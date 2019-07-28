@@ -1,15 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 
-import { 
-  Category, 
-  Menu, 
-  CategoryService, 
-  MenuService 
+import {
+  Category,
+  Menu,
+  CategoryService,
+  MenuService
 } from '../../shared';
-import { MenuPage } from '../menu/menu';
-import { CategoryPage } from '../category/category';
-import { searchBar } from '../searchbar/searchbar'
+
+import { MenuPage } from '../menu/menu.page';
+import { CategoryPage } from '../category/category.page';
+import { SearchbarPage } from '../searchbar/searchbar.page';
+import { NavigationExtras } from '@angular/router';
+import { DataService } from 'src/shared/services/data.service';
 
 @Component({
   selector: 'app-home',
@@ -27,17 +30,17 @@ export class HomePage implements OnInit {
 
   categories: Category[];
   menus: Menu[];
-  number_of_menus: number;
+  number_of_menus: number;  
 
-  constructor(public navCtrl: NavController, 
+  constructor(public navCtrl: NavController,
               private categoryService: CategoryService,
-              private menuService: MenuService) {}
+              private menuService: MenuService,
+              private dataService: DataService) { }
 
   populateCategories() {
     this.categoryService.getAll()
-      .subscribe(categories => {         
+      .subscribe(categories => {
         this.categories = categories;
-        //console.log(this.categories);
       });
   }
 
@@ -50,16 +53,18 @@ export class HomePage implements OnInit {
       });
   }
 
-  viewMenu(menu) {
-    this.navCtrl.push(MenuPage, {menu: menu});
+  viewMenu(menu) {    
+    this.dataService.setData(menu);
+    this.navCtrl.navigateForward("/menu");
   }
 
   viewCategory(category) {
-    this.navCtrl.push(CategoryPage, {category: category});
+    this.dataService.setData(category);
+    this.navCtrl.navigateForward("/category");
   }
 
-  searchProduct(){    
-    this.navCtrl.push(searchBar);
+  searchProduct() {
+    this.navCtrl.navigateForward("/searchbar");
   }
 
 

@@ -5,14 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CategoryPage } from './category.page';
-import { CategoryService, ProductService } from 'src/shared';
-import { SharedModule } from 'src/shared/shared.module';
+import { NavbarPage } from './navbar.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: CategoryPage
+    component: NavbarPage
   }
 ];
 
@@ -21,13 +19,11 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [CategoryPage],
-  providers: [
-    CategoryService,
-    ProductService
+  declarations: [NavbarPage],
+  exports: [
+    NavbarPage
   ]
 })
-export class CategoryPageModule {}
+export class NavbarPageModule {}

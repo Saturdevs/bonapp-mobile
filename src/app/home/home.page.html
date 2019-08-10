@@ -1,31 +1,19 @@
 <ion-header>
-
-  <!-- <ion-navbar color="primary">
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Home</ion-title>
-    <ion-buttons end>
-      <button ion-button>
-        <ion-icon name="md-more"></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-navbar> -->
-
+  <app-navbar [pageTitle]="pageTitle"></app-navbar>
 </ion-header>
 <ion-content>
   <ion-searchbar (click)="searchProduct()"></ion-searchbar>
-  <!--slider-->
+
   <ion-slides auto-play="2000" pager>
     <ion-slide *ngFor="let img of slides">
-      <img class="full-image" src="{{ img }}" alt=""/>
+      <img class="full-image" src="{{ img }}" alt="" />
     </ion-slide>
   </ion-slides>
 
-   <div class="list-items" *ngIf="!(number_of_menus === 1)">  
+  <div class="list-items" *ngIf="!(number_of_menus === 1)">
     <div class="item-menu" *ngFor="let menu of menus" (click)="viewMenu(menu)">
 
-      <img src="{{ menu.picture }}" alt="{{ menu.name }}"/>
+      <img src="{{ menu.picture }}" alt="{{ menu.name }}" />
 
       <div class="overlay">
 
@@ -35,18 +23,18 @@
       </div>
     </div>
   </div>
-  
+
   <div class="list-items" *ngIf="number_of_menus === 1">
     <div class="item-menu" *ngFor="let category of categories" (click)="viewCategory(category)">
 
-      <img src="{{ category.picture }}" alt="{{ category._id }}"/>
+      <img src="{{ category.picture }}" alt="{{ category._id }}" />
 
       <div class="overlay">
 
         <span class="pull-left" ion-text color="light">
           {{ category._id }}
         </span>
-     </div>
+      </div>
     </div>
   </div>
 </ion-content>

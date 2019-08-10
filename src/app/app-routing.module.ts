@@ -14,7 +14,7 @@ const routes: Routes = [
   },
   { path: 'category', 
     resolve: {
-      menu: DataResolverService
+      category: DataResolverService
     },
     loadChildren: './category/category.module#CategoryPageModule' },
   { 
@@ -28,7 +28,8 @@ const routes: Routes = [
   { path: 'product', loadChildren: './product/product.module#ProductPageModule' },
   { path: 'qrscanner', loadChildren: './qrscanner/qrscanner.module#QrscannerPageModule' },
   { path: 'scanner', loadChildren: './scanner/scanner.module#ScannerPageModule' },
-  { path: 'searchbar', loadChildren: './searchbar/searchbar.module#SearchbarPageModule' }
+  { path: 'searchbar', loadChildren: './searchbar/searchbar.module#SearchbarPageModule' },
+  { path: 'navbar', loadChildren: './navbar/navbar.module#NavbarPageModule' }
 ];
 
 @NgModule({

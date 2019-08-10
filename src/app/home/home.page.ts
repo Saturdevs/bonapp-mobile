@@ -8,10 +8,6 @@ import {
   MenuService
 } from '../../shared';
 
-import { MenuPage } from '../menu/menu.page';
-import { CategoryPage } from '../category/category.page';
-import { SearchbarPage } from '../searchbar/searchbar.page';
-import { NavigationExtras } from '@angular/router';
 import { DataService } from 'src/shared/services/data.service';
 
 @Component({
@@ -30,7 +26,8 @@ export class HomePage implements OnInit {
 
   categories: Category[];
   menus: Menu[];
-  number_of_menus: number;  
+  number_of_menus: number; 
+  pageTitle: string = "Inicio"; 
 
   constructor(public navCtrl: NavController,
               private categoryService: CategoryService,

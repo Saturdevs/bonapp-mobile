@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { CategoryPageModule } from './category/category.module';
 import { MenuPageModule } from './menu/menu.module';
 import { HttpClientModule } from '@angular/common/http';
+import { SharedModule } from 'src/shared/shared.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,13 +22,15 @@ import { HttpClientModule } from '@angular/common/http';
     IonicModule.forRoot(),
     AppRoutingModule,
     CategoryPageModule,
-    MenuPageModule
+    MenuPageModule,
+    SharedModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
+  schemas: [ NO_ERRORS_SCHEMA ,CUSTOM_ELEMENTS_SCHEMA ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

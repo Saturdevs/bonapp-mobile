@@ -1,9 +1,42 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>category</ion-title>
-  </ion-toolbar>
+  <app-navbar [pageTitle]="pageTitle"></app-navbar>
 </ion-header>
-
+  
 <ion-content>
-
-</ion-content>
+    <ion-searchbar (click)="searchProduct()"></ion-searchbar>
+    <!-- <div class="list-items">    
+      <div class="item-menu" *ngFor="let product of products" (click)="viewProduct(product)">
+  
+        <img src="{{ product.pictures[0] }}" alt="{{ product.name }}"/>
+  
+        <div class="overlay">
+  
+          <span class="pull-left" ion-text color="light">
+            {{ product.name }}
+          </span>
+  
+          <span class="pull-right" ion-text color="light">
+            ${{ product.price }}
+          </span>
+        </div>
+      </div>
+    </div> -->
+    <ion-list lines="full">
+      <ion-item *ngFor="let product of products" (click)="viewProduct(product)">
+        <ion-thumbnail slot="start" style="height: 6rem; width: 6rem; margin-right: 0.5rem;">
+          <ion-img [src]="product.pictures[0]" [alt]="product.name"></ion-img>
+        </ion-thumbnail>
+        <ion-grid>
+          <ion-row>
+            <ion-text color="dark" style="font-weight: 600;">{{product.name}}</ion-text>
+          </ion-row>
+          <ion-row>
+            <ion-text color="medium" style="height: 5rem;">{{product.description}}</ion-text>
+          </ion-row>
+          <ion-row>
+            <ion-text color="green">{{product.price | currency}}</ion-text>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-list>
+  </ion-content>

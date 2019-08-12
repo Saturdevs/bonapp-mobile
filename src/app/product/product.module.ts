@@ -6,6 +6,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { ProductPage } from './product.page';
+import { SharedModule } from 'src/shared/shared.module';
+import { OrderService } from 'src/shared';
 
 const routes: Routes = [
   {
@@ -19,8 +21,12 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ProductPage]
+  declarations: [ProductPage],
+  providers: [
+    OrderService
+  ]
 })
 export class ProductPageModule {}

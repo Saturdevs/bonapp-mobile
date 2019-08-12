@@ -12,6 +12,7 @@ import { CategoryPageModule } from './category/category.module';
 import { MenuPageModule } from './menu/menu.module';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/shared/shared.module';
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +21,7 @@ import { SharedModule } from 'src/shared/shared.module';
     BrowserModule,
     HttpClientModule,
     IonicModule.forRoot(),
+    IonicStorageModule.forRoot(),
     AppRoutingModule,
     CategoryPageModule,
     MenuPageModule,

@@ -1,9 +1,56 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>product</ion-title>
-  </ion-toolbar>
+  <app-navbar [pageTitle]="pageTitle"></app-navbar>
 </ion-header>
 
 <ion-content>
+    <ion-grid>
+        <ion-row>
+            <ion-col> 
+                <ion-img [src]="'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'" [alt]="product.name"></ion-img>
+            </ion-col>    
+        </ion-row>    
+    </ion-grid>
 
+    <ion-grid class="ion-no-padding">
+        <ion-row class="item-button-group ion-no-padding">
+            <ion-col class="ion-no-padding" size="6">
+                <ion-button expand="block" (click)="toggleFav(product)"> <!--ESTO YO LO PONDRIA EN UN CORAZONCTIO EN EL NOMBRE O EN LA IMAGEN-->
+                    <ion-icon name="star-outline" [hidden]="!product.faved"></ion-icon>
+                    <ion-icon name="star" [hidden]="product.faved"></ion-icon>
+                    <span class="text-sm">AGREGAR A FAVORITOS</span>                            
+                </ion-button>
+            </ion-col>
+            <ion-col class="ion-no-padding" size="6"> <!--ESTE BOTON CAPAZ QUE LO PONDRIA ABAJO DE TODO EN VEZ DE ARRIBA-->
+                <ion-button expand="block" fill="solid" (click)="addToCart()">
+                    <span class="text-sm">AGREGAR AL CARRITO</span>                            
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <ion-list class="list-full-border description" no-margin>
+        <ion-item-divider>
+            <p>{{product.description}}</p>
+        </ion-item-divider>
+    </ion-list>
+    <ion-list class="list-full-border" *ngIf="!(product.sizes.length === 0)">
+        <ion-item-divider>Sizes</ion-item-divider>
+        <ion-item *ngFor="let size of product.sizes, let i = index">
+            <ion-label>{{ size.name }}: ${{ size.price }}</ion-label>
+            <ion-radio value="{{ i }}"></ion-radio> 
+        </ion-item>
+    </ion-list>
+
+  <ion-list class="list-full-border" no-margin *ngIf="(product.sizes.length === 0)">
+    <ion-item class="price">
+        Precio: ${{product.price}}
+    </ion-item>
+  </ion-list>
+
+  <ion-list class="list-full-border" no-margin>
+      <ion-item-divider>Options</ion-item-divider>
+      <ion-item *ngFor="let option of product.options, let i = index">
+          <ion-label>{{ option.name }}</ion-label>
+          <ion-checkbox color="primary" [(ngModel)]="option.checked"></ion-checkbox>
+      </ion-item>
+  </ion-list>
 </ion-content>

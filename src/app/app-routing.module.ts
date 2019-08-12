@@ -24,8 +24,14 @@ const routes: Routes = [
     },
     loadChildren: './menu/menu.module#MenuPageModule' 
   },
+  { 
+    path: 'product',
+    resolve: {
+      product: DataResolverService
+    },
+    loadChildren: './product/product.module#ProductPageModule' 
+  },
   { path: 'order', loadChildren: './order/order.module#OrderPageModule' },
-  { path: 'product', loadChildren: './product/product.module#ProductPageModule' },
   { path: 'qrscanner', loadChildren: './qrscanner/qrscanner.module#QrscannerPageModule' },
   { path: 'scanner', loadChildren: './scanner/scanner.module#ScannerPageModule' },
   { path: 'searchbar', loadChildren: './searchbar/searchbar.module#SearchbarPageModule' },

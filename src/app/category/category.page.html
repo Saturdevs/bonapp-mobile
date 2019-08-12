@@ -24,7 +24,7 @@
     <ion-list lines="full">
       <ion-item *ngFor="let product of products" (click)="viewProduct(product)">
         <ion-thumbnail slot="start" style="height: 6rem; width: 6rem; margin-right: 0.5rem;">
-          <ion-img [src]="product.pictures[0]" [alt]="product.name"></ion-img>
+          <ion-img [src]="'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'" [alt]="product.name"></ion-img>
         </ion-thumbnail>
         <ion-grid>
           <ion-row>

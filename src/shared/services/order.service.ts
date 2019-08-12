@@ -1,6 +1,6 @@
 import { ApiService } from './api.service';
 import { Injectable } from "@angular/core";
-import { Storage } from "@ionic/storage";
+import { Storage, IonicStorageModule } from "@ionic/storage";
 import { Observable } from "rxjs/Rx";
 import { HttpErrorResponse } from '@angular/common/http';
 

@@ -14,6 +14,9 @@ import { async } from 'q';
 export class ProductPage implements OnInit {
   pageTitle : string;
   product: Product;
+  selectedSize: number = 0;
+  selectedSizePrice: number = 0;
+  productQty: number = 1;
 
   constructor(public navCtrl: NavController, 
               public productService: ProductService,
@@ -29,47 +32,36 @@ export class ProductPage implements OnInit {
     
   }
 
+  plusQty(product){
+    this.productQty++;
+  }
+
+  minusQty(product){
+      if (this.productQty > 1){
+          this.productQty--;
+      };
+  }
+
+  selectSize(price){
+    this.selectedSizePrice = price;
+  }
+
   async addToCart(){
-    let prompt = await this.alertController.create({
-      header: "Quantity",
-      message: "",
-      inputs: [
-        {name:"quantity",
-        value: "1",
-        },
-      ],
-      buttons: [
-        {
-          text:"Cancel",
-          handler: data => {
-            console.log("Cancel");
-          }
-        },
-        {
-          text:"Add To Cart",
-          handler: data => {
-            this.orderService.addProduct(this.product,data.quantity, async (order) => {
-              let alert = await this.alertController.create({
-                header: "Info",
-                message: "Item added to cart",
-                buttons: [
-                  {
-                    text: 'Cart',
-                    handler: data => {
-                       this.navCtrl.navigateForward("/order");
-                    },
-                  },
-                ],
-              });
-
-              await alert.present();
-            });
+    this.orderService.addProduct(this.product,this.productQty, async (order) => {
+      let alert = await this.alertController.create({
+        header: "Info",
+        message: "Item added to cart",
+        buttons: [
+          {
+            text: 'Cart',
+            handler: data => {
+                this.navCtrl.navigateForward("/order");
+            },
           },
-        }
-      ]
+        ],
+      });
+      await alert.present();
     });
-
-    await prompt.present();
   }
 
 }

@@ -49,13 +49,19 @@ export class ProductPage implements OnInit {
   async addToCart(){
     this.orderService.addProduct(this.product,this.productQty, async (order) => {
       let alert = await this.alertController.create({
-        header: "Info",
-        message: "Item added to cart",
+        header: "Listo!",
+        message: "Agregamos el producto a tu pedido",
         buttons: [
           {
-            text: 'Cart',
+            text: 'Ver Pedido',
             handler: data => {
                 this.navCtrl.navigateForward("/order");
+            },
+          },
+          {
+            text: 'Agregar producto',
+            handler: data => {
+                this.navCtrl.navigateForward("/menu");
             },
           },
         ],

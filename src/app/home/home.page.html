@@ -4,36 +4,21 @@
 <ion-content>
   <ion-searchbar (click)="searchProduct()"></ion-searchbar>
 
-  <ion-slides auto-play="2000" pager>
-    <ion-slide *ngFor="let img of slides">
-      <img class="full-image" src="{{ img }}" alt="" />
-    </ion-slide>
-  </ion-slides>
-
-  <div class="list-items" *ngIf="!(number_of_menus === 1)">
-    <div class="item-menu" *ngFor="let menu of menus" (click)="viewMenu(menu)">
-
-      <img src="{{ menu.picture }}" alt="{{ menu.name }}" />
-
+  <div *ngIf="!(numberOfMenus === 1)">
+    <div *ngFor="let menu of menus" class="screen" (click)="viewMenu(menu)" [class.screen-50]="numberOfMenus === 2"
+      [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">
       <div class="overlay">
-
-        <span class="pull-left" ion-text color="light">
-          {{ menu.name }}
-        </span>
+        <p class="itemTitle">{{menu.name | uppercase}}</p>
       </div>
     </div>
   </div>
 
-  <div class="list-items" *ngIf="number_of_menus === 1">
-    <div class="item-menu" *ngFor="let category of categories" (click)="viewCategory(category)">
-
-      <img src="{{ category.picture }}" alt="{{ category._id }}" />
-
+  <div *ngIf="numberOfMenus === 1">
+    <div *ngFor="let category of categories" class="screen" (click)="viewCategory(category)"
+      [class.screen-50]="numberOfMenus === 2" [class.screen-33]="numberOfMenus === 3"
+      [class.screen-25]="numberOfMenus > 3">
       <div class="overlay">
-
-        <span class="pull-left" ion-text color="light">
-          {{ category._id }}
-        </span>
+        <p class="itemTitle">{{category.name | uppercase}}</p>
       </div>
     </div>
   </div>

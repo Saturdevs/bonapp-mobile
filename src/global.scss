@@ -24,3 +24,39 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.screen{
+    background-image:url("https://bucket3.glanacion.com/anexos/fotos/85/cerdo-2691685w620.jpg");
+    margin-bottom: .5rem;
+    background-size: cover;
+}
+
+.screen-50{
+    height: calc(calc(100vh - 100px)/2);
+}
+
+.screen-33{
+    height: calc(calc(100vh - 100px)/3);
+}
+
+.screen-25{
+    height: calc(calc(100vh - 100px)/4);
+}
+
+.overlay {
+    margin: 0px;
+    z-index: 1;
+    position: absolute;
+    height: inherit;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.itemTitle{
+    font-size: 2.5rem;
+    color:white;
+    font-family: 'Raleway', sans-serif;
+}

@@ -3,4 +3,5 @@ export class Category {
   picture: string;
   number_of_items: number;
   menu: number;  
+  name: string;
 }

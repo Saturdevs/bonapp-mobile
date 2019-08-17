@@ -15,8 +15,8 @@
 
   <div *ngIf="numberOfMenus === 1">
     <div *ngFor="let category of categories" class="screen" (click)="viewCategory(category)"
-      [class.screen-50]="numberOfMenus === 2" [class.screen-33]="numberOfMenus === 3"
-      [class.screen-25]="numberOfMenus > 3">
+      [class.screen-50]="numberOfCategories === 2" [class.screen-33]="numberOfCategories === 3"
+      [class.screen-25]="numberOfCategories > 3">
       <div class="overlay">
         <p class="itemTitle">{{category.name | uppercase}}</p>
       </div>

@@ -60,3 +60,48 @@
     color:white;
     font-family: 'Raleway', sans-serif;
 }
+
+.float-left{
+    float: left;
+}
+
+.float-right{
+    float:right;
+}
+
+.full-width{
+    width: 100vw;
+}
+
+.icon-size{
+    font-size: 1.25rem;
+}
+
+
+
+
+.sizesAlert{
+    .alert-head{
+        border-bottom: solid 1px lightgray;
+    }
+
+    .alert-message{
+        padding-right: 0;
+        padding-left: 0;
+        padding-bottom: 0;
+    }
+}
+
+.no-padding-top{
+    padding-top: 0;
+}
+
+.no-padding-bottom{
+    padding-bottom: 0;
+}
+
+.divider-padding{
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    padding-right: 1rem;
+}

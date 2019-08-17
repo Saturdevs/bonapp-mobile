@@ -44,6 +44,38 @@ export class ProductPage implements OnInit {
 
   selectSize(price){
     this.selectedSizePrice = price;
+    this.alertController.dismiss();
+  }
+
+  onBack(){
+    this.navCtrl.back();
+  }
+
+  async showSizesModal(){
+    let sizeList = '';
+
+    this.product.sizes.map((size)=>{
+      sizeList += `<ion-item-divider class="divider-padding">${size.name} ($${size.price})</ion-item-divider>`;
+    })
+
+    let alert = await this.alertController.create({
+      header: "Tamaños",
+      message: `
+                <ion-list class="no-padding-top no-padding-bottom">
+                  ${sizeList}
+                </ion-list>
+                `,
+      buttons: [
+        {
+          text: 'Cancelar',
+          handler: data => {
+              this.alertController.dismiss();
+          },
+        }
+      ],
+      cssClass: 'sizesAlert',
+    });
+    await alert.present();  
   }
 
   async addToCart(){
@@ -59,7 +91,7 @@ export class ProductPage implements OnInit {
             },
           },
           {
-            text: 'Agregar producto',
+            text: 'Agregar otro',
             handler: data => {
                 this.navCtrl.navigateForward("/menu");
             },

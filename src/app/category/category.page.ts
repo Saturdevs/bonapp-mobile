@@ -13,6 +13,7 @@ import { DataService } from 'src/shared/services/data.service';
 export class CategoryPage implements OnInit {
   category: any;
   products: Product[];
+  pageTitle: string;
 
   constructor(public productService: ProductService,
               private _route: ActivatedRoute,
@@ -21,6 +22,7 @@ export class CategoryPage implements OnInit {
     
   ngOnInit(): void {
     this.category = this._route.snapshot.data['category'];
+    this.pageTitle = this.category.name;
     this.populateProductsByCategory(this.category._id);
   }
 

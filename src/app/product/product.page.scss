@@ -1,0 +1,57 @@
+.productName{
+    font-weight: bold;
+    color: black;
+    margin-top: .5rem;
+}
+
+.productList{
+    padding-top: 0;
+}
+
+.backArrow{
+    position: absolute;
+    left: 2%;
+    top:5%;
+    font-size: 24px;
+    color: rgba(255,255,255,0.9);
+}
+
+.priceLabel{
+    font-size: 1.5rem; 
+    font-weight: bold;
+}
+
+.price-padding{
+    padding-top: .7rem;
+}
+
+.quantityLabel{
+    font-size: 1.5rem;
+    padding-left: 0.3rem; 
+    padding-right: 0.3rem;
+}
+
+.fixed-botton{
+    position: absolute; 
+    bottom: 0; 
+    padding-bottom: 1rem;
+}
+
+.button-wrapper{
+    height: 2.2rem;
+    margin-top: 0.5rem;
+    border: solid 1px red;
+    padding-bottom: 0;
+    padding-top: 0;
+    border-radius: 40px;
+}
+
+.quantity-col{
+    text-align: center;
+    padding-top: 0;
+}
+
+.sizes-label{
+    color: black;
+    font-weight: 600;
+}

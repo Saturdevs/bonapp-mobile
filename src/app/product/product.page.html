@@ -1,29 +1,41 @@
-<ion-header>
-  <app-navbar [pageTitle]="pageTitle"></app-navbar>
-</ion-header>
-
 <ion-content>
-    <ion-grid>
-        <ion-row>
-            <ion-col style="position: relative;"> 
-                <ion-icon name="heart" style="position: absolute; left: 85%; top:2.5%; font-size: 48px; color: red;"></ion-icon>
-                <ion-img [src]="'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'" [alt]="product.name"></ion-img>
-            </ion-col>    
-        </ion-row>    
-    </ion-grid>
+    <ion-icon name="arrow-round-back" class="backArrow" (click)="onBack()"></ion-icon>
+    <ion-img [src]="'https://bucket3.glanacion.com/anexos/fotos/85/cerdo-2691685w620.jpg'" width="100"
+        [alt]="product.name"></ion-img>
 
-    <ion-list class="list-full-border description" no-margin>
+    <ion-list class="list-full-border description productList" no-margin>
         <ion-item-divider>
+            <ion-text>
+                <h3 class="productName">
+                    {{product.name}}
+                </h3>
+            </ion-text>
+        </ion-item-divider>
+        <ion-item-divider
+            *ngIf="product.description.length > 0 && product.description !== 'undefined' && product.description !== null">
             <p>{{product.description}}</p>
         </ion-item-divider>
     </ion-list>
-    <ion-list class="list-full-border" *ngIf="!(product.sizes.length === 0)">
-        <ion-item-divider>Sizes</ion-item-divider>
-        <ion-item *ngFor="let size of product.sizes, let i = index">
+    <!-- <ion-list class="list-full-border" > -->
+        <ion-item-divider *ngIf="!(product.sizes.length === 0)">
+            <ion-row class="full-width">
+                <ion-col size="6">
+                    <ion-text class="sizes-label">
+                        Tamaños
+                    </ion-text>
+                </ion-col>
+                <ion-col size="3" offset="3" (click)="showSizesModal()">
+                    <ion-text color="primary">
+                        Seleccionar
+                    </ion-text>
+                </ion-col>
+            </ion-row>
+        </ion-item-divider>
+        <!-- <ion-item *ngFor="let size of product.sizes, let i = index">
             <ion-label>{{ size.name }}: ${{ size.price }}</ion-label>
-            <ion-radio (ngModelChange)="selectSize(size.price)" [value]="i" [ngModel]="selectedSize"></ion-radio> 
-        </ion-item>
-    </ion-list>
+            <ion-radio (ngModelChange)="selectSize(size.price)" [value]="i" [ngModel]="selectedSize"></ion-radio>
+        </ion-item> -->
+    <!-- </ion-list> -->
 
     <ion-list class="list-full-border" no-margin *ngIf="(product.sizes.length === 0)">
         <ion-item class="price">
@@ -31,48 +43,44 @@
         </ion-item>
     </ion-list>
 
-    <ion-list class="list-full-border" no-margin>
+    <ion-list class="list-full-border" no-margin *ngIf="product.options.length > 0">
         <ion-item-divider>Options</ion-item-divider>
         <ion-item *ngFor="let option of product.options, let i = index">
             <ion-label>{{ option.name }}</ion-label>
-            <ion-checkbox color="primary" [(ngModel)]="option.checked"></ion-checkbox> <!--TODO: VER PARA CALCULAR EL TOTAL DE LOS ADICIONALES Y SUMARLO AL FINAL CUANDO PONE LA CANTIDAD Y EL PRECIO-->
+            <ion-checkbox color="primary" [(ngModel)]="option.checked"></ion-checkbox>
+            <!--TODO: VER PARA CALCULAR EL TOTAL DE LOS ADICIONALES Y SUMARLO AL FINAL CUANDO PONE LA CANTIDAD Y EL PRECIO-->
         </ion-item>
     </ion-list>
-    <ion-grid class="ion-no-padding">
+    <div class="fixed-botton">
         <ion-row>
-            <ion-col size="6" style="padding-top: .75rem; padding-left: .5rem;">
-                <ion-text *ngIf="(product.sizes.length !== 0)" style="font-size: 1.5rem; font-weight: bold;"> 
+            <ion-col size="6" class="price-padding">
+                <ion-text class="priceLabel" *ngIf="(product.sizes.length !== 0)">
                     {{selectedSizePrice | currency}}
                 </ion-text>
-                <ion-text *ngIf="(product.sizes.length === 0)" style="font-size: 1.5rem; font-weight: bold;"> 
+                <ion-text class="priceLabel" *ngIf="(product.sizes.length === 0)">
                     {{product.price | currency}}
                 </ion-text>
             </ion-col>
-            <ion-col size="5" offset="1">
-                <ion-button color="primary" class="button-qty pull-right" (click)="minusQty()" style="float: left;">
-                    <ion-icon name="remove"></ion-icon>
-                </ion-button>
-                <ion-text style="font-size: 1.5rem; padding-left: 0.3rem; padding-right: 0.3rem;">
-                        {{productQty}}
-                </ion-text>
-                <ion-button color="primary" class="button-qty pull-right" (click)="plusQty()" style="float: right;">
-                    <ion-icon name="add"></ion-icon>
-                </ion-button>
+            <ion-col size="6">
+                <ion-row class="button-wrapper">
+                    <ion-col size="3" offset="1">
+                        <ion-icon name="remove" (click)="minusQty()" class="icon-size"></ion-icon>
+                    </ion-col>
+                    <ion-col size="4" class="quantity-col">
+                        <ion-text class="quantityLabel">
+                            {{productQty}}
+                        </ion-text>
+                    </ion-col>
+                    <ion-col size="3" offset="1">
+                        <ion-icon name="add" (click)="plusQty()" class="icon-size"></ion-icon>
+                    </ion-col>
+                </ion-row>
             </ion-col>
         </ion-row>
-        <ion-row class="item-button-group ion-no-padding">
-            <!-- <ion-col class="ion-no-padding" size="6">
-                <ion-button expand="block" (click)="toggleFav(product)">
-                    <ion-icon name="star-outline" [hidden]="!product.faved"></ion-icon>
-                    <ion-icon name="star" [hidden]="product.faved"></ion-icon>
-                    <span class="text-sm">AGREGAR A FAVORITOS</span>                            
-                </ion-button>
-            </ion-col> -->
-            <ion-col class="ion-no-padding" size="12"> <!--ESTE BOTON CAPAZ QUE LO PONDRIA ABAJO DE TODO EN VEZ DE ARRIBA-->
-                <ion-button expand="block" fill="solid" (click)="addToCart()">
-                    <span class="text-sm">AGREGAR AL PEDIDO</span>                            
-                </ion-button>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
+        <div class="full-width">
+            <ion-button expand="block" fill="solid" (click)="addToCart()">
+                <span class="text-sm">AGREGAR AL PEDIDO</span>
+            </ion-button>
+        </div>
+    </div>
 </ion-content>

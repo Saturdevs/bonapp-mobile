@@ -60,11 +60,6 @@ export class HomePage implements OnInit {
     this.navCtrl.navigateForward("/category");
   }
 
-  searchProduct() {
-    this.navCtrl.navigateForward("/searchbar");
-  }
-
-
   ngOnInit(): void {
     this.populateMenus();
     this.populateCategories();

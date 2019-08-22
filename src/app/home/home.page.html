@@ -2,8 +2,6 @@
   <app-navbar [pageTitle]="pageTitle"></app-navbar>
 </ion-header>
 <ion-content>
-  <ion-searchbar (click)="searchProduct()"></ion-searchbar>
-
   <div *ngIf="!(numberOfMenus === 1)">
     <div *ngFor="let menu of menus" class="screen" (click)="viewMenu(menu)" [class.screen-50]="numberOfMenus === 2"
       [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">

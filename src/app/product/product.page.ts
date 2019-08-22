@@ -42,8 +42,8 @@ export class ProductPage implements OnInit {
       };
   }
 
-  selectSize(price){
-    this.selectedSizePrice = price;
+  selectSize(size){
+    this.selectedSizePrice = size.price;
     this.alertController.dismiss();
   }
 
@@ -52,27 +52,34 @@ export class ProductPage implements OnInit {
   }
 
   async showSizesModal(){
-    let sizeList = '';
-
+    let sizeList =  [];
     this.product.sizes.map((size)=>{
-      sizeList += `<ion-item-divider class="divider-padding">${size.name} ($${size.price})</ion-item-divider>`;
+      size = {
+        name: size.name,
+        label: size.name + ' ($' + size.price + ')',
+        type: 'radio',
+        value: size
+      };
+      sizeList.push(size);
     })
 
     let alert = await this.alertController.create({
       header: "Tamaños",
-      message: `
-                <ion-list class="no-padding-top no-padding-bottom">
-                  ${sizeList}
-                </ion-list>
-                `,
       buttons: [
         {
           text: 'Cancelar',
           handler: data => {
               this.alertController.dismiss();
           },
+        },
+        {
+          text: 'Aceptar',
+          handler: data => {
+            this.selectSize(data)
+          },
         }
       ],
+      inputs: sizeList,
       cssClass: 'sizesAlert',
     });
     await alert.present();  

@@ -3,7 +3,6 @@
 </ion-header>
   
 <ion-content>
-    <ion-searchbar (click)="searchProduct()"></ion-searchbar>
     <ion-list lines="full">
       <ion-item *ngFor="let product of products" (click)="viewProduct(product)">
         <ion-thumbnail slot="start" style="height: 6rem; width: 6rem; margin-right: 0.5rem;">

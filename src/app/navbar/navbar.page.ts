@@ -22,4 +22,9 @@ export class NavbarPage implements OnInit {
   onBack(){
     this.navCtrl.back();
   }
+
+  searchProduct() {
+    this.navCtrl.navigateForward("/searchbar");
+  }
+
 }

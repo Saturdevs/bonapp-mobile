@@ -1,9 +1,21 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>searchbar</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-
+  <ion-searchbar #searchbar show-cancel-button="always" (ionCancel)="onBack()" (ionInput)="getItems($event)" placeholder="Buscar Productos" id="productSearchBar"></ion-searchbar>
+    <ion-list lines="full">
+      <ion-item *ngFor="let product of products" (click)="viewProduct(product)">
+        <ion-thumbnail slot="start" style="height: 6rem; width: 6rem; margin-right: 0.5rem;">
+          <ion-img [src]="'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'" [alt]="product.name"></ion-img>
+        </ion-thumbnail>
+        <ion-grid>
+          <ion-row>
+            <ion-text color="dark" style="font-weight: 600">{{product.name}}</ion-text>
+          </ion-row>
+          <ion-row>
+            <ion-text color="medium" style="height: 3.6rem; overflow: hidden;">{{product.description}}</ion-text>
+          </ion-row>
+          <ion-row>
+            <ion-text color="green">{{product.price | currency}}</ion-text>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-list>
 </ion-content>

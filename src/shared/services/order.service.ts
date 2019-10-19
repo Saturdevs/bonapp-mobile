@@ -1,118 +1,83 @@
 import { ApiService } from './api.service';
 import { Injectable } from "@angular/core";
-import { Storage, IonicStorageModule } from "@ionic/storage";
+import { Storage } from "@ionic/storage";
 import { Observable } from "rxjs/Rx";
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProductInUserOrder, Order, ProductOption } from '../models';
+import { isNullOrUndefined } from 'util';
 
 @Injectable()
 export class OrderService {
-    order = {
+    CART = "cart";
+    cart = {
         products: [],
         total: 0
     };
 
-
     constructor(public storage: Storage,
         private apiService: ApiService) { }
 
-    getAll() {
-        return this.storage.get('order')
+    updateTotalPrice(cart: any, price: number, quantity: number) {
+        cart.total += price * quantity;
     }
 
-    addProduct(product, qty, callback) {
-        let storage = this.storage;
+    ////////////////////////////////////////////////////////////////////////
+    /////////////////////////LOCAL STORAGE METHODS//////////////////////////
+    ////////////////////////////////////////////////////////////////////////
 
-        storage.get('order').then(order => {
-            if (!order) {
-                order = this.order;
-            }
-
-            let record = {
-                _id: product._id,
-                name: product.name,
-                price: product.price,
-                options: [],
-                size: product.size ? product.sizes[product.size] : null,
-                quantity: parseInt(qty),
-                subtotal: 0
-            };
-
-            record.subtotal = parseFloat(record.size ? record.size.price : record.price);
-
-            if (product.options) {
-                for (let i = 0; i < product.options.length; i++) {
-                    if (product.options[i].checked) {
-                        record.options.push(product.options[i]);
-                        record.subtotal += parseFloat(record.options[i].price)
-                    }
-                }
-            }
-
-            let productIndex = -1;
-            for (let i = 0; i < order.products.length; i++) {
-                let product = order.products[i];
-                if ((product._id == record._id) &&
-                    (product.size == record.size) &&
-                    (JSON.stringify(product.options) == JSON.stringify(record.options))) {
-                    productIndex = i;
-                }
-            }
-
-            if (productIndex == -1) {
-                order.products.push(record);
-            } else {
-                order.products[productIndex].quantity += record.quantity;
-                order.products[productIndex].subtotal += record.subtotal;
-            }
-
-            order.total = this.calculateTotalPrice(order.products);
-
-            storage.set('order', order)
-                .then(callback(order));
-        });
+    getCart() {
+        return this.storage.get(this.CART)
     }
 
-    removeProduct(order, index) {
-        order.products.splice(index, 1);
-        order.total = this.calculateTotalPrice(order.products);
-        this.storage.set('order', order);
+    setCart(cart: any, callback) {
+        this.storage.set(this.CART, cart)
+            .then(callback(cart));;
     }
 
-    changeQty(order) {
-        order.total = this.calculateTotalPrice(order.products);
-        this.storage.set('order', order);
-    }
-
-    calculateTotalPrice(products) {
-        let total = 0;
-        let subtotal = 0;
-
-        products.forEach(product => {
-            subtotal = product.subtotal * product.quantity;
-            total += subtotal;
-        });
-        return total.toFixed(2);
+    setCartWithoutCallback(cart: any) {
+        this.storage.set(this.CART, cart);
     }
 
     clearCart() {
-        return this.storage.set('order', this.order)
+        return this.storage.set(this.CART, this.cart)
     }
+
+    ////////////////////////////////////////////////////////////////////////
+    //////////////////////////////HTTP METHODS//////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
 
     searchOrders(tableId, status) {
         return this.apiService.get(`/order/status/${tableId}?open=${status}`)
-            .map(data => data.orders);
+            .map(data => data.orders)
+            .catch(this.handleError);
+    }
+
+    getOrderOpenByTable(tableNumber): Observable<Order> {
+        return this.apiService.get(`/order/status/${tableNumber}?open=Open`)
+            .map(data => data.order)
+            .catch(this.handleError);
     }
 
     postOrder(order) {
-        this.apiService.post(`/order/${order}`)
+        this.apiService.post(`/order`, order)
+            .map(data => data.order)
+            .catch(this.handleError);
     }
 
     putOrder(order, orderId) {
         this.apiService.put(`/order/${orderId}`, order)
+            .map(data => data.order)
+            .catch(this.handleError);
     }
 
     updateStatus(orderId) {
         this.apiService.put(`/order/${orderId}`)
+    }
+
+    updateProductsOrder(order) {
+        return this.apiService.put(`/order/products`, order)
+            .map(data => data.order)
+            .catch(this.handleError);
     }
 
     private handleError(err: HttpErrorResponse) {

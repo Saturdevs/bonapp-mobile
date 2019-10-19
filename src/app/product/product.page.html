@@ -1,7 +1,6 @@
 <ion-content>
     <ion-icon name="arrow-round-back" class="backArrow" (click)="onBack()"></ion-icon>
-    <ion-img [src]="'https://bucket3.glanacion.com/anexos/fotos/85/cerdo-2691685w620.jpg'" width="100"
-        [alt]="product.name"></ion-img>
+    <ion-img [src]="'https://bucket3.glanacion.com/anexos/fotos/85/cerdo-2691685w620.jpg'" width="100" [alt]="product.name"></ion-img>
 
     <ion-list class="list-full-border description productList" no-margin>
         <ion-item-divider>
@@ -11,54 +10,51 @@
                 </h3>
             </ion-text>
         </ion-item-divider>
-        <ion-item-divider
-            *ngIf="product.description.length > 0 && product.description !== 'undefined' && product.description !== null">
+        <ion-item-divider *ngIf="product.description.length > 0 && product.description !== 'undefined' && product.description !== null">
             <p>{{product.description}}</p>
         </ion-item-divider>
     </ion-list>
-    <!-- <ion-list class="list-full-border" > -->
-        <ion-item-divider *ngIf="!(product.sizes.length === 0)">
-            <ion-row class="full-width">
-                <ion-col size="6">
-                    <ion-text class="sizes-label">
-                        Tamaños
-                    </ion-text>
-                </ion-col>
-                <ion-col size="3" offset="3" (click)="showSizesModal()">
-                    <ion-text color="primary">
-                        Seleccionar
-                    </ion-text>
-                </ion-col>
-            </ion-row>
-        </ion-item-divider>
-        <!-- <ion-item *ngFor="let size of product.sizes, let i = index">
-            <ion-label>{{ size.name }}: ${{ size.price }}</ion-label>
-            <ion-radio (ngModelChange)="selectSize(size.price)" [value]="i" [ngModel]="selectedSize"></ion-radio>
-        </ion-item> -->
-    <!-- </ion-list> -->
-
-    <ion-list class="list-full-border" no-margin *ngIf="(product.sizes.length === 0)">
-        <ion-item class="price">
-            Precio: ${{product.price}}
-        </ion-item>
-    </ion-list>
+    <ion-item-divider *ngIf="!(product.sizes.length === 0)">
+        <ion-row class="full-width">
+            <ion-col size="6">
+                <ion-text class="sizes-label">
+                    Tamaños
+                </ion-text>
+            </ion-col>
+            <ion-col size="3" offset="3" (click)="showSizesModal()">
+                <ion-text color="primary">
+                    Seleccionar
+                </ion-text>
+            </ion-col>
+        </ion-row>
+    </ion-item-divider>
 
     <ion-list class="list-full-border" no-margin *ngIf="product.options.length > 0">
         <ion-item-divider>Options</ion-item-divider>
         <ion-item *ngFor="let option of product.options, let i = index">
-            <ion-label>{{ option.name }}</ion-label>
-            <ion-checkbox color="primary" [(ngModel)]="option.checked"></ion-checkbox>
+            <ion-label>{{ option.name + "  ($" + option.price + ")" }}</ion-label>
+            <ion-checkbox (ionChange)="selectOption(option)" color="primary" [(ngModel)]="option.checked"></ion-checkbox>
             <!--TODO: VER PARA CALCULAR EL TOTAL DE LOS ADICIONALES Y SUMARLO AL FINAL CUANDO PONE LA CANTIDAD Y EL PRECIO-->
         </ion-item>
     </ion-list>
+
+    <ion-item-divider>
+        <ion-text>
+            <h6 class="obsTitle">
+                ¿Querés aclarar algo?
+            </h6>
+        </ion-text>
+    </ion-item-divider>
+
+    <ion-item>
+        <ion-textarea placeholder="Observaciones..." [(ngModel)]="productInUserOrder.observations"></ion-textarea>
+    </ion-item>
+
     <div class="fixed-botton">
         <ion-row>
             <ion-col size="6" class="price-padding">
-                <ion-text class="priceLabel" *ngIf="(product.sizes.length !== 0)">
-                    {{selectedSizePrice | currency}}
-                </ion-text>
-                <ion-text class="priceLabel" *ngIf="(product.sizes.length === 0)">
-                    {{product.price | currency}}
+                <ion-text class="priceLabel">
+                    {{productInUserOrder.price | currency}}
                 </ion-text>
             </ion-col>
             <ion-col size="6">
@@ -68,7 +64,7 @@
                     </ion-col>
                     <ion-col size="4" class="quantity-col">
                         <ion-text class="quantityLabel">
-                            {{productQty}}
+                            {{ productInUserOrder.quantity }}
                         </ion-text>
                     </ion-col>
                     <ion-col size="3" offset="1">
@@ -79,7 +75,7 @@
         </ion-row>
         <div class="full-width">
             <ion-button expand="block" fill="solid" (click)="addToCart()">
-                <span class="text-sm">AGREGAR AL PEDIDO</span>
+                <span class="text-sm">AGREGAR AL PEDIDO ({{ productInUserOrder.price * productInUserOrder.quantity | currency }})</span>
             </ion-button>
         </div>
     </div>

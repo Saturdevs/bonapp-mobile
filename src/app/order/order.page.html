@@ -1,10 +1,10 @@
 <ion-header>
   <app-navbar [pageTitle]="pageTitle"></app-navbar>
 </ion-header>
-  
+
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-item-sliding *ngFor="let product of order.products, let i = index">
+    <ion-item-sliding *ngFor="let product of cart.products, let i = index">
       <ion-item-options side="start" class="ion-margin-top">
         <ion-item-option (click)="favorite(item)">Favorite</ion-item-option>
         <ion-item-option color="danger" (click)="share(item)">Share</ion-item-option>
@@ -12,28 +12,28 @@
 
       <ion-item>
         <ion-label>
-            {{ product.name }}
-            <span *ngIf="(product.options.length === 1)">+ {{ product.options.length }} adicional</span>
-            <span *ngIf="(product.options.length >1)">+ {{ product.options.length }} adicionales</span>
+          {{ product.name }}
+          <span *ngIf="(product.options.length === 1)">+ {{ product.options.length }} adicional</span>
+          <span *ngIf="(product.options.length >1)">+ {{ product.options.length }} adicionales</span>
         </ion-label>
         <div>
-            <h2 class="price pull-left">
-                <span ion-text color="primary">${{ product.subtotal }}</span>
-                <span>x {{ product.quantity }}</span>
-            </h2>
-            <ion-button color="primary" class="button-qty pull-right" (click)="minusQty(product)">
-                    <ion-icon name="remove"></ion-icon>
-            </ion-button>
-            <ion-button color="primary" class="button-qty pull-right" (click)="plusQty(product)">
-                <ion-icon name="add"></ion-icon>
-            </ion-button>
-            <div class="clear"></div>
+          <h2 class="price pull-left">
+            <span ion-text color="primary">${{ product.price }}</span>
+            <span>x {{ product.quantity }}</span>
+          </h2>
+          <ion-button color="primary" class="button-qty pull-right" (click)="minusQty(product)">
+            <ion-icon name="remove"></ion-icon>
+          </ion-button>
+          <ion-button color="primary" class="button-qty pull-right" (click)="plusQty(product)">
+            <ion-icon name="add"></ion-icon>
+          </ion-button>
+          <div class="clear"></div>
         </div>
       </ion-item>
 
       <ion-item-options side="end">
-        <ion-item-option (click)="remove(i)">
-            <ion-icon name="trash"></ion-icon>
+        <ion-item-option (click)="removeProduct(i)">
+          <ion-icon name="trash"></ion-icon>
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
@@ -43,9 +43,9 @@
   <ion-toolbar>
     <ion-title>
       <ion-text color="dark">Total</ion-text>
-      <br/>
-      <ion-text class="bold" color="danger">${{ order.total }}</ion-text>
+      <br />
+      <ion-text class="bold" color="danger">${{ cart.total }}</ion-text>
     </ion-title>
-      <ion-button slot="end" (click)="confirmOrder(order)" color="danger">SEND ORDER</ion-button>
+    <ion-button slot="end" (click)="confirmOrder()" color="danger">SEND ORDER</ion-button>
   </ion-toolbar>
 </ion-footer>

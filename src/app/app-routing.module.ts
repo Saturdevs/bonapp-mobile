@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DataResolverService } from 'src/shared/resolver/data-resolver.service';
+import { CartResolverService } from './order/cart-resolver.service';
 
 const routes: Routes = [
   {
@@ -31,7 +32,12 @@ const routes: Routes = [
     },
     loadChildren: './product/product.module#ProductPageModule' 
   },
-  { path: 'order', loadChildren: './order/order.module#OrderPageModule' },
+  { path: 'order', 
+    resolve: {
+      cart: CartResolverService
+    },
+    loadChildren: './order/order.module#OrderPageModule' 
+  },
   { path: 'qrscanner', loadChildren: './qrscanner/qrscanner.module#QrscannerPageModule' },
   { path: 'scanner', loadChildren: './scanner/scanner.module#ScannerPageModule' },
   { path: 'searchbar', loadChildren: './searchbar/searchbar.module#SearchbarPageModule' },

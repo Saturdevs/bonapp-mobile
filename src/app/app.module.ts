@@ -13,6 +13,7 @@ import { MenuPageModule } from './menu/menu.module';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/shared/shared.module';
 import { IonicStorageModule } from '@ionic/storage';
+import { ProductPageModule } from './product/product.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,6 +26,7 @@ import { IonicStorageModule } from '@ionic/storage';
     AppRoutingModule,
     CategoryPageModule,
     MenuPageModule,
+    ProductPageModule,
     SharedModule
   ],
   providers: [

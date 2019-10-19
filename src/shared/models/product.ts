@@ -1,10 +1,12 @@
 export class Product {
+  _id: string;
   name: string;
   category: string;
-  pictures: Array<string> = [];
+  pictures: string;
   description: string;
   price: number;
   options: Array<any> = [];
   sizes: Array<any> = [];
-  tags: Array<string> = []
+  tags: Array<string> = [];
+  available: any;
 }

@@ -2,17 +2,16 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
+import { SharedModule } from '../../../shared/shared.module';
 
 import { IonicModule } from '@ionic/angular';
 
-import { OrderPage } from './order.page';
-import { SharedModule } from 'src/shared/shared.module';
-import { OrderService, UserService } from 'src/shared';
+import { PaymentPerUserModalPage } from './payment-per-user-modal.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: OrderPage
+    component: PaymentPerUserModalPage
   }
 ];
 
@@ -24,10 +23,6 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [OrderPage],
-  providers: [
-    OrderService,
-    UserService
-  ]
+  declarations: [PaymentPerUserModalPage]
 })
-export class OrderPageModule {}
+export class PaymentPerUserModalPageModule {}

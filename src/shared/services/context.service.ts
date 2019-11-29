@@ -16,7 +16,8 @@ export class ContextService {
   /**Pedido abierto para la mesa en la que se lee el qr si existe alguno */
   private order: Order;
   private user: User;
-
+  private displayProductsForEveryUser: boolean = false;
+  
   constructor() { }
 
   setTableNro(tableNro: number): void {
@@ -39,7 +40,15 @@ export class ContextService {
     this.user = user;
   }
 
-  getUser(): User {
+  getUser(): User {    
     return this.user;
+  }
+
+  setDisplayProductsForEveryUser(displayProductsForEveryUser: boolean): void {
+    this.displayProductsForEveryUser = displayProductsForEveryUser;
+  }
+
+  getDisplayProductsForEveryUser(): boolean {
+    return this.displayProductsForEveryUser;
   }
 }

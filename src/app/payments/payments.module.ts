@@ -5,14 +5,14 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { OrderPage } from './order.page';
-import { SharedModule } from 'src/shared/shared.module';
-import { OrderService, UserService } from 'src/shared';
+import { PaymentsPage } from './payments.page';
+import { PaymentPerUserModalPage } from '../modals/payment-per-user-modal/payment-per-user-modal.page'
+import { SharedModule } from '../../shared/shared.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: OrderPage
+    component: PaymentsPage
   }
 ];
 
@@ -24,10 +24,12 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [OrderPage],
-  providers: [
-    OrderService,
-    UserService
+  declarations: [
+    PaymentsPage,
+    PaymentPerUserModalPage
+  ],
+  entryComponents: [
+    PaymentPerUserModalPage
   ]
 })
-export class OrderPageModule {}
+export class PaymentsPageModule {}

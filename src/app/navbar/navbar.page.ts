@@ -8,7 +8,8 @@ import { NavController } from '@ionic/angular';
 })
 export class NavbarPage implements OnInit {
   isHomePage: boolean = false;
-
+  shouldShowSearch : boolean = true;
+  
   @Input() pageTitle: string;
   constructor(private _route: ActivatedRoute,
               private navCtrl: NavController) { }
@@ -16,6 +17,10 @@ export class NavbarPage implements OnInit {
   ngOnInit() {
     if(this._route.snapshot['_routerState'].url == '/home'){
       this.isHomePage = true;
+    }
+
+    if(this._route.snapshot['_routerState'].url === '/payments'){
+      this.shouldShowSearch = false;
     }
   }
 

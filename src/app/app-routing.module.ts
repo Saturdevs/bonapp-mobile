@@ -41,7 +41,8 @@ const routes: Routes = [
   { path: 'qrscanner', loadChildren: './qrscanner/qrscanner.module#QrscannerPageModule' },
   { path: 'scanner', loadChildren: './scanner/scanner.module#ScannerPageModule' },
   { path: 'searchbar', loadChildren: './searchbar/searchbar.module#SearchbarPageModule' },
-  { path: 'navbar', loadChildren: './navbar/navbar.module#NavbarPageModule' }
+  { path: 'navbar', loadChildren: './navbar/navbar.module#NavbarPageModule' },
+  { path: 'payments', loadChildren: './payments/payments.module#PaymentsPageModule' }
 ];
 
 @NgModule({

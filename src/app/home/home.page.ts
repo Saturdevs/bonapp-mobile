@@ -46,7 +46,6 @@ export class HomePage implements OnInit {
       .subscribe(menus => {
         this.menus = menus;
         this.numberOfMenus = this.menus.length;
-        console.log(this.numberOfMenus);
       });
   }
 

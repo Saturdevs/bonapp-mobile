@@ -17,7 +17,7 @@ export class CashRegisterService {
   ) {}
 
   getDefaultCashRegister(): Observable<CashRegister> {
-    return this.apiService.get('/default')
+    return this.apiService.get('/cashRegister/default')
       .map(data => data.cashRegister)
       .catch(this.handleError);
   }

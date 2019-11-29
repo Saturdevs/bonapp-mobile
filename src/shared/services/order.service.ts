@@ -58,14 +58,14 @@ export class OrderService {
             .catch(this.handleError);
     }
 
-    postOrder(order) {
-        this.apiService.post(`/order`, order)
+    postOrder(order){
+        return this.apiService.post(`/order`, order)
             .map(data => data.order)
             .catch(this.handleError);
     }
 
     putOrder(order, orderId) {
-        this.apiService.put(`/order/${orderId}`, order)
+        return this.apiService.put(`/order/`, order)
             .map(data => data.order)
             .catch(this.handleError);
     }
@@ -78,6 +78,12 @@ export class OrderService {
         return this.apiService.put(`/order/products`, order)
             .map(data => data.order)
             .catch(this.handleError);
+    }
+
+    blockUsersInOrder(order) {
+        return this.apiService.put(`/order/blockUsers`, order)
+        .map(data => data.order)
+        .catch(this.handleError);
     }
 
     private handleError(err: HttpErrorResponse) {

@@ -1,0 +1,40 @@
+<ion-header>
+  <app-navbar [pageTitle]="pageTitle"></app-navbar>
+</ion-header>  
+
+<ion-content>
+    <ion-list>
+      <ion-radio-group>
+        
+        <ion-list-header>
+          <ion-label>Monto a pagar</ion-label>
+        </ion-list-header>
+        
+        <ion-item>
+          <ion-label>Total</ion-label>
+          <ion-radio slot="start" value="true" checked (ionSelect)="setAmount(true)"></ion-radio>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Monto personalizado</ion-label>
+          <ion-radio slot="start" (ionSelect)="setAmount(false)"></ion-radio>
+        </ion-item>
+
+      </ion-radio-group>
+    </ion-list>
+    <ion-list>
+        <ion-item-divider>
+          <ion-input required type="number" disabled="{{totalAmount}}" min="0" max="{{userAmount}}" [(ngModel)]="amountToPay"></ion-input>
+        </ion-item-divider>
+    </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-grid>  
+    <ion-row>
+      <ion-col>
+        <ion-button expand="full" (click)="selectAmount()" disabled="{{amountToPay > userAmount || amountToPay < 0}}">Aceptar</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>

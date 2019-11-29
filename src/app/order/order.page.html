@@ -3,40 +3,74 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list>
-    <ion-item-sliding *ngFor="let product of cart.products, let i = index">
-      <ion-item-options side="start" class="ion-margin-top">
-        <ion-item-option (click)="favorite(item)">Favorite</ion-item-option>
-        <ion-item-option color="danger" (click)="share(item)">Share</ion-item-option>
-      </ion-item-options>
+  <ion-item>
+    <ion-checkbox color="danger" slot="start" (ionChange)="changeProductsDisplay()" [(ngModel)]="displayProductsForEveryUser"></ion-checkbox>
+    <ion-label>Ver productos de todos los usuarios</ion-label>
+  </ion-item>
+  <ion-list *ngIf="cart.products.length > 0">
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>A pedir</ion-label>
+      </ion-item-divider>
+      <ion-item-sliding *ngFor="let product of cart.products, let i = index">
+        <ion-item-options side="start" class="ion-margin-top">
+          <ion-item-option (click)="favorite(item)">Favorite</ion-item-option>
+          <ion-item-option color="danger" (click)="share(item)">Share</ion-item-option>
+        </ion-item-options>
 
-      <ion-item>
-        <ion-label>
-          {{ product.name }}
-          <span *ngIf="(product.options.length === 1)">+ {{ product.options.length }} adicional</span>
-          <span *ngIf="(product.options.length >1)">+ {{ product.options.length }} adicionales</span>
-        </ion-label>
-        <div>
-          <h2 class="price pull-left">
-            <span ion-text color="primary">${{ product.price }}</span>
-            <span>x {{ product.quantity }}</span>
-          </h2>
-          <ion-button color="primary" class="button-qty pull-right" (click)="minusQty(product)">
-            <ion-icon name="remove"></ion-icon>
-          </ion-button>
-          <ion-button color="primary" class="button-qty pull-right" (click)="plusQty(product)">
-            <ion-icon name="add"></ion-icon>
-          </ion-button>
-          <div class="clear"></div>
-        </div>
-      </ion-item>
+        <ion-item>
+          <ion-label>
+            {{ product.name }}
+            <span *ngIf="(product.options.length === 1)">+ {{ product.options.length }} adicional</span>
+            <span *ngIf="(product.options.length >1)">+ {{ product.options.length }} adicionales</span>
+          </ion-label>
+          <div>
+            <h2 class="price pull-left">
+              <span ion-text color="primary">${{ product.price }}</span>
+              <span>x {{ product.quantity }}</span>
+            </h2>
+            <ion-button color="primary" class="button-qty pull-right" (click)="minusQty(product)">
+              <ion-icon name="remove"></ion-icon>
+            </ion-button>
+            <ion-button color="primary" class="button-qty pull-right" (click)="plusQty(product)">
+              <ion-icon name="add"></ion-icon>
+            </ion-button>
+            <div class="clear"></div>
+          </div>
+        </ion-item>
 
-      <ion-item-options side="end">
-        <ion-item-option (click)="removeProduct(i)">
-          <ion-icon name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
+        <ion-item-options side="end">
+          <ion-item-option (click)="removeProduct(i)">
+            <ion-icon name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-item-group>
+  </ion-list>
+  <ion-list *ngIf="usersToDisplayProducts.length > 0">
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Ya pedidos</ion-label>
+      </ion-item-divider>
+      <ng-container *ngFor="let user of usersToDisplayProducts">
+        <ion-item *ngFor="let product of user.products, let i = index">
+          <ion-avatar slot="start" *ngIf="displayProductsForEveryUser">
+            <img [src]="'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'">
+          </ion-avatar>
+          <ion-label>
+            {{ product.name }}
+            <span *ngIf="(product.options.length === 1)">+ {{ product.options.length }} adicional</span>
+            <span *ngIf="(product.options.length >1)">+ {{ product.options.length }} adicionales</span>
+          </ion-label>
+          <div>
+            <h2 class="price pull-left">
+              <span ion-text color="primary">${{ product.price }}</span>
+              <span>x {{ product.quantity }}</span>
+            </h2>
+          </div>
+        </ion-item>
+      </ng-container>
+    </ion-item-group> 
   </ion-list>
 </ion-content>
 <ion-footer>
@@ -46,6 +80,7 @@
       <br />
       <ion-text class="bold" color="danger">${{ cart.total }}</ion-text>
     </ion-title>
-    <ion-button slot="end" (click)="confirmOrder()" color="danger">SEND ORDER</ion-button>
+    <ion-button *ngIf="cart.products.length > 0" slot="end" (click)="confirmOrder()" color="danger">ENVIAR PEDIDO</ion-button>
+    <ion-button *ngIf="cart.products.length === 0" slot="end" (click)="showPaymentPage()" color="danger">REALIZAR PAGO</ion-button>
   </ion-toolbar>
 </ion-footer>

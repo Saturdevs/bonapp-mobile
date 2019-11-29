@@ -4,7 +4,7 @@
     <ion-icon *ngIf="!isHomePage" name="arrow-round-back" class="backArrow" (click)="onBack()"></ion-icon>
   </ion-buttons>
   <ion-title>{{pageTitle}}</ion-title>
-  <ion-buttons slot="end">
+  <ion-buttons slot="end" *ngIf="shouldShowSearch">
     <ion-button (click)="searchProduct()">
       <ion-icon name="search"></ion-icon>
     </ion-button>

@@ -4,7 +4,8 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { ContextService } from 'src/shared/services/context.service';
-import { OrderService } from 'src/shared';
+import { OrderService, User, CashRegister } from 'src/shared';
+import { CashRegisterService } from 'src/shared/services/cash-register.service';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,11 @@ export class AppComponent {
       title: 'Mi Pedido',
       url: '/order',
       icon: 'cart'
+    },
+    {
+      title: 'Realizar pago',
+      url: '/order',
+      icon: 'logo-usd'
     }
   ];
 
@@ -30,7 +36,8 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private contextService: ContextService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private CashRegisterService: CashRegisterService
   ) {
     this.initializeApp();
   }
@@ -43,10 +50,23 @@ export class AppComponent {
       //////////////////////////////////////////////////////////////
       /**SOLO PARA PRUEBAS. ESTO DEBE HACERSE CUANDO SE LEE EL QR */
       //////////////////////////////////////////////////////////////
-      
-      this.contextService.setTableNro(8);
+      let user = new User();
+      user.lastname = 'Lischetti2';
+      user.name = 'Lorenzoo';
+      user.phone = '341560433';
+      user.username = 'llischetti2';
+
+      this.contextService.setUser(user);
+
+      this.contextService.setTableNro(21);
       this.orderService.getOrderOpenByTable(this.contextService.getTableNro()).subscribe(
         order => {
+          let cashRegister: CashRegister = null;
+          this.CashRegisterService.getDefaultCashRegister()
+            .subscribe(cashRegister => {
+              cashRegister = cashRegister;
+            });
+          order.cashRegister = cashRegister;
           this.contextService.setOrder(order);
         }
       )

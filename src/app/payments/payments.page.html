@@ -1,0 +1,40 @@
+<ion-header>
+  <app-navbar [pageTitle]="pageTitle"></app-navbar>
+</ion-header>  
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-checkbox color="danger" slot="start" (ionChange)="changeProductsDisplay()" [(ngModel)]="displayProductsForEveryUser"></ion-checkbox>
+      <ion-label>Ver montos de todos los usuarios</ion-label>
+    </ion-item>
+    <ng-container *ngFor="let userAmount of usersAmounts">
+      <ion-item *ngIf="shouldDisplayUser(userAmount)" (click)="showModalPayment(userAmount)"> 
+        <ion-avatar slot="start">
+          <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
+        </ion-avatar>
+        <ion-label>
+          <h2>
+            {{userAmount.username}}
+          </h2>
+          <p *ngIf="userAmount.paymentAmount > 0">
+            Va a pagar: {{userAmount.paymentAmount | currency}} (editar)
+          </p>
+        </ion-label>
+        <ion-note slot="end" color="dark" class="amountText">{{userAmount.amount | currency}}</ion-note>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="full">Mercadopago</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button (click)="confirmPayment(true)" expand="full">Efectivo</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>

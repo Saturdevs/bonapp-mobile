@@ -9,4 +9,5 @@ export class UserInOrder {
   totalPerUser: number;
   payments: Array<PaymentInUserOrder>;
   owner: Boolean;
+  blocked : Boolean;
 }

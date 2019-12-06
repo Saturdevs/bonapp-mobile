@@ -1,17 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount } from 'src/shared';
+import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService } from 'src/shared';
 import { ContextService } from 'src/shared/services/context.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { PaymentPerUserModalPage } from '../modals/payment-per-user-modal/payment-per-user-modal.page';
 import { isNullOrUndefined } from 'util';
 import { PaymentTypesService } from 'src/shared/services/payment-types.service';
 import { PaymentType } from 'src/shared/models/payment-type';
+import { MercadoPagoPage } from '../modals/mercado-pago/mercado-pago.page';
+import { MercadoPagoCostumerPage } from '../modals/mercado-pago-costumer/mercado-pago-costumer.page';
 
 @Component({
   selector: 'app-payments',
   templateUrl: './payments.page.html',
   styleUrls: ['./payments.page.scss'],
 })
+
 export class PaymentsPage implements OnInit {
   pageTitle: string = 'Metodos de pago';
   order: Order;
@@ -25,7 +28,8 @@ export class PaymentsPage implements OnInit {
               private modalController: ModalController,
               private alertController : AlertController,
               private orderService: OrderService,
-              private paymentTypeService: PaymentTypesService) { }
+              private paymentTypeService: PaymentTypesService,
+              private mercadoPagoService: MercadoPagoService) { }
 
   ngOnInit() {
     this.order = this.contextService.getOrder();
@@ -36,21 +40,23 @@ export class PaymentsPage implements OnInit {
     this.getPaymentTypes();
   }
 
-  /**Muesta el componente modal para seleccionar el monto (parcial o total) a pagar por cada usuario */
+  /**Muesta el componente modal para seleccionar el
+   *  monto (parcial o total) a pagar por cada usuario
+   */
   async showModalPayment(userAmount){
-    let currentUserInOrder = this.order.users.find(x => x.username === userAmount.username);
-    
+    const currentUserInOrder = this.order.users.find(x => x.username === userAmount.username);
+
     let userOldPaymentsAmount = 0;
 
     currentUserInOrder.payments.forEach(payment => {
       userOldPaymentsAmount += payment.amount;
     });
-    
+
     const modal = await this.modalController.create({
       component: PaymentPerUserModalPage,
       componentProps: {
-        'username': currentUserInOrder.username,
-        'userAmount': currentUserInOrder.totalPerUser - userOldPaymentsAmount
+        username: currentUserInOrder.username,
+        userAmount: currentUserInOrder.totalPerUser - userOldPaymentsAmount
       }
     });
     await modal.present();
@@ -61,6 +67,41 @@ export class PaymentsPage implements OnInit {
     currentUserAmount.amount = currentUserInOrder.totalPerUser - userOldPaymentsAmount - currentUserAmount.paymentAmount;
   }
 
+  async showModalMercadoPago(userAmount) {
+    // const currentUserInOrder = this.order.users.find(x => x.username === userAmount.username);
+
+    // let userOldPaymentsAmount = 0;
+
+    // currentUserInOrder.payments.forEach(payment => {
+    //   userOldPaymentsAmount += payment.amount;
+    // });
+
+    let email = 'andre_nolan7@yahoo.com' //cuanto tengamos el usuario lo saco de ahi
+
+    this.mercadoPagoService.getCustomer(email)
+      .subscribe(async (response) =>{
+        if((response.status === 200 || response.status === 201) && response.body.results.length > 0){
+          let customer = response.body.results[0];
+          const modal = await this.modalController.create({
+            component: MercadoPagoCostumerPage,
+            componentProps: {
+              customer: customer,
+              usersAmounts: this.usersAmounts
+            }
+          });
+          await modal.present();
+        } else {
+          const modal = await this.modalController.create({
+            component: MercadoPagoPage,
+            componentProps: {
+              usersAmounts: this.usersAmounts 
+            }
+          });
+          await modal.present();
+        }
+      })
+  }
+
   /** Se usa para ver que productos del pedido mostrar (DEL USUARIO ACTUAL O DE TODOS) */
   changeProductsDisplay(){
     this.contextService.setDisplayProductsForEveryUser(this.displayProductsForEveryUser);
@@ -68,22 +109,25 @@ export class PaymentsPage implements OnInit {
 
   /** Valida si tiene que mostrar el usuario en el listado de usuarios y montos a pagar 
    *  para verificar eso, valida que el usuario deba ser mostrado por monto mayor a 0, que el 
-   * check de mostrar todos este checkeado 
-   * y que el sea o no el que esta usando la app */
-  shouldDisplayUser(user : any){
-    return user.shouldDisplay && ((this.user.username !== user.username && this.displayProductsForEveryUser) || this.user.username === user.username)
+   * check de mostrar todos este checkeado
+   * y que el sea o no el que esta usando la app
+   */
+  shouldDisplayUser(user: any) {
+    return user.shouldDisplay && ((this.user.username !== user.username && this.displayProductsForEveryUser)
+    || this.user.username === user.username);
   }
-  /**Carga el array de payments para mostrar en el frontend con los datos traidos desde el backend */
+  /**Carga el array de payments para mostrar en el frontend con los datos traidos desde el backend
+   */
   populateUsersPayments(){
     this.order.users.forEach(user => {
-      
-      let totalPaymentsAmount : number = 0;
-      
-      user.payments.forEach(payment => {
-        totalPaymentsAmount += payment.amount
-      })
 
-      let userAmount : any = {};
+      let totalPaymentsAmount = 0;
+
+      user.payments.forEach(payment => {
+        totalPaymentsAmount += payment.amount;
+      });
+
+      let userAmount: any = {};
 
       if(user.username === this.user.username){
         userAmount.username = user.username;
@@ -102,15 +146,16 @@ export class PaymentsPage implements OnInit {
     })
   }
 
-  /**Muestra un mensaje pidiendo confirmacion para enviar el pedido */
+  /**Muestra un mensaje pidiendo confirmacion para enviar el pedido
+   */
   async confirmPayment(isCash){
-    if(isCash){
+    if (isCash) {
       this.paymentType = PaymentTypes.Efectivo;
     }
-    else{
+    else {
       this.paymentType = PaymentTypes.MercadoPago;
     }
-    //capaz que volver a traerme la order es al pedo
+    // capaz que volver a traerme la order es al pedo
     this.order = this.contextService.getOrder();
     let currentTotalPayment = 0;
     let oldPayments = 0;
@@ -126,7 +171,7 @@ export class PaymentsPage implements OnInit {
 
     totalPayment = totalPayment - (currentTotalPayment + oldPayments);
     let alertMessage = '';
-    if(totalPayment > 0){
+    if(totalPayment > 0) {
       alertMessage = "Estas pagando $" + currentTotalPayment.toString() +". <br/>El pedido permanecera abierto hasta completar el pago.<br/><br/> Monto pendiente: $" + totalPayment.toString();
     }
     else{
@@ -151,7 +196,7 @@ export class PaymentsPage implements OnInit {
         }
       ],
   });
-  await alert.present();
+    await alert.present();
   }
 
   sendPayment(){
@@ -160,10 +205,10 @@ export class PaymentsPage implements OnInit {
       totalPerUser += userPayment.paymentAmount;
 
       if(totalPerUser > userPayment.totalPerUser || totalPerUser === 0){
-        let alertMessage = "Estas intentando pagar un monto mayor al monto pendiente para el usuario: " + userPayment.username;
+        const alertMessage = 'Estas intentando pagar un monto mayor al monto pendiente para el usuario: ' + userPayment.username;
 
-        let alert = await this.alertController.create({
-          header: "Error",
+        const alert = await this.alertController.create({
+          header: 'Error',
           message: alertMessage,
           buttons: [
             {
@@ -174,12 +219,11 @@ export class PaymentsPage implements OnInit {
             }
           ],
       });
-      await alert.present();
-      }
-      else{
+        await alert.present();
+      } else {
         this.blockUsersInOrder();
       }
-    })
+    });
   }
 
   blockUsersInOrder(){

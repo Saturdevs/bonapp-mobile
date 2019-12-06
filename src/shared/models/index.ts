@@ -9,3 +9,4 @@ export * from './productInUserOrder';
 export * from './orderDiscount';
 export * from './productOption';
 export * from './userInOrder';
+export * from './mercadoPagoPayment';

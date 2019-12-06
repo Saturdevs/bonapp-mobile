@@ -27,6 +27,7 @@ export class HomePage implements OnInit {
   categories: Category[];
   menus: Menu[];
   numberOfMenus: number; 
+  numberOfCategories: number;
   pageTitle: string = "Inicio"; 
 
   constructor(public navCtrl: NavController,
@@ -38,6 +39,7 @@ export class HomePage implements OnInit {
     this.categoryService.getAll()
       .subscribe(categories => {
         this.categories = categories;
+        this.numberOfCategories = this.categories.length;
       });
   }
 

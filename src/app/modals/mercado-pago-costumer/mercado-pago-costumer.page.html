@@ -1,0 +1,36 @@
+<ion-header>
+  <app-navbar [pageTitle]="pageTitle"></app-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    <ion-item (click)="doPaymentWithNewCard()">
+      <ion-icon name="card" slot="start" style="padding: 1.2rem;"></ion-icon>
+      <ion-grid>
+        <ion-row>
+          <ion-text color="dark" style="font-weight: 600">Nueva Tarjeta</ion-text>
+        </ion-row>
+      </ion-grid>
+      <ion-icon name="arrow-dropright" slot="end"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full">
+    <ion-item *ngFor="let card of cards" (click)="showSecurityCode(card)">
+      <ion-thumbnail slot="start">
+        <ion-img [src]="card.payment_method.secure_thumbnail" style="height: auto; padding-top: 1rem;"></ion-img>
+      </ion-thumbnail>
+      <ion-grid>
+        <ion-row style="padding-top: 1.5rem;" >
+          <ion-text color="dark" style="font-weight: 600">{{card.payment_method.name | titlecase }}</ion-text>
+          <ion-text *ngIf="card.issuer && card.issuer.name && card.issuer.name !== ''" color="dark" style="font-weight: 600">&nbsp;-&nbsp;{{card.issuer.name | titlecase }}</ion-text>          
+        </ion-row>
+        <ion-row>
+          <ion-text color="medium" style="height: 3.6rem; overflow: hidden;">{{terminadaText + ' ' + card.last_four_digits}}</ion-text>
+        </ion-row>
+      </ion-grid>
+      <ion-icon name="arrow-dropright" slot="end"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

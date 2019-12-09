@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { ScannerPage } from './scanner.page';
+import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ScannerPage]
+  declarations: [ScannerPage],
+  providers: [QRScanner]
 })
 export class ScannerPageModule {}

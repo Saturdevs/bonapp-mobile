@@ -19,6 +19,12 @@
         </ion-list>
       </ion-content>
     </ion-menu>
-    <ion-router-outlet main></ion-router-outlet>
+    <ion-router-outlet main>
+      <ion-fab horizontal="end" vertical="bottom">
+        <ion-fab-button color="danger" (click)="callWaiter()">
+          <ion-icon name="hand"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-router-outlet>
   </ion-split-pane>
 </ion-app>

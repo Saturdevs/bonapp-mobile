@@ -5,6 +5,9 @@
 export const environment = {
   production: false,
   api_url: 'http://localhost:3001/api',
+  socket_url: 'http://localhost:3001',
+  // socket_url: 'http://192.168.0.12:3001',  // TO USE DEVAPP
+  // api_url: 'http://192.168.0.12:3001/api', // TO USE DEVAPP
   avatar_url: 'https://ui-avatars.com/api/?name='
 };
 

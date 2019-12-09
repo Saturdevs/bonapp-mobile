@@ -6,6 +6,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { ContextService } from 'src/shared/services/context.service';
 import { OrderService, User, CashRegister } from 'src/shared';
 import { CashRegisterService } from 'src/shared/services/cash-register.service';
+import { SocketIoService } from 'src/shared/services/socket-io.service';
 
 @Component({
   selector: 'app-root',
@@ -37,9 +38,14 @@ export class AppComponent {
     private statusBar: StatusBar,
     private contextService: ContextService,
     private orderService: OrderService,
-    private CashRegisterService: CashRegisterService
+    private CashRegisterService: CashRegisterService,
+    private socketService: SocketIoService
   ) {
     this.initializeApp();
+  }
+
+  callWaiter(){
+    this.socketService.callWaiter();
   }
 
   initializeApp() {

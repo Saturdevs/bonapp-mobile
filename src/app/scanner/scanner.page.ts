@@ -16,7 +16,6 @@ export class ScannerPage implements OnInit {
     .then((status: QRScannerStatus) => {
       if (status.authorized) {
     // camera permission was granted
-    this.qrScanner.show();
 
 
     // start scanning

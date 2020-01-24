@@ -3,8 +3,8 @@
 </ion-header>
 
 <ion-content>
-  <ion-list lines="full">
-    <ion-item (click)="doPaymentWithNewCard()">
+  <ion-list>
+    <ion-item lines="full" (click)="doPaymentWithNewCard()">
       <ion-icon name="card" slot="start" style="padding: 1.2rem;"></ion-icon>
       <ion-grid>
         <ion-row>
@@ -15,8 +15,8 @@
     </ion-item>
   </ion-list>
 
-  <ion-list lines="full">
-    <ion-item *ngFor="let card of cards" (click)="showSecurityCode(card)">
+  <ion-list>
+    <ion-item lines="full" *ngFor="let card of cards" (click)="showSecurityCode(card)">
       <ion-thumbnail slot="start">
         <ion-img [src]="card.payment_method.secure_thumbnail" style="height: auto; padding-top: 1rem;"></ion-img>
       </ion-thumbnail>

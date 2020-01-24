@@ -4,12 +4,12 @@
 
 <ion-content>
   <ion-list>
-    <ion-item>
+    <ion-item lines="full">
       <ion-checkbox color="danger" slot="start" (ionChange)="changeProductsDisplay()" [(ngModel)]="displayProductsForEveryUser"></ion-checkbox>
-      <ion-label>Ver montos de todos los usuarios</ion-label>
+      <ion-label color="medium" class="amountsLabel">Ver montos de todos los usuarios</ion-label>
     </ion-item>
     <ng-container *ngFor="let userAmount of usersAmounts">
-      <ion-item *ngIf="shouldDisplayUser(userAmount)" (click)="showModalPayment(userAmount)"> 
+      <ion-item lines="full" *ngIf="shouldDisplayUser(userAmount)" (click)="showModalPayment(userAmount)"> 
         <ion-avatar slot="start">
           <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
         </ion-avatar>
@@ -21,7 +21,7 @@
             Va a pagar: {{userAmount.paymentAmount | currency}} (editar)
           </p>
         </ion-label>
-        <ion-note slot="end" color="dark" class="amountText">{{userAmount.amount | currency}}</ion-note>
+        <ion-note slot="end" color="secondary" class="amountText">{{userAmount.amount | currency}}</ion-note>
       </ion-item>
     </ng-container>
   </ion-list>
@@ -30,10 +30,10 @@
   <ion-grid>
     <ion-row>
       <ion-col>
-        <ion-button (click)="showModalMercadoPago()" expand="full">Mercadopago</ion-button>
+        <ion-button (click)="showModalMercadoPago()" shape="round" class="mercadoPagoButton" expand="full">Mercadopago</ion-button>
       </ion-col>
       <ion-col>
-        <ion-button (click)="confirmPayment(true)" expand="full">Efectivo</ion-button>
+        <ion-button (click)="confirmPayment(true)" shape="round" color="secondary" expand="full">Efectivo</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

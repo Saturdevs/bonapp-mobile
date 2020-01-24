@@ -1,11 +1,28 @@
-.avatar{
-    height: 4rem;
-    width: 4rem;
-    margin-right: 0.5rem;
+.avatar {
+  height: 4rem;
+  width: 4rem;
+  margin-right: 0.5rem;
 }
 
-.amountText{
-    font-size: 1rem;
-    padding-bottom: 0px;
-    padding-top: 1.4rem;
+.amountText {
+  font-size: 1rem;
+  padding-bottom: 0px;
+  padding-top: 1.2rem;
+}
+
+ion-item {
+  --border-color: var(--ion-color-tertiary);
+  --border-width: 0 0 2px 0;
+  --inner-padding-bottom: 1rem;
+  --inner-padding-top: 1rem;
+}
+
+.amountsLabel {
+  font-size: 0.9rem;
+}
+
+.mercadoPagoButton {
+    .button-native{
+        --main-bg-color: #009ee3;
+    }
 }

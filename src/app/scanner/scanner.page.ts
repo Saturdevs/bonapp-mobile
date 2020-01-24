@@ -12,10 +12,11 @@ export class ScannerPage implements OnInit {
 
   ngOnInit() {
     // Optionally request the permission early
-    // this.qrScanner.prepare()
-    // .then((status: QRScannerStatus) => {
-    //   if (status.authorized) {
+    this.qrScanner.prepare()
+    .then((status: QRScannerStatus) => {
+      if (status.authorized) {
     // camera permission was granted
+    this.qrScanner.show();
 
 
     // start scanning
@@ -27,15 +28,14 @@ export class ScannerPage implements OnInit {
     });
 
 
-    this.qrScanner.show();
-    // } else if (status.denied) {
+    } else if (status.denied) {
     //   // camera permission was permanently denied
     //   // you must use QRScanner.openSettings() method to guide the user to the settings page
     //   // then they can grant the permission from there
-    // } else {
-    //   // permission was denied, but not permanently. You can ask for permission again at a later time.
-    // }
-    // })
-    // .catch((e: any) => console.log('Error is', e));
+    } else {
+      // permission was denied, but not permanently. You can ask for permission again at a later time.
+    }
+    })
+    .catch((e: any) => console.log('Error is', e));
       }
   }

@@ -5,50 +5,50 @@
 <ion-content>
     <form [formGroup]="payForm" (ngSubmit)="doPay()" id="pay" name="pay" >
       <fieldset style="border: none">
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label position="stacked">Email</ion-label>
                 <ion-input id="email" formControlName="email" name="email" type="email" placeholder="your email"></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label position="stacked">N&uacute;mero de tarjeta:</ion-label>
                 <ion-input  type="text" id="cardNumber" formControlName="cardNumber" (ngModelChange)="guessingPaymentMethod()" data-checkout="cardNumber" placeholder="4509 9535 6623 3704" onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off></ion-input>
                 <ion-thumbnail slot="end" *ngIf="paymentMethod">
                     <img src="{{paymentMethod?.secure_thumbnail}}" style="height: auto; padding-top: 1rem;">
                 </ion-thumbnail>
             </ion-item>
-            <ion-item *ngIf="issuerRequired()">
+            <ion-item lines="full" *ngIf="issuerRequired()">
                 <ion-label>Banco</ion-label>
                 <ion-select  id="docType" formControlName="docType" data-checkout="docType" okText="Okay" cancelText="Dismiss">        
                     <ion-select-option *ngFor="let issuer of issuers" >{{issuer.name}}</ion-select-option>
                 </ion-select>
             </ion-item>
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label position="stacked">C&oacute;digo de Seguridad</ion-label>
                 <ion-input type="text" id="securityCode" formControlName="securityCode" data-checkout="securityCode" placeholder="123" onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off ></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label position="stacked">Vencimiento: Mes</ion-label>
                 <ion-input type="number" id="cardExpirationMonth" max="12" min="1" formControlName="cardExpirationMonth" data-checkout="cardExpirationMonth" placeholder="12"  onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off  ></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label position="stacked">Vencimiento: A&ntilde;o</ion-label>
                 <ion-input  type="number" id="cardExpirationYear" formControlName="cardExpirationYear" data-checkout="cardExpirationYear" placeholder="2019" onselectstart="return false" onpaste="return false" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label position="stacked">Nombre en la tarjeta</ion-label>
                 <ion-input type="text" id="cardholderName" formControlName="cardholderName" data-checkout="cardholderName" placeholder="APRO"></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label>Tipo de documento</ion-label>
                 <ion-select  id="docType" formControlName="docType" data-checkout="docType" okText="Okay" cancelText="Dismiss">        
                   <ion-select-option *ngFor="let documentType of documentTypes" >{{documentType.name}}</ion-select-option>
                 </ion-select>
             </ion-item>
-            <ion-item>
+            <ion-item lines="full">
                 <ion-label position="stacked">N&uacute;mero de Documento</ion-label>
                 <ion-input type="text" id="docNumber" formControlName="docNumber" data-checkout="docNumber" placeholder="12345678"></ion-input>
             </ion-item>
-            <ion-item >
+            <ion-item lines="full">
                 <ion-label>Guardar Tarjeta</ion-label>
                 <ion-checkbox slot="end" formControlName="saveCard"></ion-checkbox>
             </ion-item>

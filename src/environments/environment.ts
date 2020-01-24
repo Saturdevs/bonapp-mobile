@@ -6,8 +6,10 @@ export const environment = {
   production: false,
   api_url: 'http://localhost:3001/api',
   socket_url: 'http://localhost:3001',
-  // socket_url: 'http://192.168.0.12:3001',  // TO USE DEVAPP
-  // api_url: 'http://192.168.0.12:3001/api', // TO USE DEVAPP
+  // socket_url: 'http://192.168.50.123:3001',  // TO USE DEVAPP
+  // api_url: 'http://192.168.50.123:3001/api', // TO USE DEVAPP
+  // socket_url: 'http://47cd520c.ngrok.io',  // TO USE APK IN DEBUG - URL CHANGES
+  // api_url: 'http://47cd520c.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES
   avatar_url: 'https://ui-avatars.com/api/?name='
 };
 

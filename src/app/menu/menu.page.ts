@@ -14,6 +14,7 @@ export class MenuPage implements OnInit {
   menu: Menu;
   categories: Category[];
   pageTitle: string = "Menu";
+  numberOfCategories: number;
 
   constructor(public navCtrl: NavController,
               public categoryService: CategoryService,
@@ -24,6 +25,7 @@ export class MenuPage implements OnInit {
     this.categoryService.getCategoriesByMenu(menu)
         .subscribe(categories => {
           this.categories = categories;
+          this.numberOfCategories = this.categories.length;
         });
   }
 

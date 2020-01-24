@@ -64,7 +64,7 @@ export class AppComponent {
 
       this.contextService.setUser(user);
 
-      this.contextService.setTableNro(2);
+      this.contextService.setTableNro(6);
       this.orderService.getOrderOpenByTable(this.contextService.getTableNro()).subscribe(
         order => {
           let cashRegister: CashRegister = null;

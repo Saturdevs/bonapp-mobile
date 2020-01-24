@@ -1,0 +1,45 @@
+.item-lines-full {
+  --border-color: var(--ion-color-tertiary);
+  --border-width: 0 0 2px 0 !important;
+}
+
+.cartLabel{
+    font-size: .9rem;
+}
+
+.productNameLabel{
+    margin-bottom: 1.5rem;
+}
+
+.price{
+    color: var(--ion-color-secondary);
+    font-size: .9rem;
+}
+
+.button-qty{
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.inOrder{
+    margin-top: 8rem;
+}
+
+.inOrderPrice{
+    padding-right: 1.6rem;
+}
+
+.footer-md:before{
+    height: 0px!important;
+}
+
+.finalPriceText{
+    font-size: 1.3rem;
+    padding-left: .5rem;
+}
+
+.totalTitle{
+    padding-left: .5rem;
+}

@@ -1,62 +1,124 @@
-.productName{
-    font-weight: bold;
-    color: black;
-    margin-top: .5rem;
-}
-
 .obsTitle {
-    font-weight: bold;
-    color: black;
+  font-weight: bold;
+  color: black;
 }
 
-.productList{
-    padding-top: 0;
+.productDesc {
+  color: gray;
 }
 
-.backArrow{
-    position: absolute;
-    left: 2%;
-    top:5%;
-    font-size: 24px;
-    color: rgba(255,255,255,0.9);
+.productList {
+  padding-top: 0;
 }
 
-.priceLabel{
-    font-size: 1.5rem; 
-    font-weight: bold;
+.backArrow {
+  position: absolute;
+  left: 2%;
+  top: 2%;
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.price-padding{
-    padding-top: .7rem;
+.priceLabel {
+  font-size: 1.25rem;
+  padding-left: 2rem;
 }
 
-.quantityLabel{
-    font-size: 1.5rem;
-    padding-left: 0.3rem; 
-    padding-right: 0.3rem;
+.price-padding {
+  padding-top: 0.7rem;
 }
 
-.fixed-botton{
-    position: absolute; 
-    bottom: 0; 
-    padding-bottom: 1rem;
+.quantityLabel {
+  font-size: 1.5rem;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
 }
 
-.button-wrapper{
-    height: 2.2rem;
-    margin-top: 0.5rem;
-    border: solid 1px red;
-    padding-bottom: 0;
-    padding-top: 0;
-    border-radius: 40px;
+.fixed-botton {
+  position: relative;
+  bottom: 0;
+  padding-bottom: 1rem;
 }
 
-.quantity-col{
-    text-align: center;
-    padding-top: 0;
+.button-wrapper {
+  height: 2.2rem;
+  margin-top: 0.5rem;
+  border: solid 1px var(--ion-color-secondary);
+  padding-bottom: 0;
+  padding-top: 0;
+  border-radius: 40px;
+  margin-bottom: .7rem;
 }
 
-.sizes-label{
-    color: black;
-    font-weight: 600;
+.quantity-col {
+  text-align: center;
+  padding-top: 0;
 }
+
+.labelSizes {
+  font-size: 1.1rem;
+}
+
+.labelOptions {
+  padding-left: 1.2rem;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+.optionNameLabel {
+  font-size: 0.8rem;
+  padding-left: 0.5rem;
+  margin-top: 0;
+}
+
+.selectText {
+  margin-top: 1.3rem;
+}
+
+.optionsCheckBox {
+  margin-top: 0.4rem;
+}
+
+.sizesContainer {
+  padding-left: 0.8rem;
+}
+
+.optionsCheckBox .checkbox-icon {
+  border-color: green !important;
+}
+
+ion-checkbox {
+  --background-checked: var(--ion-color-tertiary);
+  --border-color: var(--ion-color-tertiary);
+  --border-color-checked: var(--ion-color-tertiary);
+}
+
+ion-item {
+  --border-color: var(--ion-color-tertiary);
+  --border-width: 0 0 2px 0;
+}
+
+ion-item-divider {
+  --color: var(--ion-color-tertiary)!important;
+}
+
+
+.customItemDivider{
+    border-bottom: solid 1px;
+}
+
+.customTextArea{
+    background-color: white;
+    margin-top: 0;
+    height: 6rem;
+}
+
+.addToCartButtonContainer{
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+#observationsList{
+    padding: 0;
+}
+

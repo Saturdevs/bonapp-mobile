@@ -1,66 +1,75 @@
 <ion-content>
     <ion-icon name="arrow-round-back" class="backArrow" (click)="onBack()"></ion-icon>
-    <ion-img [src]="'https://bucket3.glanacion.com/anexos/fotos/85/cerdo-2691685w620.jpg'" width="100" [alt]="product.name"></ion-img>
+    <ion-img [src]="product.pictures" width="100" [alt]="product.name"></ion-img>
 
     <ion-list class="list-full-border description productList" no-margin>
-        <ion-item-divider>
-            <ion-text>
-                <h3 class="productName">
+        <ion-item-divider class="customItemDivider">
+            <ion-text color="secondary">
+                <h3 >
                     {{product.name}}
                 </h3>
+                <p *ngIf="product.description.length > 0 && product.description !== 'undefined' && product.description !== null" class="productDesc">
+                    {{product.description}}
+                </p>
             </ion-text>
         </ion-item-divider>
-        <ion-item-divider *ngIf="product.description.length > 0 && product.description !== 'undefined' && product.description !== null">
-            <p>{{product.description}}</p>
-        </ion-item-divider>
     </ion-list>
-    <ion-item-divider *ngIf="!(product.sizes.length === 0)">
+    <ion-item-divider class="sizesContainer customItemDivider" *ngIf="!(product.sizes.length === 0)">
         <ion-row class="full-width">
             <ion-col size="6">
-                <ion-text class="sizes-label">
-                    Tamaños
+                <ion-text color="secondary">
+                    <p class="labelSizes">
+                        Tamaños
+                    </p>
                 </ion-text>
             </ion-col>
             <ion-col size="3" offset="3" (click)="showSizesModal()">
                 <ion-text color="primary">
-                    Seleccionar
+                    <p class="selectText">
+                        Seleccionar
+                    </p>
                 </ion-text>
             </ion-col>
         </ion-row>
     </ion-item-divider>
 
     <ion-list class="list-full-border" no-margin *ngIf="product.options.length > 0">
-        <ion-item-divider>Options</ion-item-divider>
-        <ion-item *ngFor="let option of product.options, let i = index">
-            <ion-label>{{ option.name + "  ($" + option.price + ")" }}</ion-label>
-            <ion-checkbox (ionChange)="selectOption(option)" color="primary" [(ngModel)]="option.checked"></ion-checkbox>
+        <ion-text color="secondary">
+            <p class="labelOptions">
+                Opciones
+            </p>
+        </ion-text>
+        <ion-item *ngFor="let option of product.options, let i = index" lines="full">
+            <ion-label class="optionNameLabel" color="medium">{{ option.name + "  ($" + option.price + ")" }}</ion-label>
+            <ion-checkbox class="optionsCheckBox" (ionChange)="selectOption(option)" color="primary" [(ngModel)]="option.checked"></ion-checkbox>
             <!--TODO: VER PARA CALCULAR EL TOTAL DE LOS ADICIONALES Y SUMARLO AL FINAL CUANDO PONE LA CANTIDAD Y EL PRECIO-->
         </ion-item>
     </ion-list>
 
-    <ion-item-divider>
-        <ion-text>
-            <h6 class="obsTitle">
-                ¿Querés aclarar algo?
-            </h6>
-        </ion-text>
-    </ion-item-divider>
-
-    <ion-item>
-        <ion-textarea placeholder="Observaciones..." [(ngModel)]="productInUserOrder.observations"></ion-textarea>
-    </ion-item>
+    <ion-list id="observationsList">
+        <ion-item lines="none">
+            <ion-text color="secondary">
+                <p>
+                    ¿Querés aclarar algo?
+                </p>
+            </ion-text>
+        </ion-item>
+        <ion-item lines="none">
+            <ion-textarea class="customTextArea" placeholder="Observaciones..." [(ngModel)]="productInUserOrder.observations"></ion-textarea>
+        </ion-item>
+    </ion-list>
 
     <div class="fixed-botton">
         <ion-row>
             <ion-col size="6" class="price-padding">
-                <ion-text class="priceLabel">
+                <ion-text class="priceLabel" color="secondary">
                     {{productInUserOrder.price | currency}}
                 </ion-text>
             </ion-col>
-            <ion-col size="6">
+            <ion-col size="5">
                 <ion-row class="button-wrapper">
                     <ion-col size="3" offset="1">
-                        <ion-icon name="remove" (click)="minusQty()" class="icon-size"></ion-icon>
+                        <ion-icon color="secondary" name="remove" (click)="minusQty()" class="icon-size"></ion-icon>
                     </ion-col>
                     <ion-col size="4" class="quantity-col">
                         <ion-text class="quantityLabel">
@@ -68,13 +77,13 @@
                         </ion-text>
                     </ion-col>
                     <ion-col size="3" offset="1">
-                        <ion-icon name="add" (click)="plusQty()" class="icon-size"></ion-icon>
+                        <ion-icon color="secondary" name="add" (click)="plusQty()" class="icon-size"></ion-icon>
                     </ion-col>
                 </ion-row>
             </ion-col>
         </ion-row>
-        <div class="full-width">
-            <ion-button expand="block" fill="solid" (click)="addToCart()">
+        <div class="full-width addToCartButtonContainer">
+            <ion-button shape="round" expand="block" color="secondary" fill="solid" (click)="addToCart()">
                 <span class="text-sm">AGREGAR AL PEDIDO ({{ productInUserOrder.price * productInUserOrder.quantity | currency }})</span>
             </ion-button>
         </div>

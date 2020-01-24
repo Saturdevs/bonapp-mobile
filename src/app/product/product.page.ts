@@ -104,12 +104,14 @@ export class ProductPage implements OnInit {
       buttons: [
         {
           text: 'Cancelar',
+          cssClass: 'alertCancelButton',
           handler: data => {
             this.alertController.dismiss();
           },
         },
         {
           text: 'Aceptar',
+          cssClass: 'alertOKButton',
           handler: data => {
             this.selectSize(data)
           },

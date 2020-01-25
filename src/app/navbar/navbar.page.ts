@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { NavController, ModalController } from '@ionic/angular';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.page.html',
@@ -11,8 +11,11 @@ export class NavbarPage implements OnInit {
   shouldShowSearch : boolean = true;
   
   @Input() pageTitle: string;
+  @Input() isModal?: boolean = false;
+  
   constructor(private _route: ActivatedRoute,
-              private navCtrl: NavController) { }
+              private navCtrl: NavController,
+              private modalController: ModalController) { }
 
   ngOnInit() {
     if(this._route.snapshot['_routerState'].url == '/home'){
@@ -25,7 +28,11 @@ export class NavbarPage implements OnInit {
   }
 
   onBack(){
-    this.navCtrl.back();
+    if(this.isModal){
+      this.modalController.dismiss();
+    }else{
+      this.navCtrl.back();
+    }
   }
 
   searchProduct() {

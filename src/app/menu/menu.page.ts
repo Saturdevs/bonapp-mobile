@@ -13,7 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 export class MenuPage implements OnInit {
   menu: Menu;
   categories: Category[];
-  pageTitle: string = "Menu";
+  pageTitle: string = "";
   numberOfCategories: number;
 
   constructor(public navCtrl: NavController,
@@ -36,6 +36,7 @@ export class MenuPage implements OnInit {
 
   ngOnInit(): void {
     this.menu = this._route.snapshot.data['menu'];
+    this.pageTitle = this.menu.name;
     this.populateCategoriesByMenu(this.menu._id);
   }
 }

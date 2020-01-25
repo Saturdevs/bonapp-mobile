@@ -198,3 +198,12 @@ ion-checkbox {
 .imageRadius{
   border-radius: 10%;
 }
+
+.ion-color-mercadopago {
+  --ion-color-base: var(--ion-color-mercadopago);
+  --ion-color-base-rgb: var(--ion-color-mercadopago-rgb);
+  --ion-color-contrast: var(--ion-color-mercadopago-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-mercadopago-contrast-rgb);
+  --ion-color-shade: var(--ion-color-mercadopago-shade);
+  --ion-color-tint: var(--ion-color-mercadopago-tint);
+}

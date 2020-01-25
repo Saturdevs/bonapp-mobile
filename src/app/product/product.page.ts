@@ -150,13 +150,13 @@ export class ProductPage implements OnInit {
             {
               text: 'Ver Pedido',
               handler: data => {
-                this.navCtrl.navigateForward("/order");
+                this.navCtrl.navigateRoot("/order");
               },
             },
             {
               text: 'Agregar otro',
               handler: data => {
-                this.navCtrl.navigateForward("/menu");
+                this.navCtrl.navigateRoot("/menu");
               },
             },
           ],

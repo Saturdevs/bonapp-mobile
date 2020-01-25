@@ -108,7 +108,7 @@ export class OrderPage implements OnInit {
                         ],
                     });
                     await alert.present();
-                    this.navCtrl.navigateForward("/menu");
+                    this.navCtrl.navigateRoot("/");
                 },
                 async error => {
                     let alert = await this.alertController.create({

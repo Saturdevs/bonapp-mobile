@@ -231,7 +231,7 @@ export class MercadoPagoPage implements OnInit {
             {
               text: 'OK!',
               handler: data => {
-                this.navCtrl.navigateForward("/");
+                this.navCtrl.navigateRoot("/");
               },
             }
           ],

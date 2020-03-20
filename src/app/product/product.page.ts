@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
 
-import { OrderService, ProductInUserOrder } from '../../shared';
+import { OrderService, ProductInUserOrder, ProductService } from '../../shared';
 import { Product } from 'src/shared';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/shared/services/data.service';
@@ -26,6 +26,7 @@ export class ProductPage implements OnInit {
   constructor(private navCtrl: NavController,
     private alertController: AlertController,
     private orderService: OrderService,
+    private productService: ProductService,
     private dataService: DataService,
     private _route: ActivatedRoute) { }
 
@@ -143,6 +144,14 @@ export class ProductPage implements OnInit {
       this.orderService.updateTotalPrice(cart, this.productInUserOrder.price, this.productInUserOrder.quantity);
 
       this.orderService.setCart(cart, async (order) => {
+
+        if(this.product.stockControl){
+          this.product.stock.current--;
+          this.productService.updateProduct(this.product)
+            .subscribe(resp => {
+              console.log(resp);
+            }) 
+        };
         let alert = await this.alertController.create({
           header: "Listo!",
           message: "Agregamos el producto a tu pedido",

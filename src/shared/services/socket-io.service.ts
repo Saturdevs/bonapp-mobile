@@ -13,12 +13,4 @@ export class SocketIoService {
   constructor(private contextService: ContextService) {
     this.socket = io(`${environment.socket_url}`);
    }
-
-  callWaiter(){
-    let waiterCall = new WaiterCall();
-    waiterCall.tableNumber = this.contextService.getTableNro();
-    waiterCall.userName = this.contextService.getUser().username;
-    waiterCall.waiterName = 'Mozo de prueba';
-    this.socket.emit('callWaiter', waiterCall);
-  }
 }

@@ -4,9 +4,10 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { ContextService } from 'src/shared/services/context.service';
-import { OrderService, User, CashRegister } from 'src/shared';
+import { OrderService, User, CashRegister, NotificationType, Notification } from 'src/shared';
 import { CashRegisterService } from 'src/shared/services/cash-register.service';
-import { SocketIoService } from 'src/shared/services/socket-io.service';
+import { NotificationsService } from 'src/shared/services/notifications.service';
+import { NotificationTypes } from '../shared/enums/notificationsTypes';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,7 @@ export class AppComponent {
       icon: 'logo-usd'
     }
   ];
+  notificationsTypes: Array<NotificationType>;
 
   constructor(
     private platform: Platform,
@@ -39,13 +41,30 @@ export class AppComponent {
     private contextService: ContextService,
     private orderService: OrderService,
     private CashRegisterService: CashRegisterService,
-    private socketService: SocketIoService
+    private notificationSerive: NotificationsService
   ) {
     this.initializeApp();
   }
 
   callWaiter(){
-    this.socketService.callWaiter();
+    this.notificationSerive.getAllTypes()
+      .subscribe(notificationsTypes => {
+        this.notificationsTypes = notificationsTypes;
+        
+        let currentNotificationType = this.notificationsTypes.find(x => x.type == NotificationTypes.WaiterCall);
+        let notification = new Notification();
+        notification.createdAt = new Date();
+        notification.notificationType = currentNotificationType;
+        notification.readBy = null;
+        notification.table = this.contextService.getTableNro();
+        notification.userFrom = this.contextService.getUser()._id;
+        notification.usersTo = [];
+
+        this.notificationSerive.send(notification)
+          .subscribe(result => {
+            console.log(result);
+          })
+      });
   }
 
   initializeApp() {

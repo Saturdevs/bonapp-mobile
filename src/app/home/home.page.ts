@@ -9,6 +9,8 @@ import {
 } from '../../shared';
 
 import { DataService } from 'src/shared/services/data.service';
+import { DailyMenuService } from 'src/shared/services/daily-menu.service';
+import { DailyMenu } from 'src/shared/models/dailyMenu';
 
 @Component({
   selector: 'app-home',
@@ -29,11 +31,15 @@ export class HomePage implements OnInit {
   numberOfMenus: number; 
   numberOfCategories: number;
   pageTitle: string = "Inicio"; 
+  dailyMenus: Array<DailyMenu>;
+  numberOfDailyMenus: number;
+  dailyMenuText = "Menu del dia";
 
   constructor(public navCtrl: NavController,
               private categoryService: CategoryService,
               private menuService: MenuService,
-              private dataService: DataService) { }
+              private dataService: DataService,
+              private dailyMenuService: DailyMenuService) { }
 
   populateCategories() {
     this.categoryService.getAll()
@@ -51,9 +57,21 @@ export class HomePage implements OnInit {
       });
   }
 
+  populateDailyMenus(){
+    this.dailyMenuService.getAll()
+      .subscribe(dailyMenus => {
+        this.dailyMenus = dailyMenus;
+        this.numberOfDailyMenus = this.dailyMenus.length;
+      });
+  }
+
   viewMenu(menu) {    
     this.dataService.setData(menu);
     this.navCtrl.navigateForward("/menu");
+  }
+
+  viewDailyMenu() {    
+    this.navCtrl.navigateForward("/dailyMenuList");
   }
 
   viewCategory(category) {

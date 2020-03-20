@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService } from 'src/shared';
+import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService, NotificationType, Notification } from 'src/shared';
 import { ContextService } from 'src/shared/services/context.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { PaymentPerUserModalPage } from '../modals/payment-per-user-modal/payment-per-user-modal.page';
@@ -8,6 +8,8 @@ import { PaymentTypesService } from 'src/shared/services/payment-types.service';
 import { PaymentType } from 'src/shared/models/payment-type';
 import { MercadoPagoPage } from '../modals/mercado-pago/mercado-pago.page';
 import { MercadoPagoCostumerPage } from '../modals/mercado-pago-costumer/mercado-pago-costumer.page';
+import { NotificationsService } from 'src/shared/services/notifications.service';
+import { NotificationTypes } from '../../shared/enums/notificationsTypes'
 
 @Component({
   selector: 'app-payments',
@@ -19,17 +21,19 @@ export class PaymentsPage implements OnInit {
   pageTitle: string = 'Metodos de pago';
   order: Order;
   user: User;
-  usersAmounts : Array<any> = [];
+  usersAmounts: Array<any> = [];
   displayProductsForEveryUser: boolean = false;
   paymentType: PaymentTypes;
   paymentTypes: Array<PaymentType>;
+  notificationsTypes: Array<NotificationType>;
 
-  constructor(private contextService : ContextService,
-              private modalController: ModalController,
-              private alertController : AlertController,
-              private orderService: OrderService,
-              private paymentTypeService: PaymentTypesService,
-              private mercadoPagoService: MercadoPagoService) { }
+  constructor(private contextService: ContextService,
+    private modalController: ModalController,
+    private alertController: AlertController,
+    private orderService: OrderService,
+    private paymentTypeService: PaymentTypesService,
+    private mercadoPagoService: MercadoPagoService,
+    private notificationSerive: NotificationsService) { }
 
   ngOnInit() {
     this.order = this.contextService.getOrder();
@@ -43,7 +47,7 @@ export class PaymentsPage implements OnInit {
   /**Muesta el componente modal para seleccionar el
    *  monto (parcial o total) a pagar por cada usuario
    */
-  async showModalPayment(userAmount){
+  async showModalPayment(userAmount) {
     const currentUserInOrder = this.order.users.find(x => x.username === userAmount.username);
 
     let userOldPaymentsAmount = 0;
@@ -79,8 +83,8 @@ export class PaymentsPage implements OnInit {
     let email = 'andre_nolan7@yahoo.com' //cuanto tengamos el usuario lo saco de ahi
 
     this.mercadoPagoService.getCustomer(email)
-      .subscribe(async (response) =>{
-        if((response.status === 200 || response.status === 201) && response.body.results.length > 0){
+      .subscribe(async (response) => {
+        if ((response.status === 200 || response.status === 201) && response.body.results.length > 0) {
           let customer = response.body.results[0];
           const modal = await this.modalController.create({
             component: MercadoPagoCostumerPage,
@@ -94,7 +98,7 @@ export class PaymentsPage implements OnInit {
           const modal = await this.modalController.create({
             component: MercadoPagoPage,
             componentProps: {
-              usersAmounts: this.usersAmounts 
+              usersAmounts: this.usersAmounts
             }
           });
           await modal.present();
@@ -103,7 +107,7 @@ export class PaymentsPage implements OnInit {
   }
 
   /** Se usa para ver que productos del pedido mostrar (DEL USUARIO ACTUAL O DE TODOS) */
-  changeProductsDisplay(){
+  changeProductsDisplay() {
     this.contextService.setDisplayProductsForEveryUser(this.displayProductsForEveryUser);
   }
 
@@ -114,11 +118,11 @@ export class PaymentsPage implements OnInit {
    */
   shouldDisplayUser(user: any) {
     return user.shouldDisplay && ((this.user.username !== user.username && this.displayProductsForEveryUser)
-    || this.user.username === user.username);
+      || this.user.username === user.username);
   }
   /**Carga el array de payments para mostrar en el frontend con los datos traidos desde el backend
    */
-  populateUsersPayments(){
+  populateUsersPayments() {
     this.order.users.forEach(user => {
 
       let totalPaymentsAmount = 0;
@@ -129,17 +133,17 @@ export class PaymentsPage implements OnInit {
 
       let userAmount: any = {};
 
-      if(user.username === this.user.username){
+      if (user.username === this.user.username) {
         userAmount.username = user.username;
         userAmount.amount = 0;
-        userAmount.shouldDisplay = (user.totalPerUser - totalPaymentsAmount) === 0? false : true;
-        userAmount.paymentAmount = user.totalPerUser - totalPaymentsAmount;  
+        userAmount.shouldDisplay = (user.totalPerUser - totalPaymentsAmount) === 0 ? false : true;
+        userAmount.paymentAmount = user.totalPerUser - totalPaymentsAmount;
       }
-      else{
+      else {
         userAmount.username = user.username;
         userAmount.amount = user.totalPerUser - totalPaymentsAmount;
-        userAmount.shouldDisplay = (user.totalPerUser - totalPaymentsAmount) === 0? false : true;
-        userAmount.paymentAmount = 0; 
+        userAmount.shouldDisplay = (user.totalPerUser - totalPaymentsAmount) === 0 ? false : true;
+        userAmount.paymentAmount = 0;
       }
 
       this.usersAmounts.push(userAmount);
@@ -148,7 +152,7 @@ export class PaymentsPage implements OnInit {
 
   /**Muestra un mensaje pidiendo confirmacion para enviar el pedido
    */
-  async confirmPayment(isCash){
+  async confirmPayment(isCash) {
     if (isCash) {
       this.paymentType = PaymentTypes.Efectivo;
     }
@@ -163,19 +167,19 @@ export class PaymentsPage implements OnInit {
     this.usersAmounts.forEach(userAmount => {
       currentTotalPayment += userAmount.paymentAmount;
     });
-    this.order.users.forEach(user =>{
-      user.payments.forEach(payment =>{
+    this.order.users.forEach(user => {
+      user.payments.forEach(payment => {
         oldPayments += payment.amount;
       });
     });
 
     totalPayment = totalPayment - (currentTotalPayment + oldPayments);
     let alertMessage = '';
-    if(totalPayment > 0) {
-      alertMessage = "Estas pagando $" + currentTotalPayment.toString() +". <br/>El pedido permanecera abierto hasta completar el pago.<br/><br/> Monto pendiente: $" + totalPayment.toString();
+    if (totalPayment > 0) {
+      alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ". <br/>El pedido permanecera abierto hasta completar el pago.<br/><br/> Monto pendiente: $" + totalPayment.toString();
     }
-    else{
-      alertMessage = "Estas pagando $" + currentTotalPayment.toString() +", equivalente al total del pedido. El mismo se cerrara.";
+    else {
+      alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ", equivalente al total del pedido. El mismo se cerrara.";
     }
 
     let alert = await this.alertController.create({
@@ -185,26 +189,26 @@ export class PaymentsPage implements OnInit {
         {
           text: 'Cancelar',
           handler: data => {
-              this.alertController.dismiss();
+            this.alertController.dismiss();
           },
         },
         {
-            text: 'Aceptar',
-            handler: data => {
-                this.sendPayment();
-            },
+          text: 'Aceptar',
+          handler: data => {
+            this.sendPayment();
+          },
         }
       ],
-  });
+    });
     await alert.present();
   }
 
-  sendPayment(){
+  sendPayment() {
     this.usersAmounts.forEach(async userPayment => {
       let totalPerUser = 0;
       totalPerUser += userPayment.paymentAmount;
 
-      if(totalPerUser > userPayment.totalPerUser || totalPerUser === 0){
+      if (totalPerUser > userPayment.totalPerUser || totalPerUser === 0) {
         const alertMessage = 'Estas intentando pagar un monto mayor al monto pendiente para el usuario: ' + userPayment.username;
 
         const alert = await this.alertController.create({
@@ -214,11 +218,11 @@ export class PaymentsPage implements OnInit {
             {
               text: 'OK',
               handler: data => {
-                  this.alertController.dismiss();
+                this.alertController.dismiss();
               },
             }
           ],
-      });
+        });
         await alert.present();
       } else {
         this.blockUsersInOrder();
@@ -226,10 +230,10 @@ export class PaymentsPage implements OnInit {
     });
   }
 
-  blockUsersInOrder(){
-    this.usersAmounts.forEach(userAmount => {  
+  blockUsersInOrder() {
+    this.usersAmounts.forEach(userAmount => {
       let currentUserInOrder = this.order.users.find(x => (x.username === userAmount.username) && userAmount.paymentAmount > 0);
-      if(!isNullOrUndefined(currentUserInOrder)){
+      if (!isNullOrUndefined(currentUserInOrder)) {
         currentUserInOrder.blocked = true;
       }
     });
@@ -240,21 +244,21 @@ export class PaymentsPage implements OnInit {
       });
   }
 
-  getPaymentTypes(){
+  getPaymentTypes() {
     this.paymentTypeService.getAvailables()
-        .subscribe(types => {
-          this.paymentTypes = types;
-    })
+      .subscribe(types => {
+        this.paymentTypes = types;
+      })
   }
 
-  makePayment(order : Order){
+  makePayment(order: Order) {
     this.usersAmounts.forEach(userAmount => {
       let currentUserInOrderWithPayments = order.users.find(x => (x.username === userAmount.username) && (x.blocked === true) && (userAmount.paymentAmount > 0));
-      
-      if(!isNullOrUndefined(currentUserInOrderWithPayments)){
+
+      if (!isNullOrUndefined(currentUserInOrderWithPayments)) {
         let currentPayment = new PaymentInUserOrder();
         currentPayment.amount = userAmount.paymentAmount;
-        
+
         let currentPaymentType = this.paymentTypes.find(x => x.name === this.paymentType);
         currentPayment.methodId = currentPaymentType._id;
 
@@ -269,23 +273,39 @@ export class PaymentsPage implements OnInit {
 
     order.discount = discount;
 
-    this.orderService.putOrder(order,order._id)
+    this.orderService.putOrder(order, order._id)
       .subscribe(updatedOrder => {
-        this.contextService.setOrder(updatedOrder);
-        this.order = this.contextService.getOrder();
-        
-        this.order.users.forEach(user => {
-          let totalPayments = 0;
-          user.payments.forEach(payment => {
-            totalPayments += payment.amount;
+        this.notificationSerive.getAllTypes()
+          .subscribe(notificationsTypes => {
+            this.notificationsTypes = notificationsTypes;
+
+            let currentNotificationType = this.notificationsTypes.find(x => x.type == NotificationTypes.NewOrder);
+            let notification = new Notification();
+            notification.createdAt = new Date();
+            notification.notificationType = currentNotificationType;
+            notification.readBy = null;
+            notification.table = this.contextService.getTableNro();
+            notification.userFrom = this.contextService.getUser()._id;
+            notification.usersTo = [];
+
+            this.notificationSerive.send(notification)
+              .subscribe(result => {
+                this.contextService.setOrder(updatedOrder);
+                this.order = this.contextService.getOrder();
+
+                this.order.users.forEach(user => {
+                  let totalPayments = 0;
+                  user.payments.forEach(payment => {
+                    totalPayments += payment.amount;
+                  });
+
+                  let currentUserAmount = this.usersAmounts.find(x => x.username === user.username);
+
+                  currentUserAmount.paymentAmount = 0;
+
+                });
+              });
           });
-          
-          let currentUserAmount = this.usersAmounts.find(x => x.username === user.username); 
-          
-          currentUserAmount.paymentAmount = 0;
-          
-        });
-      
       });
   }
 }

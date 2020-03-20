@@ -2,6 +2,7 @@ import { ProductOption } from './productOption';
 
 export class ProductInUserOrder {
   /**Id del producto */
+  dailyMenuId?: String;
   product: string;
   name: string;
   options: Array<ProductOption>;

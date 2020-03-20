@@ -1,3 +1,5 @@
+import { ProductStock } from './productStock';
+
 export class Product {
   _id: string;
   name: string;
@@ -9,4 +11,6 @@ export class Product {
   sizes: Array<any> = [];
   tags: Array<string> = [];
   available: any;
+  stockControl: Boolean;
+  stock: ProductStock;
 }

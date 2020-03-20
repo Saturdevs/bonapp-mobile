@@ -44,7 +44,10 @@ const routes: Routes = [
   { path: 'navbar', loadChildren: './navbar/navbar.module#NavbarPageModule' },
   { path: 'payments', loadChildren: './payments/payments.module#PaymentsPageModule' },
   { path: 'mercado-pago', loadChildren: './modals/mercado-pago/mercado-pago.module#MercadoPagoPageModule' },
-  { path: 'mercado-pago-costumer', loadChildren: './modals/mercado-pago-costumer/mercado-pago-costumer.module#MercadoPagoCostumerPageModule' }
+  { path: 'mercado-pago-costumer', loadChildren: './modals/mercado-pago-costumer/mercado-pago-costumer.module#MercadoPagoCostumerPageModule' },
+  { path: 'daily-menu', loadChildren: './daily-menu/daily-menu.module#DailyMenuPageModule' },
+  { path: 'daily-menu-list', loadChildren: './daily-menu-list/daily-menu-list.module#DailyMenuListPageModule' },
+  { path: 'daily-menu', loadChildren: './daily-menu/daily-menu.module#DailyMenuPageModule' }
 ];
 
 @NgModule({

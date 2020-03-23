@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   api_url: 'http://localhost:3001/api',
+  api_general_url: 'http://localhost:3000/api',
   socket_url: 'http://localhost:3001',
   // socket_url: 'http://192.168.50.123:3001',  // TO USE DEVAPP
   // api_url: 'http://192.168.50.123:3001/api', // TO USE DEVAPP

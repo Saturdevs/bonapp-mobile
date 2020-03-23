@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 
-import { Platform } from '@ionic/angular';
+import { Platform, NavController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { ContextService } from 'src/shared/services/context.service';
-import { OrderService, User, CashRegister } from 'src/shared';
+import { OrderService, User, CashRegister, AuthenticationService } from 'src/shared';
 import { CashRegisterService } from 'src/shared/services/cash-register.service';
 import { SocketIoService } from 'src/shared/services/socket-io.service';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-root',
@@ -31,20 +32,23 @@ export class AppComponent {
       icon: 'logo-usd'
     }
   ];
+  isUserLoggedIn: Boolean = false;
 
   constructor(
+    private navCtrl: NavController,
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private contextService: ContextService,
     private orderService: OrderService,
     private CashRegisterService: CashRegisterService,
-    private socketService: SocketIoService
+    private socketService: SocketIoService,
+    private authenticationService: AuthenticationService
   ) {
     this.initializeApp();
   }
 
-  callWaiter(){
+  callWaiter() {
     this.socketService.callWaiter();
   }
 
@@ -52,6 +56,15 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
+      this.authenticationService.authState.subscribe(state => {
+        this.isUserLoggedIn = state;
+        if (state) {
+          this.navCtrl.navigateRoot('/home');          
+        } else {
+          this.navCtrl.navigateRoot('/login');
+        }
+      });
 
       //////////////////////////////////////////////////////////////
       /**SOLO PARA PRUEBAS. ESTO DEBE HACERSE CUANDO SE LEE EL QR */
@@ -67,13 +80,15 @@ export class AppComponent {
       this.contextService.setTableNro(6);
       this.orderService.getOrderOpenByTable(this.contextService.getTableNro()).subscribe(
         order => {
-          let cashRegister: CashRegister = null;
-          this.CashRegisterService.getDefaultCashRegister()
-            .subscribe(cashRegister => {
-              cashRegister = cashRegister;
-            });
-          order.cashRegister = cashRegister;
-          this.contextService.setOrder(order);
+          if (!isNullOrUndefined(order)) {
+            let cashRegister: CashRegister = null;
+            this.CashRegisterService.getDefaultCashRegister()
+              .subscribe(cashRegister => {
+                cashRegister = cashRegister;
+              });
+            order.cashRegister = cashRegister;
+            this.contextService.setOrder(order);
+          }
         }
       )
     });

@@ -1,6 +1,6 @@
 <ion-app>
   <ion-split-pane>
-    <ion-menu type="overlay">
+    <ion-menu type="overlay" *ngIf='isUserLoggedIn'>
       <ion-header>
         <ion-toolbar>
           <ion-title>Menu</ion-title>
@@ -20,7 +20,7 @@
       </ion-content>
     </ion-menu>
     <ion-router-outlet main>
-      <ion-fab horizontal="end" vertical="bottom">
+      <ion-fab horizontal="end" vertical="bottom" *ngIf='isUserLoggedIn'>
         <ion-fab-button color="danger" (click)="callWaiter()">
           <ion-icon name="hand"></ion-icon>
         </ion-fab-button>

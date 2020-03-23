@@ -14,6 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/shared/shared.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { ProductPageModule } from './product/product.module';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,6 +33,7 @@ import { ProductPageModule } from './product/product.module';
   providers: [
     StatusBar,
     SplashScreen,
+    NativeStorage,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   schemas: [ NO_ERRORS_SCHEMA ,CUSTOM_ELEMENTS_SCHEMA ],

@@ -198,3 +198,22 @@ ion-checkbox {
 .imageRadius{
   border-radius: 10%;
 }
+
+.header {
+  .toolbar-background
+	{
+		border: none !important;
+		background-color: var(--ion-color-primary);
+	}
+
+	.toolbar-title,
+	.back-button,
+	.bar-button
+	{
+		color: var(--ion-color-primary-contrast);
+	}
+}
+
+.error-message{
+  color: red;
+ }

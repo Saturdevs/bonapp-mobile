@@ -32,6 +32,12 @@ export class ProductService {
            .catch(this.handleError);
   }
 
+  updateProduct(product) {
+    return this.apiService.put(`/product/${product._id}`, product)
+      .map(data => data.product)
+      .catch(this.handleError);
+  }
+
   private handleError(err: HttpErrorResponse){
     console.log(err.message);
     return Observable.throw(err);

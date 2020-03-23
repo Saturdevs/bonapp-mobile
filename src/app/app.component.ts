@@ -4,9 +4,18 @@ import { Platform, NavController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { ContextService } from 'src/shared/services/context.service';
-import { OrderService, User, CashRegister, AuthenticationService } from 'src/shared';
-import { CashRegisterService } from 'src/shared/services/cash-register.service';
-import { SocketIoService } from 'src/shared/services/socket-io.service';
+import { 
+  OrderService, 
+  User, 
+  CashRegister,
+  CashRegisterService,  
+  AuthenticationService, 
+  NotificationType, 
+  Notification,
+  SocketIoService,
+  NotificationsService,
+  NotificationTypes
+} from 'src/shared';
 import { isNullOrUndefined } from 'util';
 
 @Component({
@@ -33,6 +42,7 @@ export class AppComponent {
     }
   ];
   isUserLoggedIn: Boolean = false;
+  notificationsTypes: Array<NotificationType>;
 
   constructor(
     private navCtrl: NavController,
@@ -43,13 +53,31 @@ export class AppComponent {
     private orderService: OrderService,
     private CashRegisterService: CashRegisterService,
     private socketService: SocketIoService,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private notificationSerive: NotificationsService
   ) {
     this.initializeApp();
   }
 
-  callWaiter() {
-    this.socketService.callWaiter();
+  callWaiter(){
+    this.notificationSerive.getAllTypes()
+      .subscribe(notificationsTypes => {
+        this.notificationsTypes = notificationsTypes;
+        
+        let currentNotificationType = this.notificationsTypes.find(x => x.type == NotificationTypes.WaiterCall);
+        let notification = new Notification();
+        notification.createdAt = new Date();
+        notification.notificationType = currentNotificationType;
+        notification.readBy = null;
+        notification.table = this.contextService.getTableNro();
+        notification.userFrom = this.contextService.getUser()._id;
+        notification.usersTo = [];
+
+        this.notificationSerive.send(notification)
+          .subscribe(result => {
+            console.log(result);
+          })
+      });
   }
 
   initializeApp() {

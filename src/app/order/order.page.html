@@ -8,7 +8,7 @@
     </ion-checkbox>
     <ion-label>Ver productos de todos los usuarios</ion-label>
   </ion-item>
-  <ion-list *ngIf="cart.products.length > 0">
+  <ion-list class="toAdd" *ngIf="cart.products.length > 0">
     <ion-item-group lines="full">
       <ion-item lines="full">
         <ion-label color="medium" class="cartLabel">A pedir</ion-label>
@@ -48,7 +48,7 @@
       </ion-item-sliding>
     </ion-item-group>
   </ion-list>
-  <ion-list class="inOrder" *ngIf="usersToDisplayProducts.length > 0">
+  <ion-list *ngIf="usersToDisplayProducts.length > 0">
     <ion-item-group>
       <ion-item lines="full">
         <ion-label color="medium" class="cartLabel">Ya pedidos</ion-label>

@@ -8,3 +8,6 @@ export * from './order.service';
 export * from './user.service';
 export * from './mercado-pago.service';
 export * from './authentication.service';
+export * from './cash-register.service';
+export * from './socket-io.service';
+export * from './notifications.service';

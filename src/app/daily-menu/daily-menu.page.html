@@ -1,0 +1,59 @@
+<ion-content>
+    <ion-icon name="arrow-round-back" class="backArrow" (click)="onBack()"></ion-icon>
+    <ion-img [src]="dailyMenu.pictures" width="100" [alt]="dailyMenu.name"></ion-img>
+
+    <ion-list class="list-full-border description productList" no-margin>
+        <ion-item-divider class="customItemDivider">
+            <ion-text color="secondary">
+                <h3 >
+                    {{dailyMenu.name}}
+                </h3>
+                <p *ngIf="dailyMenu.description.length > 0 && dailyMenu.description !== 'undefined' && dailyMenu.description !== null" class="productDesc">
+                    {{dailyMenu.description}}
+                </p>
+            </ion-text>
+        </ion-item-divider>
+    </ion-list>
+    <ion-list id="observationsList">
+        <ion-item lines="none">
+            <ion-text color="secondary">
+                <p>
+                    ¿Querés aclarar algo?
+                </p>
+            </ion-text>
+        </ion-item>
+        <ion-item lines="none">
+            <ion-textarea class="customTextArea" placeholder="Observaciones..." [(ngModel)]="dailyMenuInUserOrder.observations"></ion-textarea>
+        </ion-item>
+    </ion-list>
+
+    <div class="fixed-botton">
+        <ion-row>
+            <ion-col size="6" class="price-padding">
+                <ion-text class="priceLabel" color="secondary">
+                    {{dailyMenuInUserOrder.price | currency}}
+                </ion-text>
+            </ion-col>
+            <ion-col size="5">
+                <ion-row class="button-wrapper">
+                    <ion-col size="3" offset="1">
+                        <ion-icon color="secondary" name="remove" (click)="minusQty()" class="icon-size"></ion-icon>
+                    </ion-col>
+                    <ion-col size="4" class="quantity-col">
+                        <ion-text class="quantityLabel">
+                            {{ dailyMenuInUserOrder.quantity }}
+                        </ion-text>
+                    </ion-col>
+                    <ion-col size="3" offset="1">
+                        <ion-icon color="secondary" name="add" (click)="plusQty()" class="icon-size"></ion-icon>
+                    </ion-col>
+                </ion-row>
+            </ion-col>
+        </ion-row>
+        <div class="full-width addToCartButtonContainer">
+            <ion-button shape="round" expand="block" color="secondary" fill="solid" (click)="addToCart()">
+                <span class="text-sm">AGREGAR AL PEDIDO ({{ dailyMenuInUserOrder.price * dailyMenuInUserOrder.quantity | currency }})</span>
+            </ion-button>
+        </div>
+    </div>
+</ion-content>

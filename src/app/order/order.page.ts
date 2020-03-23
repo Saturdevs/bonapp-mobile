@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Order, OrderService, ProductInUserOrder, OrderDiscount, CashRegister, User, UserInOrder, UserService } from 'src/shared';
+import { Order, OrderService, ProductInUserOrder, OrderDiscount, CashRegister, User, UserInOrder, UserService, ProductService, Product } from 'src/shared';
 import { ActivatedRoute } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { ContextService } from 'src/shared/services/context.service';
 import { NavController, AlertController } from '@ionic/angular';
+import { DailyMenuService } from 'src/shared/services/daily-menu.service';
 
 @Component({
     selector: 'app-order',
@@ -18,15 +19,17 @@ export class OrderPage implements OnInit {
     };
     order: Order;
     user: User;
-    displayProductsForEveryUser : boolean = false;
-    usersToDisplayProducts : Array<UserInOrder> = [];
+    displayProductsForEveryUser: boolean = false;
+    usersToDisplayProducts: Array<UserInOrder> = [];
 
     constructor(private _route: ActivatedRoute,
         private orderService: OrderService,
+        private productService: ProductService,
         private navCtrl: NavController,
         private alertController: AlertController,
         private contextService: ContextService,
-        private userService: UserService) { }
+        private userService: UserService,
+        private dailyMenuService: DailyMenuService) { }
 
     ngOnInit(): void {
         //TODO: cuando se lee el codigo qr se debe verificar si ya hay un pedido abierto para esa mesa.
@@ -37,26 +40,26 @@ export class OrderPage implements OnInit {
         this.order = this.contextService.getOrder();
         this.user = this.contextService.getUser();
         this.cart = this._route.snapshot.data['cart'];
-        this.displayProductsForEveryUser = this.contextService.getDisplayProductsForEveryUser();        
+        this.displayProductsForEveryUser = this.contextService.getDisplayProductsForEveryUser();
         let userToDisplay = this.order.users.find(x => x.username === this.user.username);
-        if(!isNullOrUndefined(userToDisplay)){
+        if (!isNullOrUndefined(userToDisplay)) {
             this.usersToDisplayProducts.push(userToDisplay);
         };
     }
 
     /** Se usa para ver que productos del pedido mostrar (DEL USUARIO ACTUAL O DE TODOS) */
-    changeProductsDisplay(){
+    changeProductsDisplay() {
         let usersToDisplayProducts: Array<UserInOrder> = [];
-        
-        if(this.displayProductsForEveryUser === true){
+
+        if (this.displayProductsForEveryUser === true) {
             this.order.users.forEach(user => {
                 usersToDisplayProducts.push(user)
             });
         }
-        else{
+        else {
             usersToDisplayProducts.push(this.order.users.find(x => x.username == this.user.username));
         }
-        
+
         this.contextService.setDisplayProductsForEveryUser(this.displayProductsForEveryUser);
         this.usersToDisplayProducts = usersToDisplayProducts;
     }
@@ -67,22 +70,57 @@ export class OrderPage implements OnInit {
         product = this.cart.products[index];
         this.cart.products.splice(index, 1);
         this.orderService.updateTotalPrice(this.cart, product.price, -product.quantity);
+
+
+        if (!isNullOrUndefined(product.product)) {
+            this.productService.getProduct(product.product)
+                .subscribe((prod: Product) => {
+                    if (prod.stockControl) {
+                        prod.stock.current++;
+                        this.productService.updateProduct(prod)
+                            .subscribe(resp => {
+                                console.log(resp);
+                            })
+                    }
+                });
+        }
+        else 
+        {
+            if (!isNullOrUndefined(product.dailyMenuId)) {
+                this.dailyMenuService.getDailyMenu(product.dailyMenuId)
+                    .subscribe(dailyMenu => {
+                        dailyMenu.products.forEach(productId => {
+                            this.productService.getProduct(productId)
+                                .subscribe((product: Product) => {
+                                    if (product.stockControl) {
+                                        product.stock.current++;
+                                        this.productService.updateProduct(product)
+                                            .subscribe(resp => {
+                                                console.log(resp);
+                                            });
+                                    }
+                                });
+                        });
+                    });
+
+            }
+        }
         this.orderService.setCartWithoutCallback(this.cart);
     }
 
     /** Reduce de a 1 la cantidad del producto en el carrito, si la cantidad es 1 lo elimina */
-    minusQty(product: ProductInUserOrder){
-        if(product.quantity !== 1){
+    minusQty(product: ProductInUserOrder) {
+        if (product.quantity !== 1) {
             product.quantity--;
         }
-        else{
+        else {
             let index = this.cart.products.indexOf(product);
             this.removeProduct(index);
         }
     }
 
     /** Aumenta de a 1 la cantidad del producto en el carrito */
-    plusQty(product: ProductInUserOrder){
+    plusQty(product: ProductInUserOrder) {
         product.quantity++;
     }
 
@@ -108,7 +146,7 @@ export class OrderPage implements OnInit {
                         ],
                     });
                     await alert.present();
-                    this.navCtrl.navigateForward("/menu");
+                    this.navCtrl.navigateRoot("/");
                 },
                 async error => {
                     let alert = await this.alertController.create({
@@ -130,13 +168,13 @@ export class OrderPage implements OnInit {
     }
 
     /** Para pasar a la pagina que muestra los metodos de pago */
-    showPaymentPage(){
+    showPaymentPage() {
         this.navCtrl.navigateForward('/payments');
     }
 
     /** Para obtener los avatares de los usuarios o el avatar de las iniciales de las letras en su defecto. Aun no funciona */
-    getUserAvatar(user){
-        this.userService.getAvatar(user).subscribe(avatar =>{
+    getUserAvatar(user) {
+        this.userService.getAvatar(user).subscribe(avatar => {
             return avatar;
         })
     }

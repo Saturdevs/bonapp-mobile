@@ -11,6 +11,14 @@
         <p class="itemTitle">{{menu.name | uppercase}}</p>
       </div>
     </ng-container>
+    <ng-container *ngIf="numberOfDailyMenus > 0">
+        <div class="screen customCard" (click)="viewDailyMenus()" [class.screen-50]="numberOfMenus === 2"
+          [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">
+        </div>
+        <div class="cardFooter" [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
+          <p class="itemTitle">{{dailyMenuText | uppercase}}</p>
+        </div>
+    </ng-container>
   </div>
 
   <div *ngIf="numberOfMenus === 1">
@@ -23,6 +31,14 @@
       <div [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
         <p class="itemTitle">{{category.name | uppercase}}</p>
       </div>
+    </ng-container>
+    <ng-container *ngIf="numberOfDailyMenus > 0">
+        <div class="screen customCard" (click)="viewDailyMenus()" [class.screen-50]="numberOfMenus === 2"
+          [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">
+        </div>
+        <div class="cardFooter" [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
+          <p class="itemTitle">{{dailyMenuText | uppercase}}</p>
+        </div>
     </ng-container>
   </div>
 </ion-content>

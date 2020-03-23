@@ -10,3 +10,7 @@ export * from './orderDiscount';
 export * from './productOption';
 export * from './userInOrder';
 export * from './mercadoPagoPayment';
+export * from './notification';
+export * from './userTo';
+export * from './notificationType';
+export * from './notificationReadBy';

@@ -14,3 +14,7 @@ export * from './notification';
 export * from './userTo';
 export * from './notificationType';
 export * from './notificationReadBy';
+export * from './client';
+export * from './transaction';
+export * from './paymentTypeMin';
+export * from './cashRegisterMin';

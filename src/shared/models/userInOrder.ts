@@ -10,4 +10,5 @@ export class UserInOrder {
   payments: Array<PaymentInUserOrder>;
   owner: Boolean;
   blocked : Boolean;
+  clientId? : string;
 }

@@ -34,6 +34,17 @@ export class AuthenticationService {
     })
   }
 
+  getCurrentUser(){
+    if(this.isAuthenticated()){
+      this.nativeStorage.getItem(USER_INFO)
+        .then((response) => {
+          if(response){
+            return response;
+          }
+        })
+    }
+  }
+
   login(email: string, password: string) {
     return this._apiGeneralService.post(`/user/signin`, { email, password })
       .map(data => {

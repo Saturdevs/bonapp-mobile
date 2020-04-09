@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService, NotificationType, Notification } from 'src/shared';
+import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService, NotificationType, Notification, AuthenticationService, Client, Transaction, PaymentTypeMin } from 'src/shared';
 import { ContextService } from 'src/shared/services/context.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { PaymentPerUserModalPage } from '../modals/payment-per-user-modal/payment-per-user-modal.page';
@@ -10,6 +10,8 @@ import { MercadoPagoPage } from '../modals/mercado-pago/mercado-pago.page';
 import { MercadoPagoCostumerPage } from '../modals/mercado-pago-costumer/mercado-pago-costumer.page';
 import { NotificationsService } from 'src/shared/services/notifications.service';
 import { NotificationTypes } from '../../shared/enums/notificationsTypes'
+import { ClientService } from 'src/shared/services/client.service';
+import { TransactionService } from 'src/shared/services/transaction.service';
 
 @Component({
   selector: 'app-payments',
@@ -25,7 +27,12 @@ export class PaymentsPage implements OnInit {
   displayProductsForEveryUser: boolean = false;
   paymentType: PaymentTypes;
   paymentTypes: Array<PaymentType>;
+  paymentTypesEnum = PaymentTypes;
   notificationsTypes: Array<NotificationType>;
+  currentUser: any;
+  client: Client;
+  canPayWithAccount: boolean = false;
+  canPayWithCurrentAccount: boolean = true;
 
   constructor(private contextService: ContextService,
     private modalController: ModalController,
@@ -33,7 +40,10 @@ export class PaymentsPage implements OnInit {
     private orderService: OrderService,
     private paymentTypeService: PaymentTypesService,
     private mercadoPagoService: MercadoPagoService,
-    private notificationSerive: NotificationsService) { }
+    private notificationSerive: NotificationsService,
+    private authService: AuthenticationService,
+    private clientService: ClientService,
+    private transactionService: TransactionService) { }
 
   ngOnInit() {
     this.order = this.contextService.getOrder();
@@ -42,7 +52,14 @@ export class PaymentsPage implements OnInit {
 
     this.populateUsersPayments();
     this.getPaymentTypes();
+
+    this.getCurrentUser();
+    this.checkClientAccount();
   }
+
+  async getCurrentUser(){
+    this.currentUser = await this.authService.getCurrentUser();
+  } 
 
   /**Muesta el componente modal para seleccionar el
    *  monto (parcial o total) a pagar por cada usuario
@@ -150,15 +167,16 @@ export class PaymentsPage implements OnInit {
     })
   }
 
+  /**Verifica si el metodo de pago es CuentaCorriente y el saldo disponible */
+  checkAccount(currentTotalPayment): boolean {
+    return this.client.balance - currentTotalPayment >= (this.client.limitCtaCte * -1);
+  }
+
   /**Muestra un mensaje pidiendo confirmacion para enviar el pedido
    */
-  async confirmPayment(isCash) {
-    if (isCash) {
-      this.paymentType = PaymentTypes.Efectivo;
-    }
-    else {
-      this.paymentType = PaymentTypes.MercadoPago;
-    }
+  async confirmPayment(paymentType) {
+    this.paymentType = paymentType;
+    
     // capaz que volver a traerme la order es al pedo
     this.order = this.contextService.getOrder();
     let currentTotalPayment = 0;
@@ -175,6 +193,25 @@ export class PaymentsPage implements OnInit {
 
     totalPayment = totalPayment - (currentTotalPayment + oldPayments);
     let alertMessage = '';
+  
+    if(this.paymentType == PaymentTypes.CuentaCorriente && this.canPayWithAccount && !this.checkAccount(currentTotalPayment)){
+      alertMessage = "El monto que estas intentando pagar con Cuenta Corriente sumado al saldo actual, supera el limite para esta cuenta.";
+      let alert = await this.alertController.create({
+        header: "Enviar pago",
+        message: alertMessage,
+        buttons: [
+          {
+            text: 'OK',
+            handler: data => {
+            this.alertController.dismiss();
+            },
+          }
+        ],
+      });
+      await alert.present();
+      return;
+    }
+
     if (totalPayment > 0) {
       alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ". <br/>El pedido permanecera abierto hasta completar el pago.<br/><br/> Monto pendiente: $" + totalPayment.toString();
     }
@@ -251,6 +288,19 @@ export class PaymentsPage implements OnInit {
       })
   }
 
+  checkClientAccount(){
+    let isClient = this.order.users.find(x => x.username == this.contextService.getUser().username).clientId;
+    if(!isNullOrUndefined(isClient)){
+      this.clientService.getClient(isClient)
+        .subscribe((client: Client) => {
+          this.client = client;
+          if(this.client.enabledTransactions){
+            this.canPayWithAccount = true;
+          }
+        })
+    }
+  }
+
   makePayment(order: Order) {
     this.usersAmounts.forEach(userAmount => {
       let currentUserInOrderWithPayments = order.users.find(x => (x.username === userAmount.username) && (x.blocked === true) && (userAmount.paymentAmount > 0));
@@ -275,6 +325,27 @@ export class PaymentsPage implements OnInit {
 
     this.orderService.putOrder(order, order._id)
       .subscribe(updatedOrder => {
+        if(this.paymentType == PaymentTypes.CuentaCorriente){
+          let transaction = new Transaction();
+          let amount = this.usersAmounts.reduce((acc,curr) => acc + curr.paymentAmount, 0);
+          let paymentTypeMin = new PaymentTypeMin();
+          paymentTypeMin._id = this.paymentTypes.find(x => x.name === this.paymentType)._id;
+          paymentTypeMin.name = this.paymentType;
+
+          transaction.amount = amount;
+          transaction.cashRegister = order.cashRegister;
+          transaction.client = this.client;
+          transaction.comment = "New Payment on APP";
+          transaction.date = new Date();
+          transaction.deleted = false;
+          transaction.paymentMethod = paymentTypeMin;
+          transaction.paymentType = this.paymentTypes.find(x => x.name === this.paymentType)._id;
+
+          this.transactionService.saveTransaction(transaction)
+            .subscribe(result => { 
+              console.log(result);
+            });
+        }
         this.notificationSerive.getAllTypes()
           .subscribe(notificationsTypes => {
             this.notificationsTypes = notificationsTypes;

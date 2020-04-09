@@ -24,6 +24,6 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     ReactiveFormsModule
   ],
-  declarations: [MercadoPagoPage]
+  declarations: []
 })
 export class MercadoPagoPageModule {}

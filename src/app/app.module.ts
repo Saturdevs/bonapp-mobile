@@ -15,6 +15,7 @@ import { SharedModule } from 'src/shared/shared.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { ProductPageModule } from './product/product.module';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { ClientService } from 'src/shared/services/client.service';
 
 @NgModule({
   declarations: [AppComponent],

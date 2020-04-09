@@ -23,6 +23,6 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [PaymentPerUserModalPage]
+  declarations: []
 })
 export class PaymentPerUserModalPageModule {}

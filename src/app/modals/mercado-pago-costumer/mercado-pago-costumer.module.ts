@@ -23,6 +23,6 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [MercadoPagoCostumerPage]
+  declarations: []
 })
 export class MercadoPagoCostumerPageModule {}

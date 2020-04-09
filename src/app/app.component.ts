@@ -14,9 +14,11 @@ import {
   Notification,
   SocketIoService,
   NotificationsService,
-  NotificationTypes
+  NotificationTypes,
+  Client
 } from 'src/shared';
 import { isNullOrUndefined } from 'util';
+import { ClientService } from 'src/shared/services/client.service';
 
 @Component({
   selector: 'app-root',
@@ -54,7 +56,8 @@ export class AppComponent {
     private CashRegisterService: CashRegisterService,
     private socketService: SocketIoService,
     private authenticationService: AuthenticationService,
-    private notificationSerive: NotificationsService
+    private notificationSerive: NotificationsService,
+    private clientService: ClientService
   ) {
     this.initializeApp();
   }
@@ -101,10 +104,10 @@ export class AppComponent {
       user.lastname = 'Lischetti2';
       user.name = 'Lorenzoo';
       user.phone = '341560433';
-      user.username = 'llischetti2';
+      user.username = 'imchiodo@hotmail.com';
 
       this.contextService.setUser(user);
-
+      
       this.contextService.setTableNro(6);
       this.orderService.getOrderOpenByTable(this.contextService.getTableNro()).subscribe(
         order => {
@@ -115,6 +118,14 @@ export class AppComponent {
                 cashRegister = cashRegister;
               });
             order.cashRegister = cashRegister;
+            let client: Client = null;
+            this.clientService.getClientByEmail(user.username)
+              .subscribe(client => {
+                client = client
+                if(!isNullOrUndefined(client)){
+                  order.users.find(x => x.username == user.username).clientId = client._id.toString();
+                }
+              })
             this.contextService.setOrder(order);
           }
         }

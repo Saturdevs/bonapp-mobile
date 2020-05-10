@@ -8,11 +8,17 @@
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
+          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let index = index">
             <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
               <ion-icon slot="start" [name]="p.icon"></ion-icon>
               <ion-label>
                 {{p.title}}
+              </ion-label>
+            </ion-item>
+            <ion-item *ngIf="index == 2" (click)="logout()">
+              <ion-icon slot="start" [name]="arrow-back-outline"></ion-icon>
+              <ion-label>
+                Salir
               </ion-label>
             </ion-item>
           </ion-menu-toggle>

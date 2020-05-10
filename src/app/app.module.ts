@@ -15,7 +15,7 @@ import { SharedModule } from 'src/shared/shared.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { ProductPageModule } from './product/product.module';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
-import { ClientService } from 'src/shared/services/client.service';
+import { Facebook } from '@ionic-native/facebook/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,6 +35,7 @@ import { ClientService } from 'src/shared/services/client.service';
     StatusBar,
     SplashScreen,
     NativeStorage,
+    Facebook,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   schemas: [ NO_ERRORS_SCHEMA ,CUSTOM_ELEMENTS_SCHEMA ],

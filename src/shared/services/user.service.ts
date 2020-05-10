@@ -26,6 +26,12 @@ export class UserService {
       .catch(this.handleError);
   }
 
+  updateUser(user) {
+    return this.apiGeneralService.put('/user', user)
+      .map(data => data.arqueo)
+      .catch(this.handleError);
+  }
+
   private handleError(err: HttpErrorResponse) {    
     return Observable.throw(err);
   }

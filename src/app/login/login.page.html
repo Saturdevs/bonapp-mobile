@@ -27,6 +27,9 @@
     <br>
 
   </form>
-  <button ion-button full type="submit" class="facebook-button" (click)="tryFacebookLogin()">Facebook Login</button>
-  <button ion-button full type="submit" class="google-button"  (click)="tryGoogleLogin()">Google Login</button>
+  <!-- <button ion-button full type="submit" class="facebook-button" (click)="tryFacebookLogin()">Facebook Login</button> -->
+  <!-- <button ion-button full type="submit" class="google-button"  (click)="tryGoogleLogin()">Google Login</button> -->
+  <ion-button expand="block" class="danger" (click)="tryGoogleLogin()">Google Login</ion-button>
+  <ion-button expand="block" color="fb-button" (click)="tryFacebookLogin()">Facebook Login</ion-button>
+
 </ion-content>

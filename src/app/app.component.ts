@@ -83,6 +83,10 @@ export class AppComponent {
       });
   }
 
+  logout(){
+    this.authenticationService.logout();
+  }
+
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();

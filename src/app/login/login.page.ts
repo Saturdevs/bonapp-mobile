@@ -31,6 +31,14 @@ export class LoginPage implements OnInit {
     });
   }
 
+  tryGoogleLogin(){
+    this.authenticationService.doGoogleLogin();
+  }
+
+  tryFacebookLogin(){
+    this.authenticationService.doFacebookLogin();
+  }
+
   login() {
     // stop here if form is invalid
     if (this.loginForm.invalid) {

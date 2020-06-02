@@ -9,11 +9,11 @@ export const environment = {
   socket_url: 'http://localhost:3001',
   // socket_url: 'http://192.168.50.123:3001',  // TO USE DEVAPP
   // api_url: 'http://192.168.50.123:3001/api', // TO USE DEVAPP
-  // socket_url: 'http://47cd520c.ngrok.io',  // TO USE APK IN DEBUG - URL CHANGES
-  // api_url: 'http://47cd520c.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES
-  avatar_url: 'https://ui-avatars.com/api/?name='
+  // api_general_url: 'http://f3da2a6852c5.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES  3000
+  // socket_url: 'http://35bcd1db930d.ngrok.io',  // TO USE APK IN DEBUG - URL CHANGES 3001
+  // api_url: 'http://35bcd1db930d.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES 3001
+  avatar_url: 'https://ui-avatars.com/api/?name='     
 };
-
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.

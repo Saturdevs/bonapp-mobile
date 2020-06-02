@@ -89,6 +89,7 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      this.authenticationService.initializeUserInfo();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 

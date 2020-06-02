@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { UserService, User } from 'src/shared';
+import { Roles } from '../../shared/enums/roles'
+
 
 @Component({
   selector: 'app-register',
@@ -38,7 +40,8 @@ export class RegisterPage implements OnInit {
       name: this.form.name.value,
       lastname: this.form.lastname.value,
       email: this.form.email.value,
-      password: this.form.password.value
+      password: this.form.password.value,
+      roleId: Roles.UserApp
     }
     
     this._userService.createUser(newUser).subscribe(

@@ -5,4 +5,6 @@ export class User {
   username: string;
   phone: string;
   email: string;
+  roleId: string;
+  token: string;
 }

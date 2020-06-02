@@ -10,6 +10,8 @@ import { GooglePlus } from '@ionic-native/google-plus';
 import { Facebook } from '@ionic-native/facebook/ngx';
 import { isNullOrUndefined } from 'util';
 import { UserService } from './user.service';
+import { User } from '../models';
+import { Roles } from '../enums';
 
 const USER_INFO = "USER_INFO";
 @Injectable({
@@ -21,7 +23,8 @@ export class AuthenticationService {
   googlePlus = GooglePlus;
   FB_APP_ID: number = 287166978959053; //pasar a un enviroments cdo tengamos la de prod
   loggedUser: any = {};
-
+  // private currentUserSubject: BehaviorSubject<User>;
+  // public currentUser: Observable<User>;
 
   constructor(
     private _apiGeneralService: ApiGeneralService,
@@ -34,19 +37,19 @@ export class AuthenticationService {
   ) {
     this.platform.ready().then(() => {
       this.ifLoggedIn();
-    })
+    });
   }
 
   ifLoggedIn() {
     this.nativeStorage.getItem(USER_INFO).then((respose) => {
-      if (respose) {
+      if (respose && JSON.stringify(respose) !== '{}') {
         this.authState.next(true);
       }
     })
   }
 
-  getCurrentUser(){
-    if(this.isAuthenticated()){
+  getCurrentUser() {
+    if (this.isAuthenticated()) {
       this.nativeStorage.getItem(USER_INFO)
         .then((response) => {
           if(response){
@@ -74,7 +77,7 @@ export class AuthenticationService {
 
   logout() {
     // remove user from local storage to log user out
-    this.nativeStorage.remove(USER_INFO).then(() => {
+    this.nativeStorage.setItem(USER_INFO, {}).then(() => {
       this.router.navigate(['login']);
       this.authState.next(false);
     });
@@ -84,43 +87,53 @@ export class AuthenticationService {
     return this.authState.value;
   }
 
+  initializeUserInfo() {
+    this.nativeStorage.keys()
+      .then(keys => {
+        if (keys.indexOf(USER_INFO) === -1) {
+          this.nativeStorage.setItem(USER_INFO, {})
+            .then(result => {
+            });
+        }
+      });
+  }
 
-  checkUserEmailAndUpdate(user, isGoogle, isFacebook){
+  checkUserEmailAndUpdate(user, isGoogle, isFacebook) {
     this._apiGeneralService.get(`/user/userByEmal`, user)
       .subscribe(userResp => {
-        console.log(userResp);
-        if(!isNullOrUndefined(userResp.user)){
-          if(isGoogle){
+        if (!isNullOrUndefined(userResp.user)) {
+          if (isGoogle) {
             userResp.user.googleId = user.userId
           }
-          else if(isFacebook){
+          else if (isFacebook) {
             userResp.user.facebookId = user.id
           }
-          if((isGoogle && isNullOrUndefined(userResp.user.googleId)) || (isFacebook && isNullOrUndefined(userResp.user.facebookId))){
+          if ((isGoogle && isNullOrUndefined(userResp.user.googleId)) || (isFacebook && isNullOrUndefined(userResp.user.facebookId))) {
             this.userService.updateUser(userResp.user)
               .subscribe(u => {
-                console.log(u);
                 this.loggedUser = u;
-            }, err => {
-              this.loggedUser = null;
-            });
-          }else{
+              }, err => {
+                this.loggedUser = null;
+              });
+          } else {
             this.loggedUser = user;
           }
-        }else{
+        } else {
           let newUser: any = {};
 
-          if(isGoogle){
+          if (isGoogle) {
             newUser.googleId = user.userId;
             newUser.name = user.displayName.split(" ")[0];
             newUser.lastname = user.displayName.split(" ")[1];
             newUser.email = user.email;
+            newUser.roleId = Roles.UserApp;
           }
-          else if(isFacebook){
+          else if (isFacebook) {
             newUser.facebookId = user.id;
             newUser.name = user.name.split(" ")[0];
             newUser.lastname = user.name.split(" ")[1];
             newUser.email = user.email;
+            newUser.roleId = Roles.UserApp;
           }
 
           this.userService.createUser(newUser)
@@ -134,132 +147,112 @@ export class AuthenticationService {
       })
   }
 
-  async doGoogleLogin(){
+  async doGoogleLogin() {
     const loading = await this.loadingController.create({
       message: 'Please wait...'
     });
     this.presentLoading(loading);
-  
+
     this.googlePlus.login({
       'scopes': '', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-      'webClientId': '202897263621-trb8oeah0jq5dn59cbo09c19tbadda9l.apps.googleusercontent.com' , // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+      'webClientId': '202897263621-trb8oeah0jq5dn59cbo09c19tbadda9l.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
       'offline': true // Optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
     })
-    .then(user =>{
-      loading.dismiss();
-      console.log(user);
-      
-      this.checkUserEmailAndUpdate(user, true, false);
-
-      if(!isNullOrUndefined(this.loggedUser)){
-        this.nativeStorage.setItem(USER_INFO, JSON.stringify(this.loggedUser)).then((res) => {
-          this.router.navigate(['home']);
-          this.authState.next(true);     
-          loading.dismiss();
-        });
-      }else{
+      .then(user => {
         loading.dismiss();
-      }
-      
-      // this.nativeStorage.setItem('google_user', {
-      //   name: user.displayName,
-      //   email: user.email,
-      //   picture: user.imageUrl
-      // })
-      // .then(() =>{
-      //   this.nativeStorage.getItem('google_user')
-          
-      //   this.authState.next(true);
-      // }, error =>{
-      //   console.log("ERRRORRRRRRR en la primera");
-        
-      //   console.log(error);
-      // })
-      // loading.dismiss();
-    }, err =>{
-      console.log("ERRRORRRRRRR en la segunda perrrro");
-      console.log(err)
-      loading.dismiss();
-    });
-  }
 
-  doGoogleLogout(){
-    this.googlePlus.logout()
-    .then(res =>{
-      //user logged out so we will remove him from the NativeStorage
-      this.nativeStorage.remove('google_user');
-      this.router.navigate(["/login"]);
-    }, err =>{
-      console.log(err);
-    })
-  }
+        this.checkUserEmailAndUpdate(user, true, false);
 
-  async doFacebookLogin(){
-    const loading = await this.loadingController.create({
-			message: 'Please wait...'
-		});
-		this.presentLoading(loading);
-		// let permissions = new Array<string>();
-
-		//the permissions your facebook app needs from the user
-    const permissions = ["public_profile", "email"];
-
-		this.fb.login(permissions)
-		.then(response =>{
-      console.log(response);
-      
-			let userId = response.authResponse.userID;
-
-			//Getting name and gender properties
-			this.fb.api("/me?fields=name,email", permissions)
-			.then(user =>{
-				user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
-				//now we have the users info, let's save it in the NativeStorage
-        console.log(user); 
-        
-        this.checkUserEmailAndUpdate(user, false, true);
-        if(!isNullOrUndefined(this.loggedUser)){
-          this.nativeStorage.setItem(USER_INFO, JSON.stringify(user)).then((res) => {
+        if (!isNullOrUndefined(this.loggedUser)) {
+          this.nativeStorage.setItem(USER_INFO, JSON.stringify(this.loggedUser)).then((res) => {
             this.router.navigate(['home']);
-            this.authState.next(true);     
+            this.authState.next(true);
             loading.dismiss();
           });
-        }else{
+        } else {
           loading.dismiss();
         }
+      }, err => {
 
-        
-        // this.nativeStorage.setItem('facebook_user',
-				// {
-				// 	name: user.name,
-				// 	email: user.email,
-				// 	picture: user.picture
-				// })
-				// .then(() =>{
-        //   this.router.navigate(["home"]);
-        //   this.authState.next(true);          
-				// 	loading.dismiss();
-				// }, error =>{
-				// 	console.log(error);
-				// 	loading.dismiss();
-				// })
-			})
-		}, error =>{
-			console.log(error);
-			loading.dismiss();
-		});
+        loading.dismiss();
+      });
   }
 
-  doFbLogout(){
-		this.fb.logout()
-		.then(res =>{
-			//user logged out so we will remove him from the NativeStorage
-			this.nativeStorage.remove('facebook_user');
-			this.router.navigate(["/login"]);
-		}, error =>{
-			console.log(error);
-		});
-	}
+  doGoogleLogout() {
+    this.googlePlus.logout()
+      .then(res => {
+        //user logged out so we will remove him from the NativeStorage
+        this.nativeStorage.remove('google_user');
+        this.router.navigate(["/login"]);
+      }, err => {
+        console.log(err);
+      })
+  }
+
+  async doFacebookLogin() {
+    const loading = await this.loadingController.create({
+      message: 'Please wait...'
+    });
+    this.presentLoading(loading);
+    // let permissions = new Array<string>();
+
+    //the permissions your facebook app needs from the user
+    const permissions = ["public_profile", "email"];
+
+    this.fb.login(permissions)
+      .then(response => {
+
+        let userId = response.authResponse.userID;
+
+        //Getting name and gender properties
+        this.fb.api("/me?fields=name,email", permissions)
+          .then(user => {
+            user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
+            //now we have the users info, let's save it in the NativeStorage
+       
+            this.checkUserEmailAndUpdate(user, false, true);
+            if (!isNullOrUndefined(this.loggedUser)) {
+              this.nativeStorage.setItem(USER_INFO, JSON.stringify(user)).then((res) => {
+                this.router.navigate(['home']);
+                this.authState.next(true);
+                loading.dismiss();
+              });
+            } else {
+              loading.dismiss();
+            }
+
+
+            // this.nativeStorage.setItem('facebook_user',
+            // {
+            // 	name: user.name,
+            // 	email: user.email,
+            // 	picture: user.picture
+            // })
+            // .then(() =>{
+            //   this.router.navigate(["home"]);
+            //   this.authState.next(true);          
+            // 	loading.dismiss();
+            // }, error =>{
+            // 	console.log(error);
+            // 	loading.dismiss();
+            // })
+          })
+      }, error => {
+        console.log(error);
+        loading.dismiss();
+      });
+  }
+
+  doFbLogout() {
+    this.fb.logout()
+      .then(res => {
+        //user logged out so we will remove him from the NativeStorage
+        this.nativeStorage.remove('facebook_user');
+        this.router.navigate(["/login"]);
+      }, error => {
+        console.log(error);
+      });
+  }
 
   async presentLoading(loading) {
     return await loading.present();

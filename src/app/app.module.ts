@@ -10,12 +10,13 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { CategoryPageModule } from './category/category.module';
 import { MenuPageModule } from './menu/menu.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SharedModule } from 'src/shared/shared.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { ProductPageModule } from './product/product.module';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
+import { JwtInterceptor, ErrorInterceptor } from 'src/shared/helpers';
 
 @NgModule({
   declarations: [AppComponent],
@@ -36,7 +37,9 @@ import { Facebook } from '@ionic-native/facebook/ngx';
     SplashScreen,
     NativeStorage,
     Facebook,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
   schemas: [ NO_ERRORS_SCHEMA ,CUSTOM_ELEMENTS_SCHEMA ],
   bootstrap: [AppComponent]

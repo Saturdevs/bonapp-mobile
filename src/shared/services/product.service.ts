@@ -27,7 +27,7 @@ export class ProductService {
   }
   
   getProductsByCategory(idCategory) {
-    return this.apiService.get(`/product/category/${idCategory}`)
+    return this.apiService.get(`/product/availables/category/${idCategory}`)
            .map(data => data.products)
            .catch(this.handleError);
   }

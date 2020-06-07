@@ -22,13 +22,13 @@ export class UserService {
 
   createUser(user) {
     return this.apiGeneralService.post('/user/signup', user)
-      .map(data => data.arqueo)
+      .map(data => data)
       .catch(this.handleError);
   }
 
   updateUser(user) {
     return this.apiGeneralService.put('/user', user)
-      .map(data => data.arqueo)
+      .map(data => data.user)
       .catch(this.handleError);
   }
 

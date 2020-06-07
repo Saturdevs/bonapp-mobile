@@ -11,20 +11,29 @@ export class ScannerPage implements OnInit {
   constructor(private qrScanner: QRScanner) { }
 
   ngOnInit() {
+    console.log('asdasd');
+    
     // Optionally request the permission early
     this.qrScanner.prepare()
     .then((status: QRScannerStatus) => {
+      console.log('asdeeeee');
+      
       if (status.authorized) {
-    // camera permission was granted
-
-
-    // start scanning
-    let scanSub = this.qrScanner.scan().subscribe((text: string) => {
-      console.log('Scanned something', text);
-
-      this.qrScanner.hide(); // hide camera preview
-      scanSub.unsubscribe(); // stop scanning
-    });
+        console.log('asasdaasddasdasads');
+        this.qrScanner.show()
+          .then(showed => {
+            // camera permission was granted
+        
+        
+            // start scanning
+            let scanSub = this.qrScanner.scan().subscribe((text: string) => {
+              console.log('Scanned something', text);
+        
+              this.qrScanner.hide(); // hide camera preview
+              scanSub.unsubscribe(); // stop scanning
+            });
+          })
+        
 
 
     } else if (status.denied) {

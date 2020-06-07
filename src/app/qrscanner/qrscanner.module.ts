@@ -9,6 +9,7 @@ import { QrscannerPage } from './qrscanner.page';
 import { SharedModule } from 'src/shared/shared.module';
 import { ScannerPage } from '../scanner/scanner.page';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
+import { TableService } from 'src/shared/services/table.service';
 
 const routes: Routes = [
   {
@@ -26,6 +27,6 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   declarations: [QrscannerPage, ScannerPage],
-  providers: [QRScanner]  
+  providers: [QRScanner, TableService]  
 })
 export class QrscannerPageModule {}

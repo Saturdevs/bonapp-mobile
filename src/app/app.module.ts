@@ -15,6 +15,7 @@ import { SharedModule } from 'src/shared/shared.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { ProductPageModule } from './product/product.module';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
 import { JwtInterceptor, ErrorInterceptor } from 'src/shared/helpers';
 
@@ -36,6 +37,7 @@ import { JwtInterceptor, ErrorInterceptor } from 'src/shared/helpers';
     StatusBar,
     SplashScreen,
     NativeStorage,
+    QRScanner,
     Facebook,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

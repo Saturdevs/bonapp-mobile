@@ -12,6 +12,7 @@ import { isNullOrUndefined } from 'util';
 import { UserService } from './user.service';
 import { User } from '../models';
 import { Roles } from '../enums';
+import { ContextService } from './context.service';
 
 const USER_INFO = "USER_INFO";
 @Injectable({
@@ -33,7 +34,8 @@ export class AuthenticationService {
     private router: Router,
     private loadingController: LoadingController,
     private fb: Facebook,
-    private userService: UserService
+    private userService: UserService,
+    private contextService: ContextService
   ) {
     this.platform.ready().then(() => {
       this.ifLoggedIn();
@@ -66,6 +68,7 @@ export class AuthenticationService {
         // login successful if there's a jwt token in the response
         if (user && user.token) {
           // store user details and jwt token in local storage to keep user logged in between page refreshes
+          this.contextService.setUser(user);
           this.nativeStorage.setItem(USER_INFO, JSON.stringify(user)).then((res) => {
             this.router.navigate(['home']);
             this.authState.next(true);
@@ -94,12 +97,19 @@ export class AuthenticationService {
           this.nativeStorage.setItem(USER_INFO, {})
             .then(result => {
             });
+        }else{
+          this.nativeStorage.getItem(USER_INFO)
+            .then(user => {
+              this.contextService.setUser(user);
+            });
         }
       });
   }
 
   checkUserEmailAndUpdate(user, isGoogle, isFacebook) {
-    this._apiGeneralService.get(`/user/userByEmal`, user)
+    console.log('asd',user);
+    
+    this._apiGeneralService.get(`/user/userByEmal/${user.email}`)
       .subscribe(userResp => {
         if (!isNullOrUndefined(userResp.user)) {
           if (isGoogle) {
@@ -108,15 +118,22 @@ export class AuthenticationService {
           else if (isFacebook) {
             userResp.user.facebookId = user.id
           }
+          console.log(userResp.user);
           if ((isGoogle && isNullOrUndefined(userResp.user.googleId)) || (isFacebook && isNullOrUndefined(userResp.user.facebookId))) {
             this.userService.updateUser(userResp.user)
               .subscribe(u => {
-                this.loggedUser = u;
+                this.loggedUser = userResp.user;
               }, err => {
                 this.loggedUser = null;
               });
           } else {
-            this.loggedUser = user;
+            this.loggedUser = userResp.user; 
+            if (!isNullOrUndefined(this.loggedUser)) {
+              this.nativeStorage.setItem(USER_INFO, JSON.stringify(this.loggedUser)).then((res) => {
+                this.router.navigate(['home']);
+                this.authState.next(true);
+              });
+            }
           }
         } else {
           let newUser: any = {};
@@ -139,12 +156,32 @@ export class AuthenticationService {
           this.userService.createUser(newUser)
             .subscribe(u => {
               console.log(u);
-              this.loggedUser = u;
+              this.loggedUser = u.user;
+              this.authWithoutPassWord(u.user);
             }, err => {
               this.loggedUser = null;
             })
         }
       })
+  }
+
+  authWithoutPassWord(user){
+    console.log("entro",user);
+    let email = user.email;
+    return this._apiGeneralService.post(`/user/signinWithoutPass`, { email })
+      .subscribe(data => {
+        const user = data.user;
+        // login successful if there's a jwt token in the response
+        if (user && user.token) {
+          // store user details and jwt token in local storage to keep user logged in between page refreshes
+          this.nativeStorage.setItem(USER_INFO, JSON.stringify(user)).then((res) => {
+            this.router.navigate(['home']);
+            this.authState.next(true);
+          });
+        }
+      }, err => {
+        this.loggedUser = null;
+      });
   }
 
   async doGoogleLogin() {
@@ -160,18 +197,10 @@ export class AuthenticationService {
     })
       .then(user => {
         loading.dismiss();
-
+        console.log(user);
         this.checkUserEmailAndUpdate(user, true, false);
 
-        if (!isNullOrUndefined(this.loggedUser)) {
-          this.nativeStorage.setItem(USER_INFO, JSON.stringify(this.loggedUser)).then((res) => {
-            this.router.navigate(['home']);
-            this.authState.next(true);
-            loading.dismiss();
-          });
-        } else {
-          loading.dismiss();
-        }
+        loading.dismiss();
       }, err => {
 
         loading.dismiss();
@@ -209,19 +238,11 @@ export class AuthenticationService {
           .then(user => {
             user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
             //now we have the users info, let's save it in the NativeStorage
-       
+            console.log(user);
+            
             this.checkUserEmailAndUpdate(user, false, true);
-            if (!isNullOrUndefined(this.loggedUser)) {
-              this.nativeStorage.setItem(USER_INFO, JSON.stringify(user)).then((res) => {
-                this.router.navigate(['home']);
-                this.authState.next(true);
-                loading.dismiss();
-              });
-            } else {
-              loading.dismiss();
-            }
-
-
+            
+            loading.dismiss();
             // this.nativeStorage.setItem('facebook_user',
             // {
             // 	name: user.name,

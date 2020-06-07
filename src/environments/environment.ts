@@ -4,15 +4,19 @@
 
 export const environment = {
   production: false,
-  api_url: 'http://localhost:3001/api',
-  api_general_url: 'http://localhost:3000/api',
-  socket_url: 'http://localhost:3001',
-  // socket_url: 'http://192.168.50.123:3001',  // TO USE DEVAPP
-  // api_url: 'http://192.168.50.123:3001/api', // TO USE DEVAPP
-  // api_general_url: 'http://f3da2a6852c5.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES  3000
-  // socket_url: 'http://35bcd1db930d.ngrok.io',  // TO USE APK IN DEBUG - URL CHANGES 3001
-  // api_url: 'http://35bcd1db930d.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES 3001
+  // api_url: 'http://localhost:3001/api',
+  // api_general_url: 'http://localhost:3000/api',
+  // socket_url: 'http://localhost:3001',
+  
+  api_general_url: 'https://bonapp-general.herokuapp.com/api', //HEROKU GENERAL
+  socket_url: 'https://bonapp.herokuapp.com',  // HEROKU CUSTOMER
+  api_url: 'https://bonapp.herokuapp.com/api', // HEROKU CUSTOMER
+  
+  // api_general_url: 'http://f4b03ff96525.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES  3000
+  // socket_url: 'http://41c83b4594c3.ngrok.io',  // TO USE APK IN DEBUG - URL CHANGES 3001
+  // api_url: 'http://41c83b4594c3.ngrok.io/api', // TO USE APK IN DEBUG - URL CHANGES 3001
   avatar_url: 'https://ui-avatars.com/api/?name='     
+
 };
 /*
  * For easier debugging in development mode, you can import the following file

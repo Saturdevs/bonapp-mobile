@@ -96,7 +96,7 @@ export class AppComponent {
       this.authenticationService.authState.subscribe(state => {
         this.isUserLoggedIn = state;
         if (state) {
-          this.navCtrl.navigateRoot('/home');          
+            this.navCtrl.navigateRoot('/home');
         } else {
           this.navCtrl.navigateRoot('/login');
         }
@@ -105,13 +105,13 @@ export class AppComponent {
       //////////////////////////////////////////////////////////////
       /**SOLO PARA PRUEBAS. ESTO DEBE HACERSE CUANDO SE LEE EL QR */
       //////////////////////////////////////////////////////////////
-      let user = new User();
-      user.lastname = 'Lischetti2';
-      user.name = 'Lorenzoo';
-      user.phone = '341560433';
-      user.username = 'imchiodo@hotmail.com';
+      // let user = new User();
+      // user.lastname = 'Lischetti2';
+      // user.name = 'Lorenzoo';
+      // user.phone = '341560433';
+      // user.username = 'imchiodo@hotmail.com';
 
-      this.contextService.setUser(user);
+      let user = this.contextService.getUser();
       
       this.contextService.setTableNro(6);
       this.orderService.getOrderOpenByTable(this.contextService.getTableNro()).subscribe(

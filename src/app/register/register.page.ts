@@ -47,7 +47,7 @@ export class RegisterPage implements OnInit {
     this._userService.createUser(newUser).subscribe(
       data => {
         this.errorMessage = "";
-        this.successMessage = "El usuario ha sido creado correctamente. Por favor, incie sesión.";
+        this.successMessage = data.message;
       }, err => {
         this.errorMessage = err.message;
         this.successMessage = "";

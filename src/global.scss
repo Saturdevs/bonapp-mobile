@@ -116,7 +116,7 @@
   margin-top: 0.5rem !important;
   border: solid 1px var(--ion-color-secondary) !important;
   background-color: var(--ion-color-secondary) !important;
-  color: white!important;
+  color: white !important;
   padding-bottom: 0 !important;
   padding-top: 0 !important;
   border-radius: 40px !important;
@@ -177,7 +177,7 @@
   padding-top: 2rem;
 }
 
-.p-1{
+.p-1 {
   padding: 1rem;
 }
 
@@ -185,8 +185,8 @@
   margin: 0;
 }
 
-.mt-0{
-  margin-top: 0!important;
+.mt-0 {
+  margin-top: 0 !important;
 }
 
 ion-checkbox {
@@ -195,28 +195,26 @@ ion-checkbox {
   --border-color-checked: var(--ion-color-tertiary);
 }
 
-.imageRadius{
+.imageRadius {
   border-radius: 10%;
 }
 
 .header {
-  .toolbar-background
-	{
-		border: none !important;
-		background-color: var(--ion-color-primary);
-	}
+  .toolbar-background {
+    border: none !important;
+    background-color: var(--ion-color-primary);
+  }
 
-	.toolbar-title,
-	.back-button,
-	.bar-button
-	{
-		color: var(--ion-color-primary-contrast);
-	}
+  .toolbar-title,
+  .back-button,
+  .bar-button {
+    color: var(--ion-color-primary-contrast);
+  }
 }
 
-.error-message{
+.error-message {
   color: red;
- }
+}
 .ion-color-mercadopago {
   --ion-color-base: var(--ion-color-mercadopago);
   --ion-color-base-rgb: var(--ion-color-mercadopago-rgb);
@@ -224,4 +222,150 @@ ion-checkbox {
   --ion-color-contrast-rgb: var(--ion-color-mercadopago-contrast-rgb);
   --ion-color-shade: var(--ion-color-mercadopago-shade);
   --ion-color-tint: var(--ion-color-mercadopago-tint);
+}
+
+.ion-color-facebook {
+  --ion-color-base: var(--ion-color-facebook);
+  --ion-color-base-rgb: var(--ion-color-facebook-rgb);
+  --ion-color-contrast: var(--ion-color-facebook-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-facebook-contrast-rgb);
+  --ion-color-shade: var(--ion-color-facebook-shade);
+  --ion-color-tint: var(--ion-color-facebook-tint);
+}
+
+// LOADER CLASSES
+
+.customLoader {
+  --height: 100%;
+  --max-height: 100%;
+  --width: 100%;
+  --max-width: 100%;
+}
+
+@keyframes ldio-1izbv31f41m {
+  0% {
+    transform: translate(6.24px, 41.6px) scale(0);
+  }
+  25% {
+    transform: translate(6.24px, 41.6px) scale(0);
+  }
+  50% {
+    transform: translate(6.24px, 41.6px) scale(1);
+  }
+  75% {
+    transform: translate(41.6px, 41.6px) scale(1);
+  }
+  100% {
+    transform: translate(76.96000000000001px, 41.6px) scale(1);
+  }
+}
+
+@keyframes ldio-1izbv31f41m-r {
+  0% {
+    transform: translate(76.96000000000001px, 41.6px) scale(1);
+  }
+  100% {
+    transform: translate(76.96000000000001px, 41.6px) scale(0);
+  }
+}
+
+@keyframes ldio-1izbv31f41m-c {
+  0% {
+    background: #e15b64;
+  }
+  25% {
+    background: #abbd81;
+  }
+  50% {
+    background: #f8b26a;
+  }
+  75% {
+    background: #f47e60;
+  }
+  100% {
+    background: #e15b64;
+  }
+}
+
+.ldio-1izbv31f41m div {
+  position: absolute;
+  width: 20.8px;
+  height: 20.8px;
+  border-radius: 50%;
+  transform: translate(41.6px, 41.6px) scale(1);
+  background: #e15b64;
+  animation: ldio-1izbv31f41m 4.545454545454545s infinite cubic-bezier(0, 0.5, 0.5, 1);
+}
+.ldio-1izbv31f41m div:nth-child(1) {
+  background: #f47e60;
+  transform: translate(76.96000000000001px, 41.6px) scale(1);
+  animation: ldio-1izbv31f41m-r 1.1363636363636362s infinite cubic-bezier(0, 0.5, 0.5, 1),
+    ldio-1izbv31f41m-c 4.545454545454545s infinite step-start;
+}
+
+.ldio-1izbv31f41m div:nth-child(2) {
+  animation-delay: -1.1363636363636362s;
+  background: #e15b64;
+}
+
+.ldio-1izbv31f41m div:nth-child(3) {
+  animation-delay: -2.2727272727272725s;
+  background: #f47e60;
+}
+
+.ldio-1izbv31f41m div:nth-child(4) {
+  animation-delay: -3.4090909090909087s;
+  background: #f8b26a;
+}
+
+.ldio-1izbv31f41m div:nth-child(5) {
+  animation-delay: -4.545454545454545s;
+  background: #abbd81;
+}
+
+.loadingio-spinner-ellipsis-mq7cp6u3r8o {
+  width: 104px;
+  height: 104px;
+  display: inline-block;
+  overflow: hidden;
+  background: inherit;
+}
+
+.ldio-1izbv31f41m {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  transform-origin: 0 0; /* see note above */
+}
+
+.ldio-1izbv31f41m div {
+  box-sizing: content-box;
+}
+
+.loginContent {
+  --background: url(assets/fondo-login.png) 0 0/100% 100% no-repeat;
+}
+
+.cameraView {
+  background: transparent none !important;
+  opacity: 0;
+}
+
+.qrImg {
+  opacity: 0.5;
+  max-width: 100%;
+  // max-height: calc(98% - 100px);
+  position: fixed;
+  top: 54%;
+  left: 50%;
+  height: 93.5%;
+  width: 100%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+
+.labelSideMenu{
+  padding-left: .5rem;
 }

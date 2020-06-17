@@ -84,8 +84,7 @@ export class OrderPage implements OnInit {
                     }
                 });
         }
-        else 
-        {
+        else {
             if (!isNullOrUndefined(product.dailyMenuId)) {
                 this.dailyMenuService.getDailyMenu(product.dailyMenuId)
                     .subscribe(dailyMenu => {
@@ -112,6 +111,8 @@ export class OrderPage implements OnInit {
     minusQty(product: ProductInUserOrder) {
         if (product.quantity !== 1) {
             product.quantity--;
+            this.orderService.updateTotalPrice(this.cart, product.price, -1);
+            this.orderService.setCartWithoutCallback(this.cart)
         }
         else {
             let index = this.cart.products.indexOf(product);
@@ -122,6 +123,8 @@ export class OrderPage implements OnInit {
     /** Aumenta de a 1 la cantidad del producto en el carrito */
     plusQty(product: ProductInUserOrder) {
         product.quantity++;
+        this.orderService.updateTotalPrice(this.cart, product.price, 1);
+        this.orderService.setCartWithoutCallback(this.cart)
     }
 
     async confirmOrder() {

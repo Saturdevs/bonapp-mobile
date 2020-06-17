@@ -17,7 +17,7 @@
             </ion-text>
           </ion-row>
           <ion-row>
-            <ion-text color="medium" style="height: 3rem; overflow: hidden;">{{product.description}}</ion-text>
+            <ion-text color="medium" style="height: 3rem; overflow: hidden;">{{(product.description.length > 59)? (product.description | slice:0:59)+'...':product.description}}</ion-text>
           </ion-row>
           <ion-row>
             <ion-text color="secondary" >

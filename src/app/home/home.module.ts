@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
 import { SharedModule } from 'src/shared/shared.module';
+import { TableService } from 'src/shared/services/table.service';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { SharedModule } from 'src/shared/shared.module';
       }
     ])
   ],
-  declarations: [HomePage]
+  declarations: [HomePage],
+  providers: [TableService]
 })
 export class HomePageModule {}

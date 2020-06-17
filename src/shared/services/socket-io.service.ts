@@ -13,4 +13,8 @@ export class SocketIoService {
   constructor(private contextService: ContextService) {
     this.socket = io(`${environment.socket_url}`);
    }
+
+   updateTableStatus(){
+    this.socket.emit('updateTable', {});
+  }
 }

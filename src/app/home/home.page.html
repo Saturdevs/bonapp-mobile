@@ -1,44 +1,72 @@
 <ion-header>
   <app-navbar [pageTitle]="pageTitle"></app-navbar>
+  <div *ngIf="showQR" style="
+    opacity: 1;
+    background-color: #2e3648;
+    height: 5rem;
+    margin-top: 0;
+    color: white;
+    text-align: center;
+">
+    <p style="
+    background-color: #2e3648;
+    opacity: 1;
+    margin: 0;
+    padding-top: 1.3rem;
+">Escanea el qr de tu mesa para empezar a usar Bonapp y hacer tu pedido!</p>
+  </div>
 </ion-header>
-<ion-content>
+<ion-content [class.cameraView]="showQR">
   <div *ngIf="!(numberOfMenus === 1)">
     <ng-container *ngFor="let menu of menus; let i = index">
-      <div class="screen customCard" (click)="viewMenu(menu)" [class.screen-50]="numberOfMenus === 2"
-        [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3" [ngStyle]="{'background-image': 'url(' + menu.picture + ')'}">
-      </div>
-      <div class="cardFooter" [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
-        <p class="itemTitle">{{menu.name | uppercase}}</p>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="numberOfDailyMenus > 0">
-        <div class="screen customCard" (click)="viewDailyMenus()" [class.screen-50]="numberOfMenus === 2"
-          [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">
+      <ion-card>
+        <div class="screen customCard" (click)="viewMenu(menu)" [class.screen-50]="numberOfMenus === 2"
+          [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3"
+          [ngStyle]="{'background-image': 'url(' + menu.picture + ')'}">
         </div>
         <div class="cardFooter" [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
-          <p class="itemTitle">{{dailyMenuText | uppercase}}</p>
+          <p class="itemTitle">{{menu.name | uppercase}}</p>
         </div>
+      </ion-card>
+    </ng-container>
+    <ng-container *ngIf="numberOfDailyMenus > 0">
+      <div class="screen customCard" (click)="viewDailyMenus()" [class.screen-50]="numberOfMenus === 2"
+        [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">
+      </div>
+      <div class="cardFooter" [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
+        <p class="itemTitle">{{dailyMenuText | uppercase}}</p>
+      </div>
     </ng-container>
   </div>
 
   <div *ngIf="numberOfMenus === 1">
     <ng-container *ngFor="let category of categories; let i = index">
-      <div class="screen customCard" (click)="viewCategory(category)"
+      <ion-card (click)="viewCategory(category)"
+        style="margin-top: 2rem; margin-bottom: 2rem; margin-left: 1rem; margin-right: 1rem; border-top-left-radius: 4%; border-top-right-radius: 4%;">
+        <img class="screen customCard" style="margin:0!important;" [class.screen-50]="numberOfCategories === 2"
+          [class.screen-33]="numberOfCategories === 3" [class.screen-25]="numberOfCategories > 3"
+          src="{{category.picture}}">
+        <ion-card-header style="margin:0!important; padding: 0!important;" [class.cardFooterOdd]="i % 2 !== 0"
+          [class.cardFooterEven]="i % 2 === 0">
+          <ion-card-title class="itemTitle">{{category.name | uppercase}}</ion-card-title>
+        </ion-card-header>
+      </ion-card>
+      <!-- <div class="screen customCard" (click)="viewCategory(category)"
         [class.screen-50]="numberOfCategories === 2" [class.screen-33]="numberOfCategories === 3"
         [class.screen-25]="numberOfCategories > 3"
         [ngStyle]="{'background-image': 'url(' + category.picture + ')'}">
-      </div>
-      <div [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
-        <p class="itemTitle">{{category.name | uppercase}}</p>
-      </div>
+        </div>
+        <div [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
+          <p class="itemTitle">{{category.name | uppercase}}</p>
+        </div> -->
     </ng-container>
     <ng-container *ngIf="numberOfDailyMenus > 0">
-        <div class="screen customCard" (click)="viewDailyMenus()" [class.screen-50]="numberOfMenus === 2"
-          [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">
-        </div>
-        <div class="cardFooter" [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
-          <p class="itemTitle">{{dailyMenuText | uppercase}}</p>
-        </div>
+      <div class="screen customCard" (click)="viewDailyMenus()" [class.screen-50]="numberOfMenus === 2"
+        [class.screen-33]="numberOfMenus === 3" [class.screen-25]="numberOfMenus > 3">
+      </div>
+      <div class="cardFooter" [class.cardFooterOdd]="i % 2 !== 0" [class.cardFooterEven]="i % 2 === 0">
+        <p class="itemTitle">{{dailyMenuText | uppercase}}</p>
+      </div>
     </ng-container>
   </div>
 </ion-content>

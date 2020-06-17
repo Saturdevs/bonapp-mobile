@@ -4,6 +4,7 @@ import { NavController, NavParams } from '@ionic/angular';
 import { Category, CategoryService, Menu } from '../../shared';
 import { DataService } from 'src/shared/services/data.service';
 import { ActivatedRoute } from '@angular/router';
+import { LoadingService } from 'src/shared/services/loading.service';
 
 @Component({
   selector: 'app-menu',
@@ -19,13 +20,16 @@ export class MenuPage implements OnInit {
   constructor(public navCtrl: NavController,
               public categoryService: CategoryService,
               private dataService: DataService,
-              private _route: ActivatedRoute) {}
+              private _route: ActivatedRoute,
+              private loadingService: LoadingService) {}
 
   populateCategoriesByMenu(menu) {
+    this.loadingService.presentLoader();
     this.categoryService.getCategoriesByMenu(menu)
         .subscribe(categories => {
           this.categories = categories;
           this.numberOfCategories = this.categories.length;
+          this.loadingService.dismissLoader();
         });
   }
 

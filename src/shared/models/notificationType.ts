@@ -1,3 +1,7 @@
 export class NotificationType{
-    type: string;
+    _id: string;
+    message: string
+    duration: Number
+    repeatTime: Number
+    repeatAttempts: Number
 }

@@ -1,34 +1,44 @@
-<ion-header class="header">    
+<ion-header class="header">
   <app-navbar [pageTitle]="pageTitle"></app-navbar>
 </ion-header>
 
 <ion-content padding class="form-content">
   <form class="form" [formGroup]="registerForm" (ngSubmit)="createUser(registerForm.value)">
+    <ion-text style="text-align: center">
+      <p>
+        Completa los siguientes datos para poder empezar a usar Bonapp! 
+      </p>
+    </ion-text>
+    <br>
 
     <ion-item>
-      <ion-label floating>Nombre</ion-label>
+      <ion-label position="floating">Nombre</ion-label>
       <ion-input type="text" formControlName="name"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label floating>Apellido</ion-label>
+      <ion-label position="floating">Apellido</ion-label>
       <ion-input type="text" formControlName="lastname"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label floating>Email</ion-label>
+      <ion-label position="floating">Email</ion-label>
       <ion-input type="text" formControlName="email"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label floating>Contraseña</ion-label>
-      <ion-input type="password" formControlName="password" class="form-controll"></ion-input>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
 
-    <button ion-button block class="submit-button" type="submit">Registrarse</button>
-    <label class="error-message">{{errorMessage}}</label>
+    <ion-button style="margin-top: 3rem" shape="round" expand="block" color="secondary" type="submit">REGISTRATE
+    </ion-button>
+    <ion-text class="error-message">{{errorMessage}}</ion-text>
     <label class="success-message">{{successMessage}}</label>
     <br>
-    <div>
-      <p>Ya tienes una cuenta? <a (click)="goLoginPage()">Iniciar sesión</a></p>
-    </div>
+
+    <ion-item lines="none">
+      <ion-text style="font-size: 0.8rem">
+        <p>Ya tienes una cuenta? <a (click)="goLoginPage()" style="color: red;">Iniciar sesión</a></p>
+      </ion-text>
+    </ion-item>
     <br>
   </form>
 </ion-content>

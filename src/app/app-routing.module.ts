@@ -58,7 +58,8 @@ const routes: Routes = [
   { path: 'register', loadChildren: './register/register.module#RegisterPageModule' },
   { path: 'daily-menu', loadChildren: './daily-menu/daily-menu.module#DailyMenuPageModule' },
   { path: 'daily-menu-list', loadChildren: './daily-menu-list/daily-menu-list.module#DailyMenuListPageModule' },
-  { path: 'daily-menu', loadChildren: './daily-menu/daily-menu.module#DailyMenuPageModule' }
+  { path: 'daily-menu', loadChildren: './daily-menu/daily-menu.module#DailyMenuPageModule' },
+  { path: 'app-login', loadChildren: './app-login/app-login.module#AppLoginPageModule' }
 ];
 
 @NgModule({

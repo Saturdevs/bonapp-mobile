@@ -18,11 +18,11 @@ export class NavbarPage implements OnInit {
               private modalController: ModalController) { }
 
   ngOnInit() {
-    if(this._route.snapshot['_routerState'].url == '/home'){
+    if(this._route.snapshot['_routerState'].url == '/home' || this._route.snapshot['_routerState'].url == '/login'){
       this.isHomePage = true;
     }
 
-    if(this._route.snapshot['_routerState'].url === '/payments'){
+    if(this._route.snapshot['_routerState'].url === '/payments' || this._route.snapshot['_routerState'].url === '/login' || this._route.snapshot['_routerState'].url === '/app-login' || this._route.snapshot['_routerState'].url === '/register'){
       this.shouldShowSearch = false;
     }
   }

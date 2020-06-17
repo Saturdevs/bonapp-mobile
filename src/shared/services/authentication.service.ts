@@ -4,7 +4,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 import { ApiGeneralService } from './api.general.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Platform, LoadingController } from '@ionic/angular';
+import { Platform, LoadingController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { GooglePlus } from '@ionic-native/google-plus';
 import { Facebook } from '@ionic-native/facebook/ngx';
@@ -13,6 +13,7 @@ import { UserService } from './user.service';
 import { User } from '../models';
 import { Roles } from '../enums';
 import { ContextService } from './context.service';
+import { OrderService } from './order.service';
 
 const USER_INFO = "USER_INFO";
 @Injectable({
@@ -35,7 +36,9 @@ export class AuthenticationService {
     private loadingController: LoadingController,
     private fb: Facebook,
     private userService: UserService,
-    private contextService: ContextService
+    private contextService: ContextService,
+    private alertController: AlertController,
+    private orderService: OrderService
   ) {
     this.platform.ready().then(() => {
       this.ifLoggedIn();
@@ -54,11 +57,18 @@ export class AuthenticationService {
     if (this.isAuthenticated()) {
       this.nativeStorage.getItem(USER_INFO)
         .then((response) => {
-          if(response){
+          if (response) {
             return response;
           }
         })
     }
+  }
+
+  getUser(userId): Observable<User> {
+    console.log(userId);
+    return this._apiGeneralService.get(`/user/${userId}`)
+      .map(data => data.user)
+      .catch(this.handleError);
   }
 
   login(email: string, password: string) {
@@ -79,10 +89,32 @@ export class AuthenticationService {
   }
 
   logout() {
-    // remove user from local storage to log user out
-    this.nativeStorage.setItem(USER_INFO, {}).then(() => {
-      this.router.navigate(['login']);
-      this.authState.next(false);
+    this.nativeStorage.getItem(USER_INFO).then(async (respose) => {
+      if (respose && JSON.stringify(respose) !== '{}') {
+        let userinfo = JSON.parse(respose);
+        // if (!isNullOrUndefined(userinfo.openOrder) && JSON.stringify(userinfo.openOrder) !== '{}') {
+          // remove user from local storage to log user out
+          this.nativeStorage.setItem(USER_INFO, {}).then(() => {
+            this.orderService.clearCart();
+            this.router.navigate(['login']);
+            this.authState.next(false);
+          });
+        // } else {
+        //   let alert = await this.alertController.create({
+        //     header: "Error",
+        //     message: "No podes cerrar sesión mientras tengas un pedido abierto.",
+        //     buttons: [
+        //       {
+        //         text: 'Aceptar',
+        //         handler: data => {
+        //           this.alertController.dismiss();
+        //         },
+        //       }
+        //     ],
+        //   });
+        //   await alert.present();
+        // }
+      }
     });
   }
 
@@ -94,21 +126,21 @@ export class AuthenticationService {
     this.nativeStorage.keys()
       .then(keys => {
         if (keys.indexOf(USER_INFO) === -1) {
+          console.log('as',USER_INFO);
+          
           this.nativeStorage.setItem(USER_INFO, {})
             .then(result => {
             });
-        }else{
+        } else {
           this.nativeStorage.getItem(USER_INFO)
             .then(user => {
-              this.contextService.setUser(user);
+              this.contextService.setUser(JSON.parse(user));
             });
         }
       });
   }
 
   checkUserEmailAndUpdate(user, isGoogle, isFacebook) {
-    console.log('asd',user);
-    
     this._apiGeneralService.get(`/user/userByEmal/${user.email}`)
       .subscribe(userResp => {
         if (!isNullOrUndefined(userResp.user)) {
@@ -118,17 +150,23 @@ export class AuthenticationService {
           else if (isFacebook) {
             userResp.user.facebookId = user.id
           }
-          console.log(userResp.user);
+          this.contextService.setUser(userResp.user);
           if ((isGoogle && isNullOrUndefined(userResp.user.googleId)) || (isFacebook && isNullOrUndefined(userResp.user.facebookId))) {
             this.userService.updateUser(userResp.user)
               .subscribe(u => {
                 this.loggedUser = userResp.user;
+                this.contextService.setUser(userResp.user);
+                this.nativeStorage.setItem(USER_INFO, JSON.stringify(this.loggedUser)).then((res) => {
+                  this.router.navigate(['home']);
+                  this.authState.next(true);
+                });
               }, err => {
                 this.loggedUser = null;
               });
           } else {
-            this.loggedUser = userResp.user; 
+            this.loggedUser = userResp.user;
             if (!isNullOrUndefined(this.loggedUser)) {
+              this.contextService.setUser(this.loggedUser);
               this.nativeStorage.setItem(USER_INFO, JSON.stringify(this.loggedUser)).then((res) => {
                 this.router.navigate(['home']);
                 this.authState.next(true);
@@ -144,6 +182,7 @@ export class AuthenticationService {
             newUser.lastname = user.displayName.split(" ")[1];
             newUser.email = user.email;
             newUser.roleId = Roles.UserApp;
+            newUser.openOrder = null;
           }
           else if (isFacebook) {
             newUser.facebookId = user.id;
@@ -151,11 +190,12 @@ export class AuthenticationService {
             newUser.lastname = user.name.split(" ")[1];
             newUser.email = user.email;
             newUser.roleId = Roles.UserApp;
+            newUser.openOrder = null;
           }
 
           this.userService.createUser(newUser)
             .subscribe(u => {
-              console.log(u);
+              this.contextService.setUser(u.user)
               this.loggedUser = u.user;
               this.authWithoutPassWord(u.user);
             }, err => {
@@ -165,16 +205,16 @@ export class AuthenticationService {
       })
   }
 
-  authWithoutPassWord(user){
-    console.log("entro",user);
+  authWithoutPassWord(user) {
     let email = user.email;
     return this._apiGeneralService.post(`/user/signinWithoutPass`, { email })
       .subscribe(data => {
-        const user = data.user;
+        const userWithToken = data.user;
+        this.contextService.setUser(data.user);
         // login successful if there's a jwt token in the response
-        if (user && user.token) {
+        if (userWithToken && userWithToken.token) {
           // store user details and jwt token in local storage to keep user logged in between page refreshes
-          this.nativeStorage.setItem(USER_INFO, JSON.stringify(user)).then((res) => {
+          this.nativeStorage.setItem(USER_INFO, JSON.stringify(userWithToken)).then((res) => {
             this.router.navigate(['home']);
             this.authState.next(true);
           });
@@ -197,7 +237,6 @@ export class AuthenticationService {
     })
       .then(user => {
         loading.dismiss();
-        console.log(user);
         this.checkUserEmailAndUpdate(user, true, false);
 
         loading.dismiss();
@@ -238,10 +277,9 @@ export class AuthenticationService {
           .then(user => {
             user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
             //now we have the users info, let's save it in the NativeStorage
-            console.log(user);
-            
+
             this.checkUserEmailAndUpdate(user, false, true);
-            
+
             loading.dismiss();
             // this.nativeStorage.setItem('facebook_user',
             // {

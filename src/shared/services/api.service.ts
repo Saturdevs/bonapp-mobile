@@ -4,12 +4,13 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
+import { ContextService } from './context.service';
 
 @Injectable()
 export class ApiService {
-  
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private _contextService: ContextService
   ){}
 
   private setHeaders(): HttpHeaders {
@@ -21,18 +22,23 @@ export class ApiService {
     return new HttpHeaders(headersConfig);
   }
 
+
   private formatErrors(err: HttpErrorResponse) {
     return Observable.throw(err);
   }
 
   get(path: string, params: HttpParams = new HttpParams()): Observable<any> {
-    return this.http.get(`${environment.api_url}${path}`, { headers: this.setHeaders(), params: params })
+    let apiURL = this._contextService.getApiURL();
+
+    return this.http.get(`${apiURL}${path}`, { headers: this.setHeaders(), params: params })
     .catch(this.formatErrors);
   }
 
   put(path: string, body: Object = {}): Observable<any> {
+    let apiURL = this._contextService.getApiURL();
+
     return this.http.put(
-      `${environment.api_url}${path}`,
+      `${apiURL}${path}`,
       JSON.stringify(body),
       { headers: this.setHeaders() }
     )
@@ -40,8 +46,10 @@ export class ApiService {
   }
 
   post(path: string, body: Object = {}): Observable<any> {
+    let apiURL = this._contextService.getApiURL();
+
     return this.http.post(
-      `${environment.api_url}${path}`,
+      `${apiURL}${path}`,
       JSON.stringify(body),
       { headers: this.setHeaders() }
     )
@@ -49,8 +57,10 @@ export class ApiService {
   }
 
   delete(path): Observable<any> {
+    let apiURL = this._contextService.getApiURL();
+    
     return this.http.delete(
-      `${environment.api_url}${path}`,
+      `${apiURL}${path}`,
       { headers: this.setHeaders() }
     )
     .catch(this.formatErrors);

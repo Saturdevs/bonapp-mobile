@@ -76,7 +76,7 @@
   --ion-color-light-tint: #f5f6f9;
 
   /** background **/
-  --ion-background-color:#fff0db;
+  --ion-background-color:#fdfdfd;
   
   /**menú desplegable**/
   --ion-toolbar-background:#718239;
@@ -89,11 +89,21 @@
     --ion-color-mercadopago-contrast-rgb: 255,255,255;
     --ion-color-mercadopago-shade: #008bc8;
     --ion-color-mercadopago-tint: #1aa8e6;
+
+
+  /** facebook **/
+  --ion-color-facebook: #3b5998;
+  --ion-color-facebook-rgb: 59,89,152;
+  --ion-color-facebook-contrast: #ffffff;
+  --ion-color-facebook-contrast-rgb: 255,255,255;
+  --ion-color-facebook-shade: #324c83;
+  --ion-color-facebook-tint: #3660bb;
+
 }
 
 
-@import url('https://fonts.googleapis.com/css?family=Spinnaker&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Barlow&display=swap');
 *{
-	font-family: 'Spinnaker', sans-serif;
+	font-family: 'Barlow', sans-serif;
 
 }

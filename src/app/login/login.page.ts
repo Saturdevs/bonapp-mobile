@@ -11,7 +11,6 @@ import { AuthenticationService } from 'src/shared';
 })
 export class LoginPage implements OnInit {
 
-  loginForm: FormGroup;
   errorMessage: string = '';
   pageTitle: string = "Inicio de sesión";
 
@@ -22,13 +21,8 @@ export class LoginPage implements OnInit {
   ) { }
 
   // convenience getter for easy access to form fields
-  get f() { return this.loginForm.controls; }
 
   ngOnInit() {
-    this.loginForm = this.formBuilder.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required]
-    });
   }
 
   tryGoogleLogin(){
@@ -39,24 +33,7 @@ export class LoginPage implements OnInit {
     this.authenticationService.doFacebookLogin();
   }
 
-  login() {
-    // stop here if form is invalid
-    if (this.loginForm.invalid) {
-      return;
-    }
-
-    this.authenticationService.login(this.f.email.value, this.f.password.value)
-      .subscribe(
-        data => {
-          this.navCtrl.navigateForward('/home');
-        },
-        error => {
-          this.errorMessage = error.error.message;
-        }
-      );
-  }
-
-  goRegisterPage() {
-    this.navCtrl.navigateForward("/register");
+  goAppLoginPage(){
+    this.navCtrl.navigateForward("/app-login");
   }
 }

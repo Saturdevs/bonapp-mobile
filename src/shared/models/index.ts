@@ -19,3 +19,4 @@ export * from './transaction';
 export * from './paymentTypeMin';
 export * from './cashRegisterMin';
 export * from './table';
+export * from './openOrderForUser';

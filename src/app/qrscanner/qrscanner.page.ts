@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
 import { ContextService } from 'src/shared/services/context.service';
-import { OrderService, CashRegister, CashRegisterService, Client, Order, UserInOrder, ProductInUserOrder, PaymentInUserOrder, Table, TableStatus } from 'src/shared';
+import { OrderService, CashRegister, CashRegisterService, Client, Order, UserInOrder, ProductInUserOrder, PaymentInUserOrder, Table, TableStatus, ApiService } from 'src/shared';
 import { isNullOrUndefined } from 'util';
 import { ClientService } from 'src/shared/services/client.service';
 import { TableService } from 'src/shared/services/table.service';
 import { NavController } from '@ionic/angular';
+import { RestaurantService } from 'src/shared/services/restaurant.service';
 
 
 @Component({
@@ -20,8 +21,10 @@ export class QrscannerPage implements OnInit {
   constructor(private qrScanner: QRScanner,
     private contextService: ContextService,
     private orderService: OrderService,
-    private _tableService: TableService,
-    private navCtrl: NavController) { }
+    // private _tableService: TableService,
+    private navCtrl: NavController,
+    private resutaurantService: RestaurantService,
+    private _apiService: ApiService) { }
 
   ngOnInit() {
   }
@@ -36,27 +39,35 @@ export class QrscannerPage implements OnInit {
           let scanSub = this.qrScanner.scan().subscribe((data: string) => {
             let restaurantInfo = JSON.parse(data);
             let user = this.contextService.getUser();
+            
+            this.resutaurantService.getByRestaurantId(restaurantInfo.restaurantId)
+              .subscribe(data  => {
+                console.log(data);
+                
+                this.contextService.setTableNro(restaurantInfo.tableNumber);
+                this.contextService.setApiURL(data.restaurant[0].url_db);
 
-            this.contextService.setTableNro(restaurantInfo.tableNumber);
-            this.orderService.getOrderOpenByTable(this.contextService.getTableNro())
-              .subscribe(
-                order => {
-                  if (!isNullOrUndefined(order)) {
+                this.orderService.getOrderOpenByTable(this.contextService.getTableNro())
+                  .subscribe(
+                    order => {
+                      if (!isNullOrUndefined(order)) {
+    
+                        let userToAdd = this.createUserToAdd(user, false);
+    
+                        order.users.push(userToAdd);
+    
+                        this.orderService.putOrder(order, order._id)
+                          .subscribe(updatedOrder => {
+                            this.contextService.setOrder(updatedOrder);
+                          });
+                      }
+                      else {
+                        this.newOrder(user);
+                      }
+                    }
+                  );
+              });
 
-                    let userToAdd = this.createUserToAdd(user, false);
-
-                    order.users.push(userToAdd);
-
-                    this.orderService.putOrder(order, order._id)
-                      .subscribe(updatedOrder => {
-                        this.contextService.setOrder(updatedOrder);
-                      });
-                  }
-                  else {
-                    this.newOrder(user);
-                  }
-                }
-              );
             document.getElementsByTagName("body")[0].style.opacity = "1";
             
             this.qrScanner.hide(); // hide camera preview
@@ -108,19 +119,20 @@ export class QrscannerPage implements OnInit {
     let userToAdd = this.createUserToAdd(user, true);
     order.users.push(userToAdd);
 
-    this._tableService.getTableByNumber(this.contextService.getTableNro())
-      .subscribe(table => {
-        table.status = TableStatus.OCUPADA;
-        this._tableService.updateTable(table)
-          .subscribe(updatedTable => {
-            this.orderService.postOrder(order).subscribe(() => {
-              console.log(order);
-            },
-              error => {
-                console.log(error);
-              })
-          });
-      })
+    // this._tableService.getTableByNumber(this.contextService.getTableNro())
+    //   .subscribe(table => {
+    //     table.status = TableStatus.OCUPADA;
+    //     this._tableService.updateTable(table)
+    //       .subscribe(updatedTable => {
+    //         this.orderService.postOrder(order).subscribe(() => {
+    //           this.contextService.setOrder(order);
+    //           console.log(order);
+    //         },
+    //           error => {
+    //             console.log(error);
+    //           })
+    //       });
+    //   })
   }
 
 }

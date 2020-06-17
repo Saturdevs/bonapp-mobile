@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 
 import { _throw } from 'rxjs/observable/throw';
@@ -13,6 +13,7 @@ const USER_INFO = "USER_INFO"
 @Injectable()
 
 export class JwtInterceptor implements HttpInterceptor {
+    isLoading: boolean;
     constructor(private authenticationService: AuthenticationService,
         private nativeStorage: NativeStorage) { }
 
@@ -23,29 +24,24 @@ export class JwtInterceptor implements HttpInterceptor {
                 .pipe(
                     switchMap(result => {
                         // add authorization header with jwt token if available
-                        // const currentAuthToken = this.authenticationService.currentAuthTokenValue;
                         let currentAuthUser: any
-                        if(!isObject(result)){
+                        if (!isObject(result)) {
                             currentAuthUser = JSON.parse(result);
-                        }else{
+                        } else {
                             currentAuthUser = result
                         }
-                         
-                        console.log('ENTRO', currentAuthUser);
                         if (currentAuthUser && currentAuthUser.token) {
-                            console.log('ENTRO CON TOKEN', currentAuthUser.token);
                             const headers = {
                                 Authorization: `Bearer ${currentAuthUser.token}`,
                             };
                             request = request.clone({
                                 setHeaders: headers
                             });
-                            console.log('req:', JSON.stringify(request));
                         }
-
+                        
                         return next.handle(request);
                     })
                 )
         );
-    }
+}
 }

@@ -1,0 +1,36 @@
+<ion-header class="header">
+    <app-navbar [pageTitle]="pageTitle"></app-navbar>
+  </ion-header>
+
+<ion-content padding class="form-content">
+  <form class="form" [formGroup]="loginForm" (ngSubmit)="login()">
+    <ion-text style="text-align: center">
+      <p>
+        Introduce tu usuario y contraseña para poder inciar sesión.
+      </p>
+    </ion-text>
+    <br>
+
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="text" formControlName="email"></ion-input>
+    </ion-item>
+
+    <ion-item style="margin-top: 1rem">
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" formControlName="password" class="form-controll"></ion-input>
+    </ion-item>
+
+    <ion-button style="margin-top: 3rem" shape="round" expand="block" color="secondary" type="submit">INICIA SESIÓN</ion-button>
+    <ion-text class="error-message">{{errorMessage}}</ion-text>
+
+    <ion-item lines="none">
+      <ion-text style="font-size: 0.8rem">
+        <p>Todavía no tienes una cuenta? <a (click)="goRegisterPage()" style="color: red;">Crear cuenta</a></p>
+      </ion-text>
+    </ion-item>
+    <br>
+
+  </form>
+
+</ion-content>

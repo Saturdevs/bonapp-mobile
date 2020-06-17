@@ -52,6 +52,12 @@ export class OrderService {
             .catch(this.handleError);
     }
 
+    getOrder(idOrder): Observable<Order> {
+        return this.apiService.get(`/order/${idOrder}`)
+            .map(data => data.order)
+            .catch(this.handleError);
+    }
+
     getOrderOpenByTable(tableNumber): Observable<Order> {
         return this.apiService.get(`/order/status/${tableNumber}?open=Open`)
             .map(data => data.order)

@@ -1,3 +1,6 @@
+import { OpenOrderForUser } from './index';
+
+
 export class User {
   _id: string;
   name: string;
@@ -7,4 +10,5 @@ export class User {
   email: string;
   roleId: string;
   token: string;
+  openOrder: OpenOrderForUser;
 }

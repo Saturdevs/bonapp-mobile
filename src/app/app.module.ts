@@ -18,6 +18,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
 import { JwtInterceptor, ErrorInterceptor } from 'src/shared/helpers';
+import { LoadingService } from 'src/shared/services/loading.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -38,6 +39,7 @@ import { JwtInterceptor, ErrorInterceptor } from 'src/shared/helpers';
     SplashScreen,
     NativeStorage,
     QRScanner,
+    LoadingService,
     Facebook,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

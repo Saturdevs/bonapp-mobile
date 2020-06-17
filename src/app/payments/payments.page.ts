@@ -350,7 +350,7 @@ export class PaymentsPage implements OnInit {
           .subscribe(notificationsTypes => {
             this.notificationsTypes = notificationsTypes;
 
-            let currentNotificationType = this.notificationsTypes.find(x => x.type == NotificationTypes.NewOrder);
+            let currentNotificationType = this.notificationsTypes.find(x => x._id == NotificationTypes.NewOrder);
             let notification = new Notification();
             notification.createdAt = new Date();
             notification.notificationType = currentNotificationType;

@@ -1,35 +1,16 @@
-<ion-header class="header">    
-  <app-navbar [pageTitle]="pageTitle"></app-navbar>
-</ion-header>
+<ion-content padding class="form-content loginContent">
 
-<ion-content padding class="form-content">
-  <form class="form" [formGroup]="loginForm" (ngSubmit)="login()">
+  <ion-img style="margin-top: 2rem;" [src]="'../../assets/login1.png'"></ion-img>
+  <div style="margin-top: 6rem;">
+    <ion-button expand="block" shape="round" class="danger" (click)="tryGoogleLogin()">CONTINUAR CON GOOGLE</ion-button>
+    <ion-button expand="block" shape="round" color="facebook" (click)="tryFacebookLogin()">CONTINUAR CON FACEBOOK</ion-button>
+  </div>
 
-    <ion-item>
-      <ion-label floating>Email</ion-label>
-      <ion-input type="text" formControlName="email"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label floating>Contraseña</ion-label>
-      <ion-input type="password" formControlName="password" class="form-controll"></ion-input>
-    </ion-item>
-
-    <button ion-button full class="submit-button" type="submit">
-      Iniciar Sesión
-    </button>
-    <label class="error-message">{{errorMessage}}</label>
-
-    <br>
-    <div>
-      <p>Todavía no tienes una cuenta? <a (click)="goRegisterPage()">Crear cuenta</a></p>
-    </div>
-    <br>
-
-  </form>
-  <!-- <button ion-button full type="submit" class="facebook-button" (click)="tryFacebookLogin()">Facebook Login</button> -->
-  <!-- <button ion-button full type="submit" class="google-button"  (click)="tryGoogleLogin()">Google Login</button> -->
-  <ion-button expand="block" class="danger" (click)="tryGoogleLogin()">Google Login</ion-button>
-  <ion-button expand="block" color="fb-button" (click)="tryFacebookLogin()">Facebook Login</ion-button>
-
+  <ion-item-divider style="background-color: #fff0db">
+  </ion-item-divider>
+    <ion-text color="dark" (click)="goAppLoginPage()">
+        <p style="text-align: center;">
+          <a style="color: red;">Más opciones</a>
+        </p>
+    </ion-text>
 </ion-content>

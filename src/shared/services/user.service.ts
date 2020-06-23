@@ -32,6 +32,12 @@ export class UserService {
       .catch(this.handleError);
   }
 
+  deleteOpenOrder(userId) {
+    return this.apiGeneralService.put(`/user/deleteOpenOrder/${userId}`)
+      .map(data => data.user)
+      .catch(this.handleError);
+  }
+
   private handleError(err: HttpErrorResponse) {    
     return Observable.throw(err);
   }

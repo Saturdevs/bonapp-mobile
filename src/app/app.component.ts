@@ -20,6 +20,7 @@ import {
 import { isNullOrUndefined } from 'util';
 import { ClientService } from 'src/shared/services/client.service';
 import { LoadingService } from 'src/shared/services/loading.service';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 @Component({
   selector: 'app-root',
@@ -61,7 +62,8 @@ export class AppComponent {
     private notificationSerive: NotificationsService,
     private clientService: ClientService,
     private loadingService: LoadingService,
-    private changeDetection: ChangeDetectorRef
+    private changeDetection: ChangeDetectorRef,
+    private backgroundMode: BackgroundMode
     ) {
       this.initializeApp();
       this.contextService.getMessage().subscribe(show => { 
@@ -70,6 +72,10 @@ export class AppComponent {
       });
     }
     
+  sendNotification(){
+    this.notificationSerive.sendLocalNotification();
+  }
+
   callWaiter(){
     this.notificationSerive.getAllTypes()
       .subscribe(notificationsTypes => {
@@ -100,6 +106,8 @@ export class AppComponent {
       this.authenticationService.initializeUserInfo();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.backgroundMode.setDefaults({ silent: true })
+      this.backgroundMode.enable();
 
       this.authenticationService.authState.subscribe(state => {
         this.isUserLoggedIn = state;

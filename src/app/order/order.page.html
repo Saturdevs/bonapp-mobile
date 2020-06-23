@@ -10,33 +10,34 @@
   </ion-item>
   <ion-list class="toAdd" *ngIf="cart.products.length > 0">
     <ion-item-group lines="full">
-      <ion-item lines="full">
-        <ion-label color="medium" class="cartLabel">A pedir</ion-label>
+      <ion-item lines="full" class="cartItem">
+        <ion-label color="medium" class="cartLabel">En tu carrito</ion-label>
       </ion-item>
       <ion-item-sliding *ngFor="let product of cart.products, let i = index">
-        <ion-item-options side="start" class="ion-margin-top">
+        <!-- <ion-item-options side="start" class="ion-margin-top">
           <ion-item-option (click)="favorite(item)">Favorite</ion-item-option>
-          <ion-item-option color="danger" (click)="share(item)">Share</ion-item-option>
-        </ion-item-options>
+          <ion-item-option color="danger" (click)="share(item)">Share</ion-item-option> -->
+        <!-- </ion-item-options> -->
 
         <ion-item lines="full">
           <ion-label color="secondary" class="mt-0 productNameLabel">
-            {{ product.name }}
+            {{ (product.name.length > 15)? (product.name | slice:0:15)+'...':product.name }}
             <span *ngIf="(product.options.length === 1)">+ {{ product.options.length }} adicional</span>
             <span *ngIf="(product.options.length >1)">+ {{ product.options.length }} adicionales</span>
           </ion-label>
-          <div>
+          <ion-text>
             <h2 class="price pull-left">
               <span ion-text color="primary">${{ product.price }}</span>
               <span>x {{ product.quantity }}</span>
             </h2>
-            <ion-button shape="round" color="primary" class="button-qty pull-right" (click)="minusQty(product)">
-              <ion-icon name="remove"></ion-icon>
-            </ion-button>
-            <ion-button shape="round" color="secondary" class="button-qty pull-right" (click)="plusQty(product)">
-              <ion-icon name="add"></ion-icon>
-            </ion-button>
-            <div class="clear"></div>
+          </ion-text>
+          <ion-button shape="round" color="primary" class="button-qty pull-right" (click)="minusQty(product)">
+            <ion-icon name="remove"></ion-icon>
+          </ion-button>
+          <ion-button shape="round" color="secondary" class="button-qty pull-right" (click)="plusQty(product)">
+            <ion-icon name="add"></ion-icon>
+          </ion-button>
+          <div class="clear"></div>
           </div>
         </ion-item>
 
@@ -50,11 +51,11 @@
   </ion-list>
   <ion-list *ngIf="usersToDisplayProducts.length > 0">
     <ion-item-group>
-      <ion-item lines="full">
+      <ion-item lines="full" class="cartItem">
         <ion-label color="medium" class="cartLabel">Ya pedidos</ion-label>
       </ion-item>
       <ng-container *ngFor="let user of usersToDisplayProducts">
-        <ion-item lines="none" *ngFor="let product of user.products, let i = index">
+        <ion-item lines="full" *ngFor="let product of user.products, let i = index">
           <ion-avatar slot="start" *ngIf="displayProductsForEveryUser">
             <img [src]="'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'">
           </ion-avatar>
@@ -80,12 +81,14 @@
       <ion-title class="totalTitle">
         <ion-text color="secondary">Total</ion-text>
       </ion-title>
-    </ion-item>
-    <ion-item class="pt-1 pb-1" lines="none">
       <ion-text class="finalPriceText" color="secondary">${{ cart.total }}</ion-text>
-      <ion-button *ngIf="cart.products.length > 0" slot="end" (click)="confirmOrder()" color="secondary" size="default" shape="round">ENVIAR PEDIDO
+    </ion-item>
+    <ion-item class="pt-1 pb-1 backgroundWhite" lines="none">
+      <ion-button *ngIf="cart.products.length > 0" (click)="confirmOrder()" color="secondary" expand="block"
+        shape="round">ENVIAR PEDIDO
       </ion-button>
-      <ion-button *ngIf="cart.products.length === 0" slot="end" (click)="showPaymentPage()" color="secondary" size="default" shape="round">REALIZAR PAGO
+      <ion-button *ngIf="cart.products.length === 0" (click)="showPaymentPage()" color="secondary" expand="block"
+        shape="round">REALIZAR PAGO
       </ion-button>
     </ion-item>
   </ion-toolbar>

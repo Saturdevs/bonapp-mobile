@@ -26,8 +26,8 @@
     </ng-container>
   </ion-list>
 </ion-content>
-<ion-footer>
-  <ion-grid>
+<ion-footer >
+  <ion-grid class="backgroundWhite">
     <ion-row>
       <ion-col *ngIf="canPayWithAccount">
         <ion-button (click)="confirmPayment(paymentTypesEnum.CuentaCorriente)" shape="round" color="mercadopago" expand="full">Cuenta Corriente</ion-button>

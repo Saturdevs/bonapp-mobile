@@ -19,6 +19,8 @@ import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { Facebook } from '@ionic-native/facebook/ngx';
 import { JwtInterceptor, ErrorInterceptor } from 'src/shared/helpers';
 import { LoadingService } from 'src/shared/services/loading.service';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +42,8 @@ import { LoadingService } from 'src/shared/services/loading.service';
     NativeStorage,
     QRScanner,
     LoadingService,
+    LocalNotifications,
+    BackgroundMode,
     Facebook,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

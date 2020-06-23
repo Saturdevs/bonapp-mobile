@@ -4,7 +4,15 @@
 }
 
 .cartLabel{
-    font-size: .9rem;
+    font-size: 1.1rem;
+    color: white;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+}
+
+.cartItem{
+    background-color: #f8b12f;
+    --background: #f8b12f;
 }
 
 .productNameLabel{

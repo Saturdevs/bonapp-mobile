@@ -2,7 +2,7 @@
 <widget id="io.ionic.bonapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Bonapp</name>
     <description>La app para tus pedidos</description>
-    <author email="hi@ionicframework.com" href="http://ionicframework.com/">The Bonapp Team</author>
+    <author email="ventas@bonapp.com.ar" href="https://www.bonapp.com.ar/">The Bonapp Team</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />

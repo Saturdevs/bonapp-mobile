@@ -96,6 +96,7 @@ export class AuthenticationService {
           // remove user from local storage to log user out
           this.nativeStorage.setItem(USER_INFO, {}).then(() => {
             this.orderService.clearCart();
+            this.contextService.sendMessage(false);
             this.router.navigate(['login']);
             this.authState.next(false);
           });
@@ -138,6 +139,12 @@ export class AuthenticationService {
             });
         }
       });
+  }
+
+  getUserByEmail(email) : Observable<User>{
+    return this._apiGeneralService.get(`/user/userByEmal/${email}`)
+    .map(data => data.user)
+    .catch(this.handleError);
   }
 
   checkUserEmailAndUpdate(user, isGoogle, isFacebook) {

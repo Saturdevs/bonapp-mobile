@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService, NotificationType, Notification, AuthenticationService, Client, Transaction, PaymentTypeMin } from 'src/shared';
+import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService, NotificationType, Notification, AuthenticationService, Client, Transaction, PaymentTypeMin, OpenOrderForUser, UserService, CashRegisterService, SocketIoService } from 'src/shared';
 import { ContextService } from 'src/shared/services/context.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { PaymentPerUserModalPage } from '../modals/payment-per-user-modal/payment-per-user-modal.page';
@@ -12,6 +12,9 @@ import { NotificationsService } from 'src/shared/services/notifications.service'
 import { NotificationTypes } from '../../shared/enums/notificationsTypes'
 import { ClientService } from 'src/shared/services/client.service';
 import { TransactionService } from 'src/shared/services/transaction.service';
+import { Router } from '@angular/router';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+const USER_INFO = "USER_INFO";
 
 @Component({
   selector: 'app-payments',
@@ -33,6 +36,7 @@ export class PaymentsPage implements OnInit {
   client: Client;
   canPayWithAccount: boolean = false;
   canPayWithCurrentAccount: boolean = true;
+  sendToHomePage: boolean = false;
 
   constructor(private contextService: ContextService,
     private modalController: ModalController,
@@ -43,7 +47,12 @@ export class PaymentsPage implements OnInit {
     private notificationSerive: NotificationsService,
     private authService: AuthenticationService,
     private clientService: ClientService,
-    private transactionService: TransactionService) { }
+    private transactionService: TransactionService,
+    private userService: UserService,
+    private cashRegisterService: CashRegisterService,
+    private router: Router,
+    private socketIoService: SocketIoService,
+    private nativeStorage: NativeStorage) { }
 
   ngOnInit() {
     this.order = this.contextService.getOrder();
@@ -57,9 +66,9 @@ export class PaymentsPage implements OnInit {
     this.checkClientAccount();
   }
 
-  async getCurrentUser(){
+  async getCurrentUser() {
     this.currentUser = await this.authService.getCurrentUser();
-  } 
+  }
 
   /**Muesta el componente modal para seleccionar el
    *  monto (parcial o total) a pagar por cada usuario
@@ -176,7 +185,7 @@ export class PaymentsPage implements OnInit {
    */
   async confirmPayment(paymentType) {
     this.paymentType = paymentType;
-    
+
     // capaz que volver a traerme la order es al pedo
     this.order = this.contextService.getOrder();
     let currentTotalPayment = 0;
@@ -193,8 +202,8 @@ export class PaymentsPage implements OnInit {
 
     totalPayment = totalPayment - (currentTotalPayment + oldPayments);
     let alertMessage = '';
-  
-    if(this.paymentType == PaymentTypes.CuentaCorriente && this.canPayWithAccount && !this.checkAccount(currentTotalPayment)){
+
+    if (this.paymentType == PaymentTypes.CuentaCorriente && this.canPayWithAccount && !this.checkAccount(currentTotalPayment)) {
       alertMessage = "El monto que estas intentando pagar con Cuenta Corriente sumado al saldo actual, supera el limite para esta cuenta.";
       let alert = await this.alertController.create({
         header: "Enviar pago",
@@ -203,7 +212,7 @@ export class PaymentsPage implements OnInit {
           {
             text: 'OK',
             handler: data => {
-            this.alertController.dismiss();
+              this.alertController.dismiss();
             },
           }
         ],
@@ -217,6 +226,8 @@ export class PaymentsPage implements OnInit {
     }
     else {
       alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ", equivalente al total del pedido. El mismo se cerrara.";
+      this.order.completed_at = new Date();
+      this.order.status = "Closed";
     }
 
     let alert = await this.alertController.create({
@@ -288,13 +299,13 @@ export class PaymentsPage implements OnInit {
       })
   }
 
-  checkClientAccount(){
+  checkClientAccount() {
     let isClient = this.order.users.find(x => x.username == this.contextService.getUser().username).clientId;
-    if(!isNullOrUndefined(isClient)){
+    if (!isNullOrUndefined(isClient)) {
       this.clientService.getClient(isClient)
         .subscribe((client: Client) => {
           this.client = client;
-          if(this.client.enabledTransactions){
+          if (this.client.enabledTransactions) {
             this.canPayWithAccount = true;
           }
         })
@@ -323,59 +334,93 @@ export class PaymentsPage implements OnInit {
 
     order.discount = discount;
 
-    this.orderService.putOrder(order, order._id)
-      .subscribe(updatedOrder => {
-        if(this.paymentType == PaymentTypes.CuentaCorriente){
-          let transaction = new Transaction();
-          let amount = this.usersAmounts.reduce((acc,curr) => acc + curr.paymentAmount, 0);
-          let paymentTypeMin = new PaymentTypeMin();
-          paymentTypeMin._id = this.paymentTypes.find(x => x.name === this.paymentType)._id;
-          paymentTypeMin.name = this.paymentType;
+    this.cashRegisterService.getDefaultCashRegister()
+      .subscribe(cashRegisters => {
 
-          transaction.amount = amount;
-          transaction.cashRegister = order.cashRegister;
-          transaction.client = this.client;
-          transaction.comment = "New Payment on APP";
-          transaction.date = new Date();
-          transaction.deleted = false;
-          transaction.paymentMethod = paymentTypeMin;
-          transaction.paymentType = this.paymentTypes.find(x => x.name === this.paymentType)._id;
+        order.cashRegister = cashRegisters.find(x => x.default === true);
 
-          this.transactionService.saveTransaction(transaction)
-            .subscribe(result => { 
-              console.log(result);
-            });
-        }
-        this.notificationSerive.getAllTypes()
-          .subscribe(notificationsTypes => {
-            this.notificationsTypes = notificationsTypes;
+        this.orderService.putOrder(order, order._id)
+          .subscribe((updatedOrder: Order) => {
 
-            let currentNotificationType = this.notificationsTypes.find(x => x._id == NotificationTypes.NewOrder);
-            let notification = new Notification();
-            notification.createdAt = new Date();
-            notification.notificationType = currentNotificationType;
-            notification.readBy = null;
-            notification.table = this.contextService.getTableNro();
-            notification.userFrom = this.contextService.getUser()._id;
-            notification.usersTo = [];
+            if (this.paymentType == PaymentTypes.CuentaCorriente) {
+              let transaction = new Transaction();
+              let amount = this.usersAmounts.reduce((acc, curr) => acc + curr.paymentAmount, 0);
+              let paymentTypeMin = new PaymentTypeMin();
+              paymentTypeMin._id = this.paymentTypes.find(x => x.name === this.paymentType)._id;
+              paymentTypeMin.name = this.paymentType;
 
-            this.notificationSerive.send(notification)
-              .subscribe(result => {
-                this.contextService.setOrder(updatedOrder);
-                this.order = this.contextService.getOrder();
+              transaction.amount = amount;
+              transaction.cashRegister = order.cashRegister;
+              transaction.client = this.client;
+              transaction.comment = "New Payment on APP";
+              transaction.date = new Date();
+              transaction.deleted = false;
+              transaction.paymentMethod = paymentTypeMin;
+              transaction.paymentType = this.paymentTypes.find(x => x.name === this.paymentType)._id;
 
-                this.order.users.forEach(user => {
-                  let totalPayments = 0;
-                  user.payments.forEach(payment => {
-                    totalPayments += payment.amount;
-                  });
-
-                  let currentUserAmount = this.usersAmounts.find(x => x.username === user.username);
-
-                  currentUserAmount.paymentAmount = 0;
-
+              this.transactionService.saveTransaction(transaction)
+                .subscribe(result => {
+                  console.log(result);
                 });
-              });
+            }
+            updatedOrder.users.forEach((userInOrder: UserInOrder) => {
+              let alreadyPayedByUser = userInOrder.payments.reduce((acc, curr) => acc + curr.amount, 0);
+
+              if (userInOrder.totalPerUser === alreadyPayedByUser) {
+                this.sendToHomePage = false;
+                this.authService.getUserByEmail(userInOrder.username)
+                  .subscribe(user => {
+                    if (!isNullOrUndefined(user.openOrder) && JSON.stringify(user.openOrder) !== '{}') {
+                      user.openOrder = null;
+                      this.userService.deleteOpenOrder(user._id)
+                        .subscribe(userWithoutOpenOrder => {
+                          this.nativeStorage.setItem(USER_INFO, JSON.stringify(userWithoutOpenOrder)).then(async (res) => {
+                            this.contextService.setUser(userWithoutOpenOrder);
+                            this.router.navigate(['home']);
+                          });
+                        })
+                    };
+                  });
+              }
+            });
+
+            if(updatedOrder.status === "Closed"){
+              this.socketIoService.updateTableStatus();
+            }
+            if(this.sendToHomePage){
+              this.router.navigate(['home']);
+            }
+            // this.notificationSerive.getAllTypes()
+            //   .subscribe(notificationsTypes => {
+            //     this.notificationsTypes = notificationsTypes;
+
+            //     let currentNotificationType = this.notificationsTypes.find(x => x._id == NotificationTypes.NewOrder);
+            //     let notification = new Notification();
+            //     notification.createdAt = new Date();
+            //     notification.notificationType = currentNotificationType;
+            //     notification.readBy = null;
+            //     notification.table = this.contextService.getTableNro();
+            //     notification.userFrom = this.contextService.getUser()._id;
+            //     notification.usersTo = [];
+
+            //     this.notificationSerive.send(notification)
+            //       .subscribe(result => {
+            //         this.contextService.setOrder(updatedOrder);
+            //         this.order = this.contextService.getOrder();
+
+            //         this.order.users.forEach(user => {
+            //           let totalPayments = 0;
+            //           user.payments.forEach(payment => {
+            //             totalPayments += payment.amount;
+            //           });
+
+            //           let currentUserAmount = this.usersAmounts.find(x => x.username === user.username);
+
+            //           currentUserAmount.paymentAmount = 0;
+
+            //         });
+            //       });
+            //   });
           });
       });
   }

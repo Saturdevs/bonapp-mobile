@@ -9,24 +9,31 @@
       <ion-content>
         <ion-list>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let index = index">
-            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
+            <ion-item [routerDirection]="'root'" *ngIf="!showQRAim" [routerLink]="[p.url]">
               <!-- <ion-icon slot="start" [name]="p.icon"></ion-icon> -->
-              <img [src]="p.icon" height="50px" width="auto">
+              <img [src]="p.icon" height="40px" width="auto">
               <ion-label class="labelSideMenu">
                 {{p.title}}
               </ion-label>
             </ion-item>
-            <ion-item *ngIf="index == 2" (click)="callWaiter()">
-                <img src="../../assets/nav-mozo.png" height="50px" width="auto">
+            <ion-item *ngIf="index == 2 && !showQRAim" (click)="callWaiter()">
+                <img src="../../assets/nav-mozo.png" height="40px" width="auto">
                 <!-- <ion-icon slot="start" name="hand"></ion-icon> -->
-                <ion-label>
+                <ion-label class="labelSideMenu">
                   Llamar al mozo
                 </ion-label>
             </ion-item>
+            <ion-item *ngIf="index == 2 && !showQRAim" (click)="sendNotification()">
+              <img src="../../assets/nav-mozo.png" height="40px" width="auto">
+              <!-- <ion-icon slot="start" name="hand"></ion-icon> -->
+              <ion-label class="labelSideMenu">
+                TestNotification
+              </ion-label>
+            </ion-item>
             <ion-item *ngIf="index == 2" (click)="logout()">
-              <img src="../../assets/nav-salir.png" height="50px" width="auto">
+              <img src="../../assets/nav-salir.png" height="40px" width="auto">
               <!-- <ion-icon slot="start" name="log-out"></ion-icon> -->
-              <ion-label>
+              <ion-label class="labelSideMenu">
                 Salir
               </ion-label>
             </ion-item>

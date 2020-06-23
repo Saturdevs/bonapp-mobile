@@ -132,9 +132,7 @@ export class OrderPage implements OnInit {
             let data = { products: this.cart.products, total: this.cart.total, username: this.user.username, order: this.order };
             this.orderService.updateProductsOrder(data).subscribe(
                 async orderReturned => {
-                    this.cart.products.forEach(product => {
-                        this.removeProduct(this.cart.products.indexOf(product));
-                    });
+                    this.orderService.clearCart();
                     this.contextService.setOrder(orderReturned);
                     let alert = await this.alertController.create({
                         header: "Listo!",

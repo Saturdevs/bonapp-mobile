@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { environment } from 'src/environments/environment';
-import { ContextService } from './context.service';
-import { WaiterCall } from '../models/waiterCall';
+import { NotificationsService } from './notifications.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +9,18 @@ import { WaiterCall } from '../models/waiterCall';
 export class SocketIoService {
   private socket;
 
-  constructor(private contextService: ContextService) {
+  constructor(private notificationService: NotificationsService) {
     this.socket = io(`${environment.socket_url}`);
-   }
+    this.socket.on("orderAccepted", orderAccepted => { //escucha el metodo de actualizar las mesas
+      this.notificationService.sendLocalNotification("Su pedido fue aceptado!");
+    });
+  }
 
-   updateTableStatus(){
+  updateTableStatus() {
     this.socket.emit('updateTable', {});
+  }
+
+  joinUserToOrder(data){
+    this.socket.emit('appUserConnection', data);
   }
 }

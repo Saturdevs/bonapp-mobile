@@ -27,11 +27,11 @@ export class NotificationsService {
       .catch(this.handleError);
   }
 
-  sendLocalNotification(){
+  sendLocalNotification(text : string){
     // Schedule a single notification
     this.localNotifications.schedule({
       id: 1,
-      text: 'Nueva notificacion de Bonapp!',
+      text: text,
       silent: false,
       lockscreen: true,
       foreground: true,

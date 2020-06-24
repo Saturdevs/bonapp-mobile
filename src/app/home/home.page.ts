@@ -21,7 +21,8 @@ import {
   NotificationTypes,
   NotificationType,
   SocketIoService,
-  User
+  User,
+  NotificationData
 } from '../../shared';
 
 import { DataService } from 'src/shared/services/data.service';
@@ -76,12 +77,13 @@ export class HomePage implements OnInit {
     private notiicationService: NotificationsService,
     private socketIoService: SocketIoService,
     private loadingService: LoadingService,
-    private changeDetection: ChangeDetectorRef) {
+    private changeDetection: ChangeDetectorRef,
+    private socketIOService: SocketIoService) {
 
     this.contextService.getMessage()
       .subscribe(show => {
         this.showQR = show;
-        if(this.showQR){
+        if (this.showQR) {
           this.pageTitle = "Escanear QR";
         } else {
           this.pageTitle = "Inicio";
@@ -179,15 +181,16 @@ export class HomePage implements OnInit {
                             openOrder.restaurantId = restaurantInfo.restaurantId;
 
                             let currentUser = this.contextService.getUser(); //sacar, esta al pedo
-                            
+
                             let userToUpdate = new User();
                             userToUpdate._id = currentUser._id;
                             userToUpdate.openOrder = openOrder;
                             userToUpdate.email = currentUser.email;
                             console.log(userToUpdate);
-                            
+
                             this.userService.updateUser(userToUpdate)
-                              .subscribe(updatedUser => {
+                              .subscribe((updatedUser: User) => {
+                                this.addSocketId();
                                 console.log(updatedUser);
                                 this.authService.getUser(updatedUser._id)
                                   .subscribe(userFound => {
@@ -230,6 +233,19 @@ export class HomePage implements OnInit {
         }
       })
       .catch((e: any) => console.log('Error is', e));
+  }
+
+  addSocketId() {
+    let joinUserToOrderData = {
+      orderId: this.contextService.getOrder()._id,
+      userId: this.contextService.getUser().username
+    }
+    this.socketIOService.joinUserToOrder(joinUserToOrderData);
+
+    this.orderService.getOrder(this.contextService.getOrder()._id)
+      .subscribe(order => {
+        this.contextService.setOrder(order);
+      });
   }
 
   createUserToAdd(user, owner): UserInOrder {
@@ -279,7 +295,7 @@ export class HomePage implements OnInit {
               userToUpdate.openOrder = openOrder;
               userToUpdate.email = user.email;
               console.log(userToUpdate);
-              
+
               this.userService.updateUser(userToUpdate)
                 .subscribe(updatedUser => {
                   console.log(updatedUser);
@@ -291,24 +307,25 @@ export class HomePage implements OnInit {
                         this.populateMenusAndCategories();
 
                         // NOTIFICACION PARA MESA OCUPADA! 
-                        // let notification = new Notification()
-                        // notification.createdAt = new Date();
+                        let notification = new Notification()
+                        notification.createdAt = new Date();
+                        notification.notificationType = NotificationTypes.TableOcuped;;
+                        notification.table = table.number;
+                        notification.userFrom = updatedUser.username;
+                        notification.orderId = order._id;
+                        notification.usersTo = [];
+                        notification.readBy = null;
+                        notification.data = new NotificationData();
+                        notification.data.notificationType = NotificationTypes.TableOcuped;
+                        notification.actions = [];
 
-                        // let notificationType = new NotificationType()
-                        // notificationType.type = NotificationTypes.TableTaken;
-
-                        // notification.notificationType = notificationType;
-                        // notification.table = table.number;
-                        // notification.userFrom = updatedUser._id;
-                        // notification.usersTo = [];
-                        // notification.readBy = null;
-
-                        // this.notiicationService.send(notification)
-                        //   .subscribe(notificationSent => {
-                        //     console.log(notificationSent);
-                        //   });
+                        this.notiicationService.send(notification)
+                          .subscribe(notificationSent => {
+                            console.log(notificationSent);
+                          });
 
                         this.socketIoService.updateTableStatus();
+                        this.addSocketId();
                       });
                     });
                 });

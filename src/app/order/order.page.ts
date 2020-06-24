@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Order, OrderService, ProductInUserOrder, OrderDiscount, CashRegister, User, UserInOrder, UserService, ProductService, Product } from 'src/shared';
+import { Order, OrderService, ProductInUserOrder, OrderDiscount, CashRegister, User, UserInOrder, UserService, ProductService, Product, NotificationsService, Notification, NotificationTypes, NotificationData } from 'src/shared';
 import { ActivatedRoute } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { ContextService } from 'src/shared/services/context.service';
@@ -29,7 +29,8 @@ export class OrderPage implements OnInit {
         private alertController: AlertController,
         private contextService: ContextService,
         private userService: UserService,
-        private dailyMenuService: DailyMenuService) { }
+        private dailyMenuService: DailyMenuService,
+        private notiicationService: NotificationsService) { }
 
     ngOnInit(): void {
         //TODO: cuando se lee el codigo qr se debe verificar si ya hay un pedido abierto para esa mesa.
@@ -131,9 +132,29 @@ export class OrderPage implements OnInit {
         if (!isNullOrUndefined(this.order)) {
             let data = { products: this.cart.products, total: this.cart.total, username: this.user.username, order: this.order };
             this.orderService.updateProductsOrder(data).subscribe(
-                async orderReturned => {
+                async (orderReturned: Order) => {
                     this.orderService.clearCart();
                     this.contextService.setOrder(orderReturned);
+
+                    // NOTIFICACION PARA PEDIDO NUEVO! 
+                    let notification = new Notification()
+                    notification.createdAt = new Date();
+                    notification.notificationType = NotificationTypes.NewOrder;
+                    notification.table =  this.contextService.getTableNro();
+                    notification.userFrom = this.contextService.getUser().username;
+                    notification.usersTo = [];
+                    notification.readBy = null;
+                    notification.data = new NotificationData();
+                    notification.data.notificationType = NotificationTypes.NewOrder;
+                    notification.data.orderId = orderReturned._id;
+                    notification.data.username = this.contextService.getUser().username;
+                    notification.actions = [];
+
+                    this.notiicationService.send(notification)
+                      .subscribe(notificationSent => {
+                        console.log(notificationSent);
+                    });
+
                     let alert = await this.alertController.create({
                         header: "Listo!",
                         message: "Tu pedido se envio correctamente.",

@@ -1,25 +1,17 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 
-import { Platform, NavController } from '@ionic/angular';
+import { Platform, NavController, AlertController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { ContextService } from 'src/shared/services/context.service';
-import { 
-  OrderService, 
-  User, 
-  CashRegister,
-  CashRegisterService,  
-  AuthenticationService, 
-  NotificationType, 
+import {
+  AuthenticationService,
+  NotificationType,
   Notification,
-  SocketIoService,
   NotificationsService,
   NotificationTypes,
-  Client
+  NotificationData,
 } from 'src/shared';
-import { isNullOrUndefined } from 'util';
-import { ClientService } from 'src/shared/services/client.service';
-import { LoadingService } from 'src/shared/services/loading.service';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 @Component({
@@ -48,56 +40,75 @@ export class AppComponent {
   isUserLoggedIn: Boolean = false;
   notificationsTypes: Array<NotificationType>;
   showQRAim: boolean = false;
-  
+
   constructor(
     private navCtrl: NavController,
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private contextService: ContextService,
-    private orderService: OrderService,
-    private CashRegisterService: CashRegisterService,
-    private socketService: SocketIoService,
     private authenticationService: AuthenticationService,
     private notificationSerive: NotificationsService,
-    private clientService: ClientService,
-    private loadingService: LoadingService,
     private changeDetection: ChangeDetectorRef,
-    private backgroundMode: BackgroundMode
-    ) {
-      this.initializeApp();
-      this.contextService.getMessage().subscribe(show => { 
-        this.showQRAim = show;
-        changeDetection.detectChanges();
-      });
-    }
-    
-  sendNotification(){
-    this.notificationSerive.sendLocalNotification();
+    private backgroundMode: BackgroundMode,
+    private alertController: AlertController
+  ) {
+    this.initializeApp();
+    this.contextService.getMessage().subscribe(show => {
+      this.showQRAim = show;
+      changeDetection.detectChanges();
+    });
   }
 
-  callWaiter(){
-    this.notificationSerive.getAllTypes()
-      .subscribe(notificationsTypes => {
-        this.notificationsTypes = notificationsTypes;
-        
-        let currentNotificationType = this.notificationsTypes.find(x => x._id == NotificationTypes.WaiterCall);
-        let notification = new Notification();
-        notification.createdAt = new Date();
-        notification.notificationType = currentNotificationType;
-        notification.readBy = null;
-        notification.table = this.contextService.getTableNro();
-        notification.userFrom = this.contextService.getUser()._id;
-        notification.usersTo = [];
-
-        this.notificationSerive.send(notification)
-          .subscribe(result => {
-            console.log(result);
-          })
-      });
+  sendNotification() {
+    this.notificationSerive.sendLocalNotification('TEST');
   }
 
-  logout(){
+  callWaiter() {
+    let notification = new Notification();
+    notification.createdAt = new Date();
+    notification.notificationType = NotificationTypes.WaiterCall;
+    notification.readBy = null;
+    notification.table = this.contextService.getTableNro();
+    notification.userFrom = this.contextService.getUser().username;
+    notification.usersTo = [];
+    notification.data = new NotificationData();
+    notification.data.notificationType = NotificationTypes.WaiterCall;
+    notification.actions = [];
+
+    this.notificationSerive.send(notification)
+      .subscribe(async (result) => {
+        let alert = await this.alertController.create({
+          header: "Listo!",
+          message: "El mozo viene en camino!.",
+          buttons: [
+            {
+              text: 'Aceptar',
+              handler: data => {
+                this.alertController.dismiss();
+              },
+            }
+          ],
+        });
+        await alert.present();
+      }, async (err) => {
+        let alert = await this.alertController.create({
+          header: "Algo salió mal!",
+          message: "No se pudo llamar al mozo, intente de nuevo.",
+          buttons: [
+            {
+              text: 'Aceptar',
+              handler: data => {
+                this.alertController.dismiss();
+              },
+            }
+          ],
+        });
+        await alert.present();
+      })
+  }
+
+  logout() {
     this.authenticationService.logout();
   }
 
@@ -113,7 +124,7 @@ export class AppComponent {
         this.isUserLoggedIn = state;
         if (state) {
           this.navCtrl.navigateRoot('/home');
-          
+
         } else {
           this.navCtrl.navigateRoot('/login');
         }
@@ -129,7 +140,7 @@ export class AppComponent {
       // user.username = 'imchiodo@hotmail.com';
 
       // let user = this.contextService.getUser();
-      
+
       // this.contextService.setTableNro(6);
       // this.orderService.getOrderOpenByTable(this.contextService.getTableNro()).subscribe(
       //   order => {

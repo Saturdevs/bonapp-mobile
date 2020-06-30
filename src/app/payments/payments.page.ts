@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService, NotificationType, Notification, AuthenticationService, Client, Transaction, PaymentTypeMin, OpenOrderForUser, UserService, CashRegisterService, SocketIoService } from 'src/shared';
+import { Order, User, UserInOrder, PaymentInUserOrder, OrderService, PaymentTypes, OrderDiscount, MercadoPagoService, NotificationType, Notification, AuthenticationService, Client, Transaction, PaymentTypeMin, OpenOrderForUser, UserService, CashRegisterService, SocketIoService, NotificationData } from 'src/shared';
 import { ContextService } from 'src/shared/services/context.service';
 import { ModalController, AlertController } from '@ionic/angular';
 import { PaymentPerUserModalPage } from '../modals/payment-per-user-modal/payment-per-user-modal.page';
@@ -52,7 +52,8 @@ export class PaymentsPage implements OnInit {
     private cashRegisterService: CashRegisterService,
     private router: Router,
     private socketIoService: SocketIoService,
-    private nativeStorage: NativeStorage) { }
+    private nativeStorage: NativeStorage,
+    private notiicationService : NotificationsService) { }
 
   ngOnInit() {
     this.order = this.contextService.getOrder();
@@ -184,71 +185,94 @@ export class PaymentsPage implements OnInit {
   /**Muestra un mensaje pidiendo confirmacion para enviar el pedido
    */
   async confirmPayment(paymentType) {
-    this.paymentType = paymentType;
+    // this.paymentType = paymentType;
 
-    // capaz que volver a traerme la order es al pedo
+    // // capaz que volver a traerme la order es al pedo
     this.order = this.contextService.getOrder();
-    let currentTotalPayment = 0;
-    let oldPayments = 0;
-    let totalPayment = this.order.totalPrice;
-    this.usersAmounts.forEach(userAmount => {
-      currentTotalPayment += userAmount.paymentAmount;
+    // let currentTotalPayment = 0;
+    // let oldPayments = 0;
+    // let totalPayment = this.order.totalPrice;
+    // this.usersAmounts.forEach(userAmount => {
+    //   currentTotalPayment += userAmount.paymentAmount;
+    // });
+    // this.order.users.forEach(user => {
+    //   user.payments.forEach(payment => {
+    //     oldPayments += payment.amount;
+    //   });
+    // });
+
+    // totalPayment = totalPayment - (currentTotalPayment + oldPayments);
+    // let alertMessage = '';
+
+    // if (this.paymentType == PaymentTypes.CuentaCorriente && this.canPayWithAccount && !this.checkAccount(currentTotalPayment)) {
+    //   alertMessage = "El monto que estas intentando pagar con Cuenta Corriente sumado al saldo actual, supera el limite para esta cuenta.";
+    //   let alert = await this.alertController.create({
+    //     header: "Enviar pago",
+    //     message: alertMessage,
+    //     buttons: [
+    //       {
+    //         text: 'OK',
+    //         handler: data => {
+    //           this.alertController.dismiss();
+    //         },
+    //       }
+    //     ],
+    //   });
+    //   await alert.present();
+    //   return;
+    // }
+
+    // if (totalPayment > 0) {
+    //   alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ". <br/>El pedido permanecera abierto hasta completar el pago.<br/><br/> Monto pendiente: $" + totalPayment.toString();
+    // }
+    // else {
+    //   alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ", equivalente al total del pedido. El mismo se cerrara.";
+    //   this.order.completed_at = new Date();
+    //   this.order.status = "Closed";
+    // }
+
+    // NOTIFICACION PARA PAGO NUEVO! 
+    let notification = new Notification()
+    notification.createdAt = new Date();
+    notification.notificationType = NotificationTypes.NewPayment;
+    notification.table =  this.contextService.getTableNro();
+    notification.userFrom = this.contextService.getUser().username;
+    notification.usersTo = [];
+    notification.readBy = null;
+    notification.data = new NotificationData();
+    notification.data.notificationType = NotificationTypes.NewOrder;
+    notification.data.orderId = this.order._id;
+    notification.data.username = this.contextService.getUser().username;
+    notification.actions = [];
+
+    this.notiicationService.send(notification)
+      .subscribe(async (notificationSent) => {
+        console.log(notificationSent);
+        let alertMessage = "El mozo vendra en un momento con la cuenta! "
+    
+        let alert = await this.alertController.create({
+          header: "Enviar pago",
+          message: alertMessage,
+          buttons: [
+            // {
+            //   text: 'Cancelar',
+            //   handler: data => {
+            //     this.alertController.dismiss();
+            //   },
+            // },
+            {
+              text: 'Aceptar',
+              handler: data => {
+                // this.sendPayment();
+                this.modalController.dismiss();
+              },
+            }
+          ],
+        });
+        await alert.present();
     });
-    this.order.users.forEach(user => {
-      user.payments.forEach(payment => {
-        oldPayments += payment.amount;
-      });
-    });
 
-    totalPayment = totalPayment - (currentTotalPayment + oldPayments);
-    let alertMessage = '';
 
-    if (this.paymentType == PaymentTypes.CuentaCorriente && this.canPayWithAccount && !this.checkAccount(currentTotalPayment)) {
-      alertMessage = "El monto que estas intentando pagar con Cuenta Corriente sumado al saldo actual, supera el limite para esta cuenta.";
-      let alert = await this.alertController.create({
-        header: "Enviar pago",
-        message: alertMessage,
-        buttons: [
-          {
-            text: 'OK',
-            handler: data => {
-              this.alertController.dismiss();
-            },
-          }
-        ],
-      });
-      await alert.present();
-      return;
-    }
-
-    if (totalPayment > 0) {
-      alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ". <br/>El pedido permanecera abierto hasta completar el pago.<br/><br/> Monto pendiente: $" + totalPayment.toString();
-    }
-    else {
-      alertMessage = "Estas pagando $" + currentTotalPayment.toString() + ", equivalente al total del pedido. El mismo se cerrara.";
-      this.order.completed_at = new Date();
-      this.order.status = "Closed";
-    }
-
-    let alert = await this.alertController.create({
-      header: "Enviar pago",
-      message: alertMessage,
-      buttons: [
-        {
-          text: 'Cancelar',
-          handler: data => {
-            this.alertController.dismiss();
-          },
-        },
-        {
-          text: 'Aceptar',
-          handler: data => {
-            this.sendPayment();
-          },
-        }
-      ],
-    });
-    await alert.present();
   }
 
   sendPayment() {
@@ -367,20 +391,28 @@ export class PaymentsPage implements OnInit {
               let alreadyPayedByUser = userInOrder.payments.reduce((acc, curr) => acc + curr.amount, 0);
 
               if (userInOrder.totalPerUser === alreadyPayedByUser) {
-                this.sendToHomePage = false;
-                this.authService.getUserByEmail(userInOrder.username)
-                  .subscribe(user => {
-                    if (!isNullOrUndefined(user.openOrder) && JSON.stringify(user.openOrder) !== '{}') {
-                      user.openOrder = null;
-                      this.userService.deleteOpenOrder(user._id)
-                        .subscribe(userWithoutOpenOrder => {
-                          this.nativeStorage.setItem(USER_INFO, JSON.stringify(userWithoutOpenOrder)).then(async (res) => {
-                            this.contextService.setUser(userWithoutOpenOrder);
-                            this.router.navigate(['home']);
-                          });
-                        })
-                    };
-                  });
+                let data = {
+                  userName: userInOrder.username,
+                  orderId: updatedOrder._id
+                }
+
+                this.socketIoService.removeUserFromOrder(data);
+
+
+                // this.sendToHomePage = false;
+                // this.authService.getUserByEmail(userInOrder.username)
+                //   .subscribe(user => {
+                //     if (!isNullOrUndefined(user.openOrder) && JSON.stringify(user.openOrder) !== '{}') {
+                //       user.openOrder = null;
+                //       this.userService.deleteOpenOrder(user._id)
+                //         .subscribe(userWithoutOpenOrder => {
+                //           this.nativeStorage.setItem(USER_INFO, JSON.stringify(userWithoutOpenOrder)).then(async (res) => {
+                //             this.contextService.setUser(userWithoutOpenOrder);
+                //             this.router.navigate(['home']);
+                //           });
+                //         })
+                //     };
+                //   });
               }
             });
 

@@ -33,11 +33,6 @@ export class OrderPage implements OnInit {
         private notiicationService: NotificationsService) { }
 
     ngOnInit(): void {
-        //TODO: cuando se lee el codigo qr se debe verificar si ya hay un pedido abierto para esa mesa.
-        //Si lo hay se debe almacenar en una variable de un service (puede ser order.service o crear uno nuevo
-        //x ejemplo context.service donde se guarden todas las variables necesarias para el sistema, como x
-        //el pedido, numero de mesa, usuario, etc). Si no hay un pedido abierto setear dicha variable en null.
-        //Por ahora la variable order es null para poder seguir con el desarrollo y pruebas.
         this.order = this.contextService.getOrder();
         this.user = this.contextService.getUser();
         this.cart = this._route.snapshot.data['cart'];

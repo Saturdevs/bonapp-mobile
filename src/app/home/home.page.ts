@@ -35,6 +35,7 @@ import { RestaurantService } from 'src/shared/services/restaurant.service';
 import { isNullOrUndefined } from 'util';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { LoadingService } from 'src/shared/services/loading.service';
+import { Subscription } from 'rxjs';
 const USER_INFO = "USER_INFO";
 
 @Component({
@@ -167,45 +168,22 @@ export class HomePage implements OnInit {
                   .subscribe(
                     async order => {
                       if (!isNullOrUndefined(order)) {
+                        const userFind = order.users.find(u => u.username === user.username);
 
-                        let userToAdd = this.createUserToAdd(user, false);
+                        if (!isNullOrUndefined(userFind)) {
 
-                        order.users.push(userToAdd);
+                          let userToAdd = this.createUserToAdd(user, false);
 
-                        this.orderService.putOrder(order, order._id)
-                          .subscribe(updatedOrder => {
-                            let openOrder = new OpenOrderForUser();
-                            openOrder.created = new Date();
-                            openOrder.orderId = order._id;
-                            openOrder.tableNumber = restaurantInfo.tableNumber;
-                            openOrder.restaurantId = restaurantInfo.restaurantId;
+                          order.users.push(userToAdd);
 
-                            let currentUser = this.contextService.getUser(); //sacar, esta al pedo
-
-                            let userToUpdate = new User();
-                            userToUpdate._id = currentUser._id;
-                            userToUpdate.openOrder = openOrder;
-                            userToUpdate.email = currentUser.email;
-                            console.log(userToUpdate);
-
-                            this.userService.updateUser(userToUpdate)
-                              .subscribe((updatedUser: User) => {
-                                this.addSocketId();
-                                console.log(updatedUser);
-                                this.authService.getUser(updatedUser._id)
-                                  .subscribe(userFound => {
-                                    this.nativeStorage.setItem(USER_INFO, JSON.stringify(userFound)).then(async (res) => {
-                                      this.contextService.setUser(userFound);
-                                      this.contextService.setOrder(updatedOrder);
-
-                                      await this.contextService.sendMessage(false);
-                                      scanSub.unsubscribe(); // stop scanning
-                                      await this.qrScanner.hide();
-                                      this.populateMenusAndCategories();
-                                    });
-                                  })
-                              });
-                          });
+                          this.orderService.putOrder(order, order._id)
+                            .subscribe(updatedOrder => {
+                              this.updateUserOrder(updatedOrder, restaurantInfo, true, scanSub);
+                            }
+                            );
+                        } else {
+                          this.updateUserOrder(order, restaurantInfo, false, scanSub);
+                        }
                       }
                       else {
                         await this.contextService.sendMessage(false);
@@ -233,6 +211,42 @@ export class HomePage implements OnInit {
         }
       })
       .catch((e: any) => console.log('Error is', e));
+  }
+
+  updateUserOrder(order: Order, restaurantInfo: any, setOrder: boolean, scanSub: Subscription): void {
+    let openOrder = new OpenOrderForUser();
+    openOrder.created = new Date();
+    openOrder.orderId = order._id;
+    openOrder.tableNumber = restaurantInfo.tableNumber;
+    openOrder.restaurantId = restaurantInfo.restaurantId;
+
+    let currentUser = this.contextService.getUser(); //sacar, esta al pedo
+
+    let userToUpdate = new User();
+    userToUpdate._id = currentUser._id;
+    userToUpdate.openOrder = openOrder;
+    userToUpdate.email = currentUser.email;
+    console.log(userToUpdate);
+
+    this.userService.updateUser(userToUpdate)
+      .subscribe((updatedUser: User) => {
+        this.addSocketId();
+        console.log(updatedUser);
+        this.authService.getUser(updatedUser._id)
+          .subscribe(userFound => {
+            this.nativeStorage.setItem(USER_INFO, JSON.stringify(userFound)).then(async (res) => {
+              this.contextService.setUser(userFound);
+              if (setOrder) {
+                this.contextService.setOrder(order);
+              }
+
+              await this.contextService.sendMessage(false);
+              scanSub.unsubscribe(); // stop scanning
+              await this.qrScanner.hide();
+              this.populateMenusAndCategories();
+            });
+          })
+      });
   }
 
   addSocketId() {

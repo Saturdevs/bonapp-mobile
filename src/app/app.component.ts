@@ -14,7 +14,6 @@ import {
   SocketIoService,
 } from 'src/shared';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
-import { type } from 'os';
 
 @Component({
   selector: 'app-root',

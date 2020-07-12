@@ -23,11 +23,11 @@
                   Llamar al mozo
                 </ion-label>
             </ion-item>
-            <ion-item *ngIf="index == 2 && !showQRAim" (click)="sendNotification()">
+            <ion-item *ngIf="index == 2 && !showQRAim" (click)="removeUser()">
               <img src="../../assets/nav-mozo.png" height="40px" width="auto">
               <!-- <ion-icon slot="start" name="hand"></ion-icon> -->
               <ion-label class="labelSideMenu">
-                TestNotification
+                Eliminar usuario
               </ion-label>
             </ion-item>
             <ion-item *ngIf="index == 2" (click)="logout()">

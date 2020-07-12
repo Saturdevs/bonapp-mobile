@@ -53,7 +53,7 @@ export class PaymentsPage implements OnInit {
     private router: Router,
     private socketIoService: SocketIoService,
     private nativeStorage: NativeStorage,
-    private notiicationService : NotificationsService) { }
+    private notiicationService: NotificationsService) { }
 
   ngOnInit() {
     this.order = this.contextService.getOrder();
@@ -131,6 +131,17 @@ export class PaymentsPage implements OnInit {
           await modal.present();
         }
       })
+  }
+
+  /** Agrega o quita el pago para ese usuario */
+  addOrRemoveUserToPayments(userAmount) {
+    if (userAmount.username !== this.contextService.getUser().username) {
+      if (userAmount.paymentAmount === userAmount.amount) {
+        userAmount.paymentAmount = 0;
+      } else {
+        userAmount.paymentAmount = userAmount.amount;
+      }
+    }
   }
 
   /** Se usa para ver que productos del pedido mostrar (DEL USUARIO ACTUAL O DE TODOS) */
@@ -235,12 +246,12 @@ export class PaymentsPage implements OnInit {
     let notification = new Notification()
     notification.createdAt = new Date();
     notification.notificationType = NotificationTypes.NewPayment;
-    notification.table =  this.contextService.getTableNro();
+    notification.table = this.contextService.getTableNro();
     notification.userFrom = this.contextService.getUser().username;
     notification.usersTo = [];
     notification.readBy = null;
     notification.data = new NotificationData();
-    notification.data.notificationType = NotificationTypes.NewOrder;
+    notification.data.notificationType = NotificationTypes.NewPayment;
     notification.data.orderId = this.order._id;
     notification.data.username = this.contextService.getUser().username;
     notification.actions = [];
@@ -249,7 +260,7 @@ export class PaymentsPage implements OnInit {
       .subscribe(async (notificationSent) => {
         console.log(notificationSent);
         let alertMessage = "El mozo vendra en un momento con la cuenta! "
-    
+
         let alert = await this.alertController.create({
           header: "Enviar pago",
           message: alertMessage,
@@ -270,7 +281,7 @@ export class PaymentsPage implements OnInit {
           ],
         });
         await alert.present();
-    });
+      });
 
 
   }
@@ -416,10 +427,10 @@ export class PaymentsPage implements OnInit {
               }
             });
 
-            if(updatedOrder.status === "Closed"){
+            if (updatedOrder.status === "Closed") {
               this.socketIoService.updateTableStatus();
             }
-            if(this.sendToHomePage){
+            if (this.sendToHomePage) {
               this.router.navigate(['home']);
             }
             // this.notificationSerive.getAllTypes()

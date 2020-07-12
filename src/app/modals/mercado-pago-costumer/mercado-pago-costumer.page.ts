@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ModalController, AlertController, NavController, LoadingController } from '@ionic/angular';
 import { MercadoPagoPage } from '../mercado-pago/mercado-pago.page';
 import { Validators, FormBuilder, FormControl } from '@angular/forms';
-import { MercadoPagoService, Order, OrderService, PaymentInUserOrder, PaymentTypes, OrderDiscount, MercadoPagoPayment } from 'src/shared';
+import { MercadoPagoService, Order, OrderService, PaymentInUserOrder, PaymentTypes, OrderDiscount, MercadoPagoPayment, UserInOrder } from 'src/shared';
 import { ContextService } from 'src/shared/services/context.service';
 import { isNullOrUndefined } from 'util';
 import { PaymentType } from 'src/shared/models/payment-type';
@@ -136,15 +136,14 @@ export class MercadoPagoCostumerPage implements OnInit {
     this.blockUsersInOrder(); //bloquea los usuarios
   }
   
-  postPayment(order : Order, totalPayment : number) {
-    console.log('asd');
+  postPayment(order : Order, totalPayment : number, usersInOrder: Array<UserInOrder>) {
     const p = Object.assign({}, this.payForm.value);
     let request = new MercadoPagoPayment();
     request.order = order;
     request.paymentAmount = totalPayment;
     request.payment = p;
     request.unblockUsers = true;
-    console.log(request);
+    request.users = usersInOrder;
     
     this.mercadoPagoService.postCustomerPayment(request)
       .subscribe(async (resp) => {
@@ -188,6 +187,9 @@ export class MercadoPagoCostumerPage implements OnInit {
 
   prepareOrder(order : Order){
     let totalPayment = 0;
+    let usersInOrder = new Array<UserInOrder>();
+    usersInOrder = [];
+    
     this.usersAmounts.forEach(userAmount => {
       totalPayment += userAmount.paymentAmount;
       let currentUserInOrderWithPayments = order.users.find(x => (x.username === userAmount.username) && (x.blocked === true) && (userAmount.paymentAmount > 0));
@@ -200,6 +202,8 @@ export class MercadoPagoCostumerPage implements OnInit {
         currentPayment.methodId = currentPaymentType._id;
 
         currentUserInOrderWithPayments.payments.push(currentPayment);
+
+        usersInOrder.push(currentUserInOrderWithPayments);
       };
     });
 
@@ -210,6 +214,6 @@ export class MercadoPagoCostumerPage implements OnInit {
 
     order.discount = discount;
     
-    this.postPayment(order,totalPayment);
+    this.postPayment(order,totalPayment,usersInOrder);
   }
 }

@@ -5,4 +5,5 @@ export class MercadoPagoPayment{
     order: Order;
     paymentAmount: number;
     unblockUsers: boolean;
+    users: Array<any>;
 } 

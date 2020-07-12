@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input } from "@angular/core";
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
-import { MercadoPagoService, OrderService, OrderDiscount, PaymentInUserOrder, Order, PaymentTypes, MercadoPagoPayment } from 'src/shared';
+import { MercadoPagoService, OrderService, OrderDiscount, PaymentInUserOrder, Order, PaymentTypes, MercadoPagoPayment, SocketIoService, UserInOrder } from 'src/shared';
 import { isNullOrUndefined } from 'util';
 import { customerAndCard } from 'src/shared/models/customerAndCard';
 import { LoadingController, AlertController, NavController } from '@ionic/angular';
@@ -41,7 +41,8 @@ export class MercadoPagoPage implements OnInit {
     private alertController: AlertController,
     private navCtrl: NavController,
     private contextService: ContextService,
-    private orderService: OrderService) { }
+    private orderService: OrderService,
+    private socketIoService: SocketIoService) { }
 
   ngOnInit() {
     // @ts-ignore Se usa para que VS CODE no tire el error de que no encuentra Mercadopago en window
@@ -72,7 +73,7 @@ export class MercadoPagoPage implements OnInit {
   }
 
   /** Setter del paymentMethod basado en la respuesta del SDK de MP. Sirve como callback para la funcion del SDK getPaymentMethod */
-  setPaymentMethodInfo(status, response) {
+  setPaymentMethodInfo(status: number, response: any[]) {
     if (status === 200) {
       this.paymentMethod = response[0];
       this.payForm.get('paymentMethodId').setValue(this.paymentMethod.id);
@@ -186,6 +187,9 @@ export class MercadoPagoPage implements OnInit {
 
   prepareOrder(order: Order) {
     let totalPayment = 0;
+    let usersInOrder = new Array<UserInOrder>();
+    usersInOrder = [];
+
     this.usersAmounts.forEach(userAmount => {
       totalPayment += userAmount.paymentAmount;
       let currentUserInOrderWithPayments = order.users.find(x => (x.username === userAmount.username) && (x.blocked === true) && (userAmount.paymentAmount > 0));
@@ -198,6 +202,8 @@ export class MercadoPagoPage implements OnInit {
         currentPayment.methodId = currentPaymentType._id;
 
         currentUserInOrderWithPayments.payments.push(currentPayment);
+
+        usersInOrder.push(currentUserInOrderWithPayments);
       };
     });
 
@@ -208,22 +214,38 @@ export class MercadoPagoPage implements OnInit {
 
     order.discount = discount;
 
-    this.postPayment(order, totalPayment);
+    this.postPayment(order, totalPayment, usersInOrder);
   }
 
-  postPayment(order: Order, totalPayment: number) {
+  postPayment(order: Order, totalPayment: number, usersInOrder: Array<UserInOrder>) {
     const p = Object.assign({}, this.payForm.value);
     let request = new MercadoPagoPayment();
     request.order = order;
     request.paymentAmount = totalPayment;
     request.payment = p;
     request.unblockUsers = true;
+    request.users = usersInOrder;
+
+
     this.mercadoPagoService.postPayment(request)
       .subscribe(async (resp) => {
         await this.loading.dismiss();
         // await this.loading.dismiss();
         console.log(resp);
-        this.contextService.setOrder(resp.order)
+        this.contextService.setOrder(resp.order);
+
+        resp.order.users.forEach((userInOrder: UserInOrder) => {
+          let alreadyPayedByUser = userInOrder.payments.reduce((acc, curr) => acc + curr.amount, 0);
+
+          if (userInOrder.totalPerUser === alreadyPayedByUser) {
+            let data = {
+              userName: userInOrder.username,
+              orderId: resp.order._id
+            }
+
+            this.socketIoService.removeUserFromOrder(data);
+          }
+        });
         let alert = await this.alertController.create({
           header: "Listo!",
           message: "Tu pago fue procesado correctamente!",

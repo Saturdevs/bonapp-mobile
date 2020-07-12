@@ -8,6 +8,7 @@ import { UserService } from './user.service';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { ContextService } from './context.service';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 const USER_INFO = "USER_INFO";
 
 @Injectable({
@@ -21,10 +22,12 @@ export class SocketIoService {
     private userService: UserService,
     private nativeStorage: NativeStorage,
     private contextService: ContextService,
-    private router: Router) {
-    
+    private router: Router,
+    private alertController: AlertController,
+    private socketIOService: SocketIoService) {
+
     this.socket = io(`${environment.socket_url}`);
-    
+
     this.socket.on("orderAccepted", orderAccepted => { //escucha el metodo de actualizar las mesas
       this.notificationService.sendLocalNotification("Su pedido fue aceptado!");
     });
@@ -45,6 +48,32 @@ export class SocketIoService {
         });
     });
 
+    this.socket.on("removingFromOrder", async (userToRemoveData) => {
+      const alert = await this.alertController.create({
+        header: 'Eliminar Usuarios del Pedido',
+        message: 'Un usuario esta intentando quitarte de la mesa.',
+        buttons: [
+          {
+            text: 'Cancelar',
+            cssClass: 'alertCancelButton',
+            handler: () => {
+              this.alertController.dismiss();
+            }
+          }, {
+            text: 'Aceptar',
+            handler: data => {
+              let dataToSend = {
+                userName: this.contextService.getUser().username,
+                orderId: this.contextService.getOrder()._id
+              };
+              this.socketIOService.removeUserFromOrder(dataToSend);
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+    })
   }
 
   updateTableStatus() {

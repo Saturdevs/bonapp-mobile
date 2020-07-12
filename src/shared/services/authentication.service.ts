@@ -237,7 +237,7 @@ export class AuthenticationService {
     });
     this.presentLoading(loading);
 
-    this.googlePlus.login({
+    this.googlePlus.trySilentLogin({
       'scopes': '', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
       'webClientId': '202897263621-trb8oeah0jq5dn59cbo09c19tbadda9l.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
       'offline': true // Optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server

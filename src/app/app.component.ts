@@ -11,8 +11,10 @@ import {
   NotificationsService,
   NotificationTypes,
   NotificationData,
+  SocketIoService,
 } from 'src/shared';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { type } from 'os';
 
 @Component({
   selector: 'app-root',
@@ -51,7 +53,8 @@ export class AppComponent {
     private notificationSerive: NotificationsService,
     private changeDetection: ChangeDetectorRef,
     private backgroundMode: BackgroundMode,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private socketIOService: SocketIoService
   ) {
     this.initializeApp();
     this.contextService.getMessage().subscribe(show => {
@@ -60,8 +63,49 @@ export class AppComponent {
     });
   }
 
-  sendNotification() {
-    this.notificationSerive.sendLocalNotification('TEST');
+  async removeUser() {
+    let order = this.contextService.getOrder();
+    let inputs = Array<any>();
+    order.users.forEach((user, index) => {
+      let input = {
+        name: 'userRemove' + index,
+        type: 'checkbox',
+        label: user.username,
+        value: user.username,
+        checked: false
+      };
+
+      inputs.push(input);
+    })
+
+
+    const alert = await this.alertController.create({
+      header: 'Eliminar Usuarios del Pedido',
+      inputs: inputs,
+      buttons: [
+        {
+          text: 'Cancelar',
+          cssClass: 'alertCancelButton',
+          handler: () => {
+            this.alertController.dismiss();
+          }
+        }, {
+          text: 'Aceptar',
+          handler: data => {
+            data.forEach(userToRemove => {
+              let dataToSend = {
+                userName: userToRemove,
+                orderId: this.contextService.getOrder()._id,
+                isRemovingOtherUser: true
+              };
+              this.socketIOService.removeUserFromOrder(dataToSend);
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   callWaiter() {

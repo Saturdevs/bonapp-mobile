@@ -142,6 +142,7 @@ export class OrderPage implements OnInit {
                     notification.data = new NotificationData();
                     notification.data.notificationType = NotificationTypes.NewOrder;
                     notification.data.orderId = orderReturned._id;
+                    notification.data.newProducts = this.cart.products;
                     notification.data.username = this.contextService.getUser().username;
                     notification.actions = [];
 

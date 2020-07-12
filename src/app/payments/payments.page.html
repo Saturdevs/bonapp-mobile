@@ -9,7 +9,7 @@
       <ion-label color="medium" class="amountsLabel">Ver montos de todos los usuarios</ion-label>
     </ion-item>
     <ng-container *ngFor="let userAmount of usersAmounts">
-      <ion-item lines="full" *ngIf="shouldDisplayUser(userAmount)" (click)="showModalPayment(userAmount)"> 
+      <ion-item lines="full" *ngIf="shouldDisplayUser(userAmount)" (click)="addOrRemoveUserToPayments(userAmount)"> 
         <ion-avatar slot="start">
           <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
         </ion-avatar>
@@ -18,10 +18,10 @@
             {{userAmount.username}}
           </h2>
           <p *ngIf="userAmount.paymentAmount > 0">
-            Va a pagar: {{userAmount.paymentAmount | currency}} (editar)
+            Va a pagar: {{userAmount.paymentAmount | currency}}
           </p>
         </ion-label>
-        <ion-note slot="end" color="secondary" class="amountText">{{userAmount.amount | currency}}</ion-note>
+        <ion-icon *ngIf="userAmount.paymentAmount > 0" color="secondary" name="checkmark"></ion-icon>
       </ion-item>
     </ng-container>
   </ion-list>

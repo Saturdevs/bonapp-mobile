@@ -76,25 +76,6 @@ export class AppComponent {
     });
 
     this.socket = this.socketIOService.getSocket();
-    this.socket.on('orderAccepted', orderAccepted => { //escucha el metodo de actualizar las mesas
-      this.notificationService.sendLocalNotification("Su pedido fue aceptado!");
-    });
-
-    this.socket.on('userRemovedFromOrder', userRemovedFromOrderData => { //escucha el metodo de eliminar usuarios de la orden
-      this.authService.getUserByEmail(userRemovedFromOrderData.username)
-        .subscribe(user => {
-          if (!isNullOrUndefined(user.openOrder) && JSON.stringify(user.openOrder) !== '{}') {
-            user.openOrder = null;
-            this.userService.deleteOpenOrder(user._id)
-              .subscribe(userWithoutOpenOrder => {
-                this.nativeStorage.setItem(USER_INFO, JSON.stringify(userWithoutOpenOrder)).then(async (res) => {
-                  this.contextService.setUser(userWithoutOpenOrder);
-                  this.router.navigate(['home']);
-                });
-              })
-          };
-        });
-    });
 
     this.socket.on('removingFromOrder', async (userToRemoveData) => {
       const alert = await this.alertController.create({
@@ -119,9 +100,29 @@ export class AppComponent {
           }
         ]
       });
-
       await alert.present();
-    })
+    });
+
+    this.socket.on('orderAccepted', orderAccepted => { //escucha el metodo de actualizar las mesas
+      this.notificationService.sendLocalNotification("Su pedido fue aceptado!");
+    });
+
+    this.socket.on('userRemovedFromOrder', userRemovedFromOrderData => { //escucha el metodo de eliminar usuarios de la orden
+      this.authService.getUserByEmail(userRemovedFromOrderData.userName)
+        .subscribe(user => {
+          if (!isNullOrUndefined(user.openOrder) && JSON.stringify(user.openOrder) !== '{}') {
+            user.openOrder = null;
+            this.userService.deleteOpenOrder(user._id)
+              .subscribe(userWithoutOpenOrder => {
+                this.nativeStorage.setItem(USER_INFO, JSON.stringify(userWithoutOpenOrder)).then(async (res) => {
+                  this.contextService.setUser(userWithoutOpenOrder);
+                  this.contextService.sendMessage(true);
+                  this.router.navigate(['home']);
+                });
+              })
+          };
+        });
+    });
   }
 
   async removeUser() {

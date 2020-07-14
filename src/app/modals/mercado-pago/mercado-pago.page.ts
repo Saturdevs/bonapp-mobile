@@ -8,6 +8,7 @@ import { Logs } from 'selenium-webdriver';
 import { DataService } from 'src/shared/services/data.service';
 import { ContextService } from 'src/shared/services/context.service';
 import { PaymentType } from 'src/shared/models/payment-type';
+import { Router } from '@angular/router';
 
 @Component({
   selector: "app-mercado-pago",
@@ -42,7 +43,8 @@ export class MercadoPagoPage implements OnInit {
     private navCtrl: NavController,
     private contextService: ContextService,
     private orderService: OrderService,
-    private socketIoService: SocketIoService) { }
+    private socketIoService: SocketIoService,
+    private router: Router) { }
 
   ngOnInit() {
     // @ts-ignore Se usa para que VS CODE no tire el error de que no encuentra Mercadopago en window
@@ -244,6 +246,8 @@ export class MercadoPagoPage implements OnInit {
             }
 
             this.socketIoService.removeUserFromOrder(data);
+            this.contextService.sendMessage(true);
+            this.router.navigate(['home']);
           }
         });
         let alert = await this.alertController.create({

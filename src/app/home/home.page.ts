@@ -366,6 +366,7 @@ export class HomePage implements OnInit {
                   this.contextService.setOrder(order);
                   this.contextService.setTableNro(userinfo.openOrder.tableNumber);
                   this.populateMenusAndCategories();
+                  this.addSocketId();
                 });
             });
         } else {

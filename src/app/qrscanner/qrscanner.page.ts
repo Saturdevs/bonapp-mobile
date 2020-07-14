@@ -56,7 +56,7 @@ export class QrscannerPage implements OnInit {
     
                         order.users.push(userToAdd);
     
-                        this.orderService.putOrder(order, order._id)
+                        this.orderService.putOrder(order)
                           .subscribe(updatedOrder => {
                             this.contextService.setOrder(updatedOrder);
                           });

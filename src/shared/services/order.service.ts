@@ -18,7 +18,9 @@ export class OrderService {
         private apiService: ApiService) { }
 
     updateTotalPrice(cart: any, price: number, quantity: number) {
+        console.log("cart antes de updatear =>", cart);              
         cart.total += price * quantity;
+        console.log("cart despues de updatear =>", cart);                  
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -70,8 +72,15 @@ export class OrderService {
             .catch(this.handleError);
     }
 
-    putOrder(order, orderId) {
+    putOrderPayments(order) {
         return this.apiService.put(`/order/`, order)
+            .map(data => data.order)
+            .catch(this.handleError);
+    }
+
+    putOrder(order) {
+        console.log(order);
+        return this.apiService.put(`/order/updateOrder`, order)
             .map(data => data.order)
             .catch(this.handleError);
     }

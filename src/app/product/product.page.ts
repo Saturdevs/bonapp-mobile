@@ -18,10 +18,7 @@ export class ProductPage implements OnInit {
   selectedSize: number = 0;
   selectedSizePrice: number = 0;
   productInUserOrder: ProductInUserOrder;
-  cart = {
-    products: [],
-    total: 0
-  };
+  cart: any;
 
   constructor(private navCtrl: NavController,
     private alertController: AlertController,
@@ -39,6 +36,10 @@ export class ProductPage implements OnInit {
     this.productInUserOrder.name = this.product.name;
     this.productInUserOrder.product = this.product._id;
     this.pageTitle = this.product.name;
+    this.cart = {
+      products: [],
+      total: 0
+    };
   }
 
   plusQty(product) {
@@ -127,11 +128,15 @@ export class ProductPage implements OnInit {
   async addToCart() {
     let productInStorage = new ProductInUserOrder();
     this.orderService.getCart().then(cart => {
+      console.log("addtoCart Entro al Then, cart =>", cart);
       if (!cart) {
         cart = this.cart;
+        console.log("addtoCart Entro al if de !cart, cart =>", cart);
       }
 
       productInStorage = cart.products.find(x => this.compareProducts(x, this.productInUserOrder));
+
+      console.log("addtoCart productInStorage =>", productInStorage);
 
       if (!isNullOrUndefined(productInStorage)) {
         let index = cart.products.indexOf(productInStorage);
@@ -139,18 +144,20 @@ export class ProductPage implements OnInit {
       }
       else {
         cart.products.push(this.productInUserOrder);
+        console.log("addtoCart entro al else de !productInstorage cart =>", cart);        
       }
-
+      console.log("addtoCart antes del updateTotalPrice=>", cart);              
       this.orderService.updateTotalPrice(cart, this.productInUserOrder.price, this.productInUserOrder.quantity);
+      console.log("addtoCart despues del updateTotalPrice=>", cart);              
 
       this.orderService.setCart(cart, async (order) => {
 
-        if(this.product.stockControl){
+        if (this.product.stockControl) {
           this.product.stock.current--;
           this.productService.updateProduct(this.product)
             .subscribe(resp => {
               console.log(resp);
-            }) 
+            })
         };
         let alert = await this.alertController.create({
           header: "Listo!",

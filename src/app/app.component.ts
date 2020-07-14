@@ -12,8 +12,15 @@ import {
   NotificationTypes,
   NotificationData,
   SocketIoService,
+  UserService,
+  Order,
+  OrderService,
 } from 'src/shared';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { isNullOrUndefined } from 'util';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { Router } from '@angular/router';
+const USER_INFO = "USER_INFO";
 
 @Component({
   selector: 'app-root',
@@ -41,6 +48,7 @@ export class AppComponent {
   isUserLoggedIn: Boolean = false;
   notificationsTypes: Array<NotificationType>;
   showQRAim: boolean = false;
+  socket: any;
 
   constructor(
     private navCtrl: NavController,
@@ -53,58 +61,115 @@ export class AppComponent {
     private changeDetection: ChangeDetectorRef,
     private backgroundMode: BackgroundMode,
     private alertController: AlertController,
-    private socketIOService: SocketIoService
+    private socketIOService: SocketIoService,
+    private notificationService: NotificationsService,
+    private authService: AuthenticationService,
+    private userService: UserService,
+    private nativeStorage: NativeStorage,
+    private router: Router,
+    private orderService: OrderService
   ) {
     this.initializeApp();
     this.contextService.getMessage().subscribe(show => {
       this.showQRAim = show;
       changeDetection.detectChanges();
     });
+
+    this.socket = this.socketIOService.getSocket();
+    this.socket.on('orderAccepted', orderAccepted => { //escucha el metodo de actualizar las mesas
+      this.notificationService.sendLocalNotification("Su pedido fue aceptado!");
+    });
+
+    this.socket.on('userRemovedFromOrder', userRemovedFromOrderData => { //escucha el metodo de eliminar usuarios de la orden
+      this.authService.getUserByEmail(userRemovedFromOrderData.username)
+        .subscribe(user => {
+          if (!isNullOrUndefined(user.openOrder) && JSON.stringify(user.openOrder) !== '{}') {
+            user.openOrder = null;
+            this.userService.deleteOpenOrder(user._id)
+              .subscribe(userWithoutOpenOrder => {
+                this.nativeStorage.setItem(USER_INFO, JSON.stringify(userWithoutOpenOrder)).then(async (res) => {
+                  this.contextService.setUser(userWithoutOpenOrder);
+                  this.router.navigate(['home']);
+                });
+              })
+          };
+        });
+    });
+
+    this.socket.on('removingFromOrder', async (userToRemoveData) => {
+      const alert = await this.alertController.create({
+        header: 'Eliminar Usuarios del Pedido',
+        message: 'Un usuario esta intentando quitarte de la mesa.',
+        buttons: [
+          {
+            text: 'Cancelar',
+            cssClass: 'alertCancelButton',
+            handler: () => {
+              this.alertController.dismiss();
+            }
+          }, {
+            text: 'Aceptar',
+            handler: data => {
+              let dataToSend = {
+                userName: this.contextService.getUser().username,
+                orderId: this.contextService.getOrder()._id
+              };
+              this.socketIOService.removeUserFromOrder(dataToSend);
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+    })
   }
 
   async removeUser() {
-    let order = this.contextService.getOrder();
-    let inputs = Array<any>();
-    order.users.forEach((user, index) => {
-      let input = {
-        name: 'userRemove' + index,
-        type: 'checkbox',
-        label: user.username,
-        value: user.username,
-        checked: false
-      };
-
-      inputs.push(input);
-    })
-
-
-    const alert = await this.alertController.create({
-      header: 'Eliminar Usuarios del Pedido',
-      inputs: inputs,
-      buttons: [
-        {
-          text: 'Cancelar',
-          cssClass: 'alertCancelButton',
-          handler: () => {
-            this.alertController.dismiss();
-          }
-        }, {
-          text: 'Aceptar',
-          handler: data => {
-            data.forEach(userToRemove => {
-              let dataToSend = {
-                userName: userToRemove,
-                orderId: this.contextService.getOrder()._id,
-                isRemovingOtherUser: true
-              };
-              this.socketIOService.removeUserFromOrder(dataToSend);
-            });
-          }
-        }
-      ]
+    this.orderService.getOrder(this.contextService.getOrder()._id)
+    .subscribe(async (order: Order) =>{
+        let inputs = Array<any>();
+        order.users.forEach((user, index) => {
+          let input = {
+            name: 'userRemove' + index,
+            type: 'checkbox',
+            label: user.username,
+            value: user.username,
+            checked: false
+          };
+    
+          inputs.push(input);
+        })
+    
+    
+        const alert = await this.alertController.create({
+          header: 'Eliminar Usuarios del Pedido',
+          inputs: inputs,
+          buttons: [
+            {
+              text: 'Cancelar',
+              cssClass: 'alertCancelButton',
+              handler: () => {
+                this.alertController.dismiss();
+              }
+            }, {
+              text: 'Aceptar',
+              handler: data => {
+                console.log(data);
+                data.forEach(userToRemove => {
+                  let dataToSend = {
+                    userName: userToRemove,
+                    orderId: this.contextService.getOrder()._id,
+                    isRemovingOtherUser: true
+                  };
+                  this.socketIOService.removeUserFromOrder(dataToSend);
+                });
+              }
+            }
+          ]
+        });
+    
+        await alert.present();
     });
-
-    await alert.present();
   }
 
   callWaiter() {

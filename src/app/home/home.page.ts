@@ -168,21 +168,25 @@ export class HomePage implements OnInit {
                   .subscribe(
                     async order => {
                       if (!isNullOrUndefined(order)) {
+                        this.contextService.setOrder(order);
                         const userFind = order.users.find(u => u.username === user.username);
 
-                        if (!isNullOrUndefined(userFind)) {
+                        if (isNullOrUndefined(userFind)) {
 
                           let userToAdd = this.createUserToAdd(user, false);
-
                           order.users.push(userToAdd);
+                          console.log('entro aca', order);
 
-                          this.orderService.putOrder(order, order._id)
+                          this.orderService.putOrder(order)
                             .subscribe(updatedOrder => {
-                              this.updateUserOrder(updatedOrder, restaurantInfo, true, scanSub);
+                              this.contextService.setOrder(updatedOrder);
+                              this.updateUserOrder(updatedOrder, restaurantInfo, scanSub);
+                            }, err => {
+                              console.log(err);
                             }
                             );
                         } else {
-                          this.updateUserOrder(order, restaurantInfo, false, scanSub);
+                          this.updateUserOrder(order, restaurantInfo, scanSub);
                         }
                       }
                       else {
@@ -213,7 +217,7 @@ export class HomePage implements OnInit {
       .catch((e: any) => console.log('Error is', e));
   }
 
-  updateUserOrder(order: Order, restaurantInfo: any, setOrder: boolean, scanSub: Subscription): void {
+  updateUserOrder(order: Order, restaurantInfo: any, scanSub: Subscription): void {
     let openOrder = new OpenOrderForUser();
     openOrder.created = new Date();
     openOrder.orderId = order._id;
@@ -236,10 +240,7 @@ export class HomePage implements OnInit {
           .subscribe(userFound => {
             this.nativeStorage.setItem(USER_INFO, JSON.stringify(userFound)).then(async (res) => {
               this.contextService.setUser(userFound);
-              if (setOrder) {
-                this.contextService.setOrder(order);
-              }
-
+             
               await this.contextService.sendMessage(false);
               scanSub.unsubscribe(); // stop scanning
               await this.qrScanner.hide();
@@ -359,12 +360,11 @@ export class HomePage implements OnInit {
           this.loadingService.presentLoader();
           this.resutaurantService.getByRestaurantId(userinfo.openOrder.restaurantId)
             .subscribe(data => {
-              console.log(data);
               this.contextService.setApiURL(data.restaurant[0].url_db);
-              console.log(this.contextService.getApiURL());
               this.orderService.getOrder(userinfo.openOrder.orderId)
                 .subscribe(order => {
                   this.contextService.setOrder(order);
+                  this.contextService.setTableNro(userinfo.openOrder.tableNumber);
                   this.populateMenusAndCategories();
                 });
             });

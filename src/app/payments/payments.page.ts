@@ -135,10 +135,14 @@ export class PaymentsPage implements OnInit {
 
   /** Agrega o quita el pago para ese usuario */
   addOrRemoveUserToPayments(userAmount) {
+    console.log('addOrRemoveUserToPayments', userAmount);
     if (userAmount.username !== this.contextService.getUser().username) {
+      console.log('addOrRemoveUserToPayments entro al primer if', userAmount);      
       if (userAmount.paymentAmount === userAmount.amount) {
+        console.log('addOrRemoveUserToPayments entro al segundo if', userAmount);
         userAmount.paymentAmount = 0;
       } else {
+        console.log('addOrRemoveUserToPayments entro al else', userAmount);
         userAmount.paymentAmount = userAmount.amount;
       }
     }
@@ -374,7 +378,7 @@ export class PaymentsPage implements OnInit {
 
         order.cashRegister = cashRegisters.find(x => x.default === true);
 
-        this.orderService.putOrder(order, order._id)
+        this.orderService.putOrderPayments(order)
           .subscribe((updatedOrder: Order) => {
 
             if (this.paymentType == PaymentTypes.CuentaCorriente) {

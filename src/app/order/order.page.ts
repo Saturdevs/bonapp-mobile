@@ -40,6 +40,7 @@ export class OrderPage implements OnInit {
         let userToDisplay = this.order.users.find(x => x.username === this.user.username);
         if (!isNullOrUndefined(userToDisplay)) {
             this.usersToDisplayProducts.push(userToDisplay);
+            console.log(userToDisplay);
         };
     }
 

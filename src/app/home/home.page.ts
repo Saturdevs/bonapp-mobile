@@ -240,7 +240,7 @@ export class HomePage implements OnInit {
           .subscribe(userFound => {
             this.nativeStorage.setItem(USER_INFO, JSON.stringify(userFound)).then(async (res) => {
               this.contextService.setUser(userFound);
-             
+
               await this.contextService.sendMessage(false);
               scanSub.unsubscribe(); // stop scanning
               await this.qrScanner.hide();
@@ -281,6 +281,7 @@ export class HomePage implements OnInit {
 
   newOrder(user: User, restaurantId: string, orderType: string) {
     let order = new Order();
+    let tableNumber = this.contextService.getTableNro();
 
     order.type = orderType;
     order.table = this.contextService.getTableNro();
@@ -291,64 +292,57 @@ export class HomePage implements OnInit {
     let userToAdd = this.createUserToAdd(user, true);
     order.users.push(userToAdd);
 
-    this._tableService.getTableByNumber(this.contextService.getTableNro())
-      .subscribe(table => {
-        table.status = TableStatus.OCUPADA;
-        this._tableService.updateTable(table)
-          .subscribe(updatedTable => {
-            this.orderService.postOrder(order).subscribe(updatedOrder => {
-              //traer usuario y actualizarle el openOrder
-              let openOrder = new OpenOrderForUser();
-              openOrder.created = new Date();
-              openOrder.orderId = updatedOrder._id;
-              openOrder.tableNumber = table.number;
-              openOrder.restaurantId = restaurantId;
+    this.orderService.postOrder(order).subscribe(updatedOrder => {
+      //traer usuario y actualizarle el openOrder
+      let openOrder = new OpenOrderForUser();
+      openOrder.created = new Date();
+      openOrder.orderId = updatedOrder._id;
+      openOrder.tableNumber = tableNumber;
+      openOrder.restaurantId = restaurantId;
 
-              let userToUpdate = new User();
+      let userToUpdate = new User();
 
-              userToUpdate._id = user._id;
-              userToUpdate.openOrder = openOrder;
-              userToUpdate.email = user.email;
-              console.log(userToUpdate);
+      userToUpdate._id = user._id;
+      userToUpdate.openOrder = openOrder;
+      userToUpdate.email = user.email;
+      console.log(userToUpdate);
 
-              this.userService.updateUser(userToUpdate)
-                .subscribe(updatedUser => {
-                  console.log(updatedUser);
-                  this.authService.getUser(updatedUser._id)
-                    .subscribe(userFound => {
-                      this.nativeStorage.setItem(USER_INFO, JSON.stringify(userFound)).then((res) => {
-                        this.contextService.setUser(userFound);
-                        this.contextService.setOrder(updatedOrder);
-                        this.populateMenusAndCategories();
+      this.userService.updateUser(userToUpdate)
+        .subscribe(updatedUser => {
+          console.log(updatedUser);
+          this.authService.getUser(updatedUser._id)
+            .subscribe(userFound => {
+              this.nativeStorage.setItem(USER_INFO, JSON.stringify(userFound)).then((res) => {
+                this.contextService.setUser(userFound);
+                this.contextService.setOrder(updatedOrder);
+                this.populateMenusAndCategories();
 
-                        // NOTIFICACION PARA MESA OCUPADA! 
-                        let notification = new Notification()
-                        notification.createdAt = new Date();
-                        notification.notificationType = NotificationTypes.TableOcuped;;
-                        notification.table = table.number;
-                        notification.userFrom = updatedUser.username;
-                        notification.orderId = order._id;
-                        notification.usersTo = [];
-                        notification.readBy = null;
-                        notification.data = new NotificationData();
-                        notification.data.notificationType = NotificationTypes.TableOcuped;
-                        notification.actions = [];
+                // NOTIFICACION PARA MESA OCUPADA! 
+                let notification = new Notification()
+                notification.createdAt = new Date();
+                notification.notificationType = NotificationTypes.TableOcuped;;
+                notification.table = tableNumber;
+                notification.userFrom = updatedUser.username;
+                notification.orderId = order._id;
+                notification.usersTo = [];
+                notification.readBy = null;
+                notification.data = new NotificationData();
+                notification.data.notificationType = NotificationTypes.TableOcuped;
+                notification.actions = [];
 
-                        this.notiicationService.send(notification)
-                          .subscribe(notificationSent => {
-                            console.log(notificationSent);
-                          });
+                this.notiicationService.send(notification)
+                  .subscribe(notificationSent => {
+                    console.log(notificationSent);
+                  });
 
-                        this.socketIoService.updateTableStatus();
-                        this.addSocketId();
-                      });
-                    });
-                });
-            },
-              error => {
-                console.log(error);
-              })
-          });
+                this.socketIoService.updateTableStatus();
+                this.addSocketId();
+              });
+            });
+        });
+    },
+      error => {
+        console.log(error);
       })
   }
 

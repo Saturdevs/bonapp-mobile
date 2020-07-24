@@ -193,7 +193,7 @@ export class HomePage implements OnInit {
                         await this.contextService.sendMessage(false);
                         scanSub.unsubscribe(); // stop scanning
                         await this.qrScanner.hide();
-                        this.newOrder(user, restaurantInfo.restaurantId);
+                        this.newOrder(user, restaurantInfo.restaurantId, restaurantInfo.orderType);
                       }
                     }
                   );
@@ -279,10 +279,10 @@ export class HomePage implements OnInit {
     return userToAdd;
   }
 
-  newOrder(user, restaurantId) {
+  newOrder(user: User, restaurantId: string, orderType: string) {
     let order = new Order();
 
-    order.type = "App";
+    order.type = orderType;
     order.table = this.contextService.getTableNro();
     order.status = "Open";
     order.users = new Array<UserInOrder>();
